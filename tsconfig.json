@@ -1,0 +1,32 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "jsx": "preserve",
+    "lib": ["ESNext", "DOM"],
+    "moduleDetection": "force",
+    "baseUrl": "./packages",
+    "module": "preserve",
+    "moduleResolution": "bundler",
+    "paths": {
+      "@zess/core": ["core/src/index.ts"],
+      "@zess/compiler": ["compiler/src/compiler.ts"],
+      "@zess/vite-plugin": ["plugin/src/plugin.ts"]
+    },
+    "resolveJsonModule": true,
+    "types": ["node", "@vitest/browser/providers/playwright"],
+    "strict": true,
+    "noUnusedLocals": true,
+    "declaration": true,
+    "isolatedDeclarations": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "skipLibCheck": true
+  },
+  "include": [
+    "vitest.config.ts",
+    "packages/*/src",
+    "packages/*/tests",
+    "packages/*/types"
+  ]
+}

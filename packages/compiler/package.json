@@ -1,0 +1,42 @@
+{
+  "name": "@zess/compiler",
+  "version": "0.10.0",
+  "packageManager": "pnpm@10.15.0",
+  "description": "Zess JSX compiler 💥 Delivers efficient code conversion for super - responsive web experiences.",
+  "type": "module",
+  "keywords": [
+    "zess",
+    "zessjs",
+    "compiler",
+    "JSX"
+  ],
+  "license": "MIT",
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/compiler.js",
+  "module": "./dist/compiler.js",
+  "types": "./dist/compiler.d.ts",
+  "exports": {
+    "types": "./dist/compiler.d.ts",
+    "require": "./dist/compiler.cjs",
+    "import": "./dist/compiler.js",
+    "default": "./dist/compiler.js"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsdown"
+  },
+  "dependencies": {
+    "astring": "^1.9.0",
+    "entities": "^6.0.1",
+    "merge-source-map": "^1.1.0",
+    "meriyah": "^6.1.4",
+    "source-map": "^0.7.6"
+  },
+  "engines": {
+    "node": ">=18.12.0"
+  }
+}

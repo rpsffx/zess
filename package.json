@@ -1,0 +1,61 @@
+{
+  "name": "zess",
+  "version": "0.10.0",
+  "private": true,
+  "packageManager": "pnpm@10.15.0",
+  "description": "Zess ⚡ Smooth, efficient & responsive for web dev.",
+  "type": "module",
+  "license": "MIT",
+  "author": "Columsys",
+  "scripts": {
+    "build": "pnpm run --filter=\"./packages/*\" build",
+    "dev": "pnpm run --filter=\"./packages/*\" dev",
+    "lint": "eslint --cache .",
+    "lint:fix": "pnpm run lint --fix",
+    "test": "vitest",
+    "coverage": "vitest run --coverage",
+    "format": "prettier --write --cache \"**/*.{ts,tsx}\"",
+    "release": "bumpp -r && pnpm publish -r",
+    "prepublishOnly": "pnpm run build",
+    "postinstall": "simple-git-hooks"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^19.8.1",
+    "@commitlint/config-conventional": "^19.8.1",
+    "@sxzz/eslint-config": "^4.6.0",
+    "@sxzz/prettier-config": "^2.2.4",
+    "@types/node": "^22.17.2",
+    "@vitest/browser": "^3.2.4",
+    "@vitest/coverage-istanbul": "^3.2.4",
+    "@zess/vite-plugin": "workspace:*",
+    "bumpp": "^9.11.1",
+    "eslint": "^9.33.0",
+    "lint-staged": "^16.1.5",
+    "playwright": "^1.55.0",
+    "prettier": "^3.6.2",
+    "simple-git-hooks": "^2.13.1",
+    "tsdown": "^0.6.10",
+    "tsx": "^4.20.4",
+    "typescript": "^5.9.2",
+    "vitest": "^3.2.4"
+  },
+  "engines": {
+    "node": ">=18.12.0"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "pnpm lint:fix",
+      "pnpm format"
+    ]
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
+  },
+  "prettier": "@sxzz/prettier-config",
+  "simple-git-hooks": {
+    "pre-commit": "pnpm lint-staged",
+    "commit-msg": "pnpm commitlint --edit ${1}"
+  }
+}

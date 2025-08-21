@@ -1,0 +1,425 @@
+import { onCleanup, useMemo, useStore, type Component } from '@zess/core'
+
+type RouterProps = {
+  mode?: RouteMode
+  root?: RouteComponent
+  children?: JSX.Element
+}
+type RouteProps = {
+  path: string
+  sensitive?: boolean
+  component?: RouteComponent
+  children?: JSX.Element
+}
+type LinkProps = NavigateOptions & {
+  to: string
+  style?: JSX.CSSProperties | string | null
+  className?: JSX.ClassList | string | null
+  children?: JSX.Element
+}
+type NavigateOptions = {
+  exact?: boolean
+  replace?: boolean
+}
+type RouteNode = {
+  isMatched: boolean
+  component: JSX.Element
+}
+type RouteContext = {
+  patternPath: string
+  resolvedPath: string
+}
+type RouterContext = {
+  path: string
+  mode: RouteMode
+}
+type RouteMode = 'hash' | 'history'
+type RouteEventListener = (path: string) => void
+type RouteComponent = Component<{ children?: JSX.Element }>
+type SearchParams = Record<string, string | string[]>
+
+let currentRouteContext: RouteContext | undefined
+let currentRouterContext: RouterContext | undefined
+let searchParamsStore: ReturnType<typeof useStore<SearchParams>>
+const hashchangeListeners = new Set<RouteEventListener>()
+const popstateListeners = new Set<RouteEventListener>()
+
+export function Router(props: RouterProps): JSX.Element {
+  if (currentRouterContext) return
+  const mode = props.mode ?? 'hash'
+  const isHashMode = mode === 'hash'
+  const [routerContext, setRouterContext] = useStore<RouterContext>({
+    mode,
+    path: getCurrentPath(isHashMode),
+  })
+  const childRoutes = useMemo(() => {
+    currentRouterContext = routerContext
+    const children = props.children
+    currentRouterContext = undefined
+    return children
+  })
+  const matches = useMemo(() => {
+    const routeNodes = getRouteNodes(childRoutes())
+    for (let i = 0; i < routeNodes.length; ++i) {
+      if (routeNodes[i].isMatched) return routeNodes[i].component
+    }
+  }) as unknown as JSX.Element
+  if (isHashMode && !location.hash) history.replaceState(null, '', '#/')
+  onCleanup(
+    addRouteEvent((path: string) => setRouterContext({ path }), isHashMode),
+  )
+  if (!props.root) return matches
+  currentRouterContext = routerContext
+  const component = <props.root>{matches}</props.root>
+  currentRouterContext = undefined
+  return component
+}
+
+export function Route(props: RouteProps): JSX.Element {
+  if (!currentRouterContext) return
+  const routerContext = currentRouterContext
+  const prevRouteContext = currentRouteContext
+  const patternPath = useMemo(() =>
+    getFullPath(
+      props.path,
+      prevRouteContext?.patternPath,
+      true,
+      !props.sensitive,
+    ),
+  )
+  const resolvedPath = useMemo(() =>
+    getFullPath(
+      props.path,
+      prevRouteContext?.resolvedPath,
+      false,
+      !props.sensitive,
+    ),
+  )
+  const routeContext: RouteContext = {
+    get patternPath() {
+      return patternPath()
+    },
+    get resolvedPath() {
+      return resolvedPath()
+    },
+  }
+  const childRoutes = useMemo(() => {
+    const prevRouterContext = currentRouterContext
+    currentRouteContext = routeContext
+    currentRouterContext = routerContext
+    const children = props.children
+    currentRouteContext = prevRouteContext
+    currentRouterContext = prevRouterContext
+    return children
+  })
+  const routeNodes = useMemo(() => getRouteNodes(childRoutes()))
+  const isRouteMatched = useMemo(() => {
+    const currentPath = routerContext.path
+    if (props.path === '*') return true
+    if (matchPath(patternPath(), currentPath)) return true
+    for (const routeNode of routeNodes()) {
+      if (routeNode.isMatched) return true
+    }
+    return false
+  })
+  const matches = useMemo(() => {
+    if (!isRouteMatched()) return
+    const nodes = routeNodes()
+    for (let i = 0; i < nodes.length; ++i) {
+      if (nodes[i].isMatched) return nodes[i].component
+    }
+  })
+  return {
+    get isMatched() {
+      return isRouteMatched()
+    },
+    get component() {
+      const matched = matches()
+      if (!props.component) return matched
+      const prevRouterContext = currentRouterContext
+      currentRouteContext = routeContext
+      currentRouterContext = routerContext
+      const component = <props.component>{matched}</props.component>
+      currentRouteContext = prevRouteContext
+      currentRouterContext = prevRouterContext
+      return component
+    },
+  } as unknown as JSX.Element
+}
+
+export function Link(props: LinkProps): JSX.Element {
+  const isHashMode = isHashRouterMode()
+  const routeContext = currentRouteContext
+  const to = useMemo(() =>
+    getParsedPath(props.to, isHashMode, props.exact, routeContext),
+  )
+  const handleNavigate = (event: Event) => {
+    event.preventDefault()
+    navigate(to(), isHashMode, props.replace)
+  }
+  return (
+    <a
+      href={to()}
+      onClick={handleNavigate}
+      style={props.style}
+      class={props.className}
+    >
+      {props.children}
+    </a>
+  )
+}
+
+export function useNavigate(): (
+  href: string,
+  options?: NavigateOptions,
+) => void {
+  const isHashMode = isHashRouterMode()
+  const routeContext = currentRouteContext
+  return (href, options) => {
+    navigate(
+      getParsedPath(href, isHashMode, options?.exact, routeContext),
+      isHashMode,
+      options?.replace,
+    )
+  }
+}
+
+export function useSearchParams(): [SearchParams, typeof setSearchParams] {
+  searchParamsStore ??= useStore(getSearchParams())
+  return [searchParamsStore[0], setSearchParams]
+}
+
+function isHashRouterMode(): boolean {
+  return !currentRouterContext || currentRouterContext.mode === 'hash'
+}
+
+function navigate(href: string, isHashMode: boolean, replace?: boolean): void {
+  history[replace ? 'replaceState' : 'pushState'](null, '', href)
+  handleRouteEvent(isHashMode)
+}
+
+function getCurrentPath(isHashMode: boolean): string {
+  const { hash, pathname } = location
+  const path = isHashMode ? hash.slice(1) : pathname
+  return path ? decodeURIComponent(path) : '/'
+}
+
+function addRouteEvent(
+  fn: RouteEventListener,
+  isHashMode: boolean,
+): () => void {
+  const listeners = getRouteEventListeners(isHashMode)
+  const event = isHashMode ? 'hashchange' : 'popstate'
+  if (listeners.add(fn).size === 1) {
+    window.addEventListener(event, routeEventListener)
+  }
+  return function () {
+    listeners.delete(fn)
+    if (!listeners.size) {
+      window.removeEventListener(event, routeEventListener)
+    }
+  }
+}
+
+function getFullPath(
+  path: string,
+  basePath?: string,
+  normalizeWildcards?: boolean,
+  ignoreCase?: boolean,
+): string {
+  path = formatPath(path, true, normalizeWildcards, ignoreCase)
+  return basePath ? joinPaths(basePath, path) : path
+}
+
+function matchPath(path: string, url: string): boolean {
+  return RegExp(`^${path}$`).test(url)
+}
+
+function getParsedPath(
+  path: string,
+  isHashMode: boolean,
+  exact?: boolean,
+  routeContext?: RouteContext,
+): string {
+  let parsedPath = formatPath(path)
+  const altPath = getCurrentPath(!isHashMode)
+  if (!exact && routeContext) {
+    parsedPath = joinPaths(routeContext.resolvedPath, parsedPath)
+  }
+  if (isHashMode) {
+    const index = parsedPath.indexOf('?')
+    const search = index !== -1 ? parsedPath.slice(index) : ''
+    return `${altPath}${search}#${parsedPath}`
+  }
+  return altPath === '/' ? parsedPath : `${parsedPath}#${altPath}`
+}
+
+function getSearchParams(): SearchParams {
+  let { search } = location
+  if (!search) return {}
+  let key = ''
+  let value = ''
+  const searchParams: SearchParams = {}
+  search = decodeURIComponent(search)
+  for (let i = 1; i < search.length; ++i) {
+    const char = search[i]
+    if (char === '=') {
+      key = value
+      value = ''
+      continue
+    }
+    if (char === '&') {
+      appendSearchParam(searchParams, key, value)
+      key = value = ''
+      continue
+    }
+    value += char
+  }
+  if (key || value) {
+    if (!key) {
+      key = value
+      value = ''
+    }
+    appendSearchParam(searchParams, key, value)
+  }
+  return searchParams
+}
+
+function setSearchParams(params: Record<string, any>, replace?: boolean): void {
+  let search = ''
+  const keys = Object.keys(params)
+  const searchParams: SearchParams = {}
+  for (let i = 0; i < keys.length; ++i) {
+    const key = keys[i]
+    const value = params[key]
+    if (value === '' || value == null) {
+      searchParams[key] = undefined!
+    } else if (Array.isArray(value)) {
+      const values = []
+      for (let j = 0; j < value.length; ++j) {
+        if (value[j] != null && value[j] !== '') {
+          values.push(value[j].toString())
+          search += `${search ? '&' : ''}${key}=${value[j]}`
+        }
+      }
+      searchParams[key] = values.length ? values : undefined!
+    } else {
+      searchParams[key] = value.toString()
+      search += `${search ? '&' : ''}${key}=${value}`
+    }
+  }
+  if (search) search = `?${search}`
+  const href = `${location.pathname}${search}${location.hash}`
+  history[replace ? 'replaceState' : 'pushState'](null, '', href)
+  handleSearchParamsChange(searchParams)
+}
+
+function appendSearchParam(
+  searchParams: SearchParams,
+  key: string,
+  value: string,
+): void {
+  const prevValue = searchParams[key]
+  if (prevValue === undefined) {
+    searchParams[key] = value
+  } else if (typeof prevValue === 'string') {
+    searchParams[key] = [prevValue, value]
+  } else {
+    prevValue.push(value)
+  }
+}
+
+function routeEventListener({ type }: Event): void {
+  handleRouteEvent(type === 'hashchange')
+}
+
+function handleRouteEvent(isHashMode: boolean): void {
+  const currentPath = getCurrentPath(isHashMode)
+  const listeners = getRouteEventListeners(isHashMode)
+  for (const listener of listeners) listener(currentPath)
+  handleSearchParamsChange(getSearchParams())
+}
+
+function handleSearchParamsChange(searchParams: SearchParams): void {
+  searchParamsStore?.[1]((prevSearchParams) => {
+    const keys = Object.keys(prevSearchParams)
+    for (let i = 0; i < keys.length; ++i) {
+      const key = keys[i]
+      if (!(key in searchParams)) {
+        searchParams[key] = undefined!
+      }
+    }
+    return searchParams
+  })
+}
+
+function getRouteEventListeners(isHashMode: boolean): Set<RouteEventListener> {
+  return isHashMode ? hashchangeListeners : popstateListeners
+}
+
+function getRouteNodes(childRoute: JSX.Element): RouteNode[] {
+  if (childRoute == null) return []
+  if (typeof childRoute === 'function' && !(childRoute as any).length) {
+    return getRouteNodes((childRoute as () => JSX.Element)())
+  }
+  if (Array.isArray(childRoute)) return childRoute.flatMap(getRouteNodes)
+  return [childRoute as unknown as RouteNode]
+}
+
+function joinPaths(basePath: string, path: string): string {
+  if (basePath === '/') return path || basePath
+  if (path === '/') return basePath || path
+  return `${basePath}${path}`
+}
+
+function formatPath(
+  path: string,
+  stripSearch?: boolean,
+  normalizeWildcards?: boolean,
+  ignoreCase?: boolean,
+): string {
+  let formattedPath = ''
+  let hasSlash = false
+  let hasWildcard = false
+  for (let i = 0; i < path.length; ++i) {
+    const char = path[i]
+    if (char === '/') {
+      hasSlash = true
+      continue
+    }
+    if (normalizeWildcards) {
+      if (char === '*') {
+        hasWildcard = hasSlash = true
+        continue
+      }
+      if (hasWildcard) {
+        hasWildcard = false
+        formattedPath += '/?.*'
+      }
+    }
+    if (char === '?') {
+      if (!stripSearch) {
+        formattedPath += path.slice(i)
+      }
+      break
+    }
+    if (hasSlash) {
+      hasSlash = false
+      formattedPath += '/'
+    }
+    if (ignoreCase) {
+      const upperChar = char.toUpperCase()
+      const lowerChar = char.toLowerCase()
+      if (upperChar !== lowerChar) {
+        formattedPath += `[${upperChar}${lowerChar}]`
+        continue
+      }
+    }
+    formattedPath += char
+  }
+  if (hasWildcard) formattedPath += '/?.*'
+  if (!formattedPath.startsWith('/')) {
+    formattedPath = `/${formattedPath}`
+  }
+  return formattedPath
+}

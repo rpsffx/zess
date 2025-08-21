@@ -1,0 +1,40 @@
+{
+  "name": "@zess/router",
+  "version": "0.10.0",
+  "packageManager": "pnpm@10.15.0",
+  "description": "Zess router 📍 Client-side navigation, dynamic & nested routing for web apps",
+  "type": "module",
+  "keywords": [
+    "zess",
+    "router"
+  ],
+  "license": "MIT",
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/router.js",
+  "module": "./dist/router.js",
+  "types": "./dist/router.d.ts",
+  "exports": {
+    "types": "./dist/router.d.ts",
+    "zess": "./dist/router.jsx",
+    "import": "./dist/router.js",
+    "default": "./dist/router.js"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsdown"
+  },
+  "peerDependencies": {
+    "@zess/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@zess/compiler": "workspace:*",
+    "@zess/core": "workspace:*"
+  },
+  "engines": {
+    "node": ">=18.12.0"
+  }
+}
