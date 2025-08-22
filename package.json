@@ -15,7 +15,8 @@
     "test": "vitest",
     "coverage": "vitest run --coverage",
     "format": "prettier --write --cache \"**/*.{ts,tsx}\"",
-    "release": "bumpp -r && pnpm publish -r",
+    "release": "bumpp -r && pnpm run changelog && pnpm publish -r",
+    "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s",
     "prepublishOnly": "pnpm run build",
     "postinstall": "simple-git-hooks"
   },
@@ -29,6 +30,7 @@
     "@vitest/coverage-istanbul": "^3.2.4",
     "@zess/vite-plugin": "workspace:*",
     "bumpp": "^9.11.1",
+    "conventional-changelog": "^7.1.1",
     "eslint": "^9.33.0",
     "lint-staged": "^16.1.5",
     "playwright": "^1.55.0",
