@@ -1,4 +1,10 @@
-import { onCleanup, useMemo, useStore, type Component } from '@zess/core'
+import {
+  onCleanup,
+  useMemo,
+  useRenderEffect,
+  useStore,
+  type Component,
+} from '@zess/core'
 
 type RouterProps = {
   mode?: RouteMode
@@ -26,6 +32,8 @@ type RouteNode = {
   component: JSX.Element
 }
 type RouteContext = {
+  isMatched: boolean
+  match: JSX.Element
   patternPath: string
   resolvedPath: string
 }
@@ -58,7 +66,7 @@ export function Router(props: RouterProps): JSX.Element {
     currentRouterContext = undefined
     return children
   })
-  const matches = useMemo(() => {
+  const match = useMemo(() => {
     const routeNodes = getRouteNodes(childRoutes())
     for (let i = 0; i < routeNodes.length; ++i) {
       if (routeNodes[i].isMatched) return routeNodes[i].component
@@ -68,9 +76,9 @@ export function Router(props: RouterProps): JSX.Element {
   onCleanup(
     addRouteEvent((path: string) => setRouterContext({ path }), isHashMode),
   )
-  if (!props.root) return matches
+  if (!props.root) return match
   currentRouterContext = routerContext
-  const component = <props.root>{matches}</props.root>
+  const component = <props.root>{match}</props.root>
   currentRouterContext = undefined
   return component
 }
@@ -79,30 +87,26 @@ export function Route(props: RouteProps): JSX.Element {
   if (!currentRouterContext) return
   const routerContext = currentRouterContext
   const prevRouteContext = currentRouteContext
-  const patternPath = useMemo(() =>
-    getFullPath(
-      props.path,
-      prevRouteContext?.patternPath,
-      true,
-      !props.sensitive,
-    ),
-  )
-  const resolvedPath = useMemo(() =>
-    getFullPath(
-      props.path,
-      prevRouteContext?.resolvedPath,
-      false,
-      !props.sensitive,
-    ),
-  )
-  const routeContext: RouteContext = {
+  const [routeContext, setRouteContext] = useStore<RouteContext>({
+    isMatched: false,
+    match: null,
     get patternPath() {
-      return patternPath()
+      return getFullPath(
+        props.path,
+        prevRouteContext?.patternPath,
+        true,
+        !props.sensitive,
+      )
     },
     get resolvedPath() {
-      return resolvedPath()
+      return getFullPath(
+        props.path,
+        prevRouteContext?.resolvedPath,
+        false,
+        !props.sensitive,
+      )
     },
-  }
+  })
   const childRoutes = useMemo(() => {
     const prevRouterContext = currentRouterContext
     currentRouteContext = routeContext
@@ -113,33 +117,30 @@ export function Route(props: RouteProps): JSX.Element {
     return children
   })
   const routeNodes = useMemo(() => getRouteNodes(childRoutes()))
-  const isRouteMatched = useMemo(() => {
+  useRenderEffect(() => {
+    const isWildcard = props.path === '*'
     const currentPath = routerContext.path
-    if (props.path === '*') return true
-    if (matchPath(patternPath(), currentPath)) return true
+    if (!isWildcard && matchPath(routeContext.patternPath, currentPath)) {
+      return setRouteContext({ isMatched: true, match: null })
+    }
     for (const routeNode of routeNodes()) {
-      if (routeNode.isMatched) return true
+      if (routeNode.isMatched) {
+        return setRouteContext({ isMatched: true, match: routeNode.component })
+      }
     }
-    return false
-  })
-  const matches = useMemo(() => {
-    if (!isRouteMatched()) return
-    const nodes = routeNodes()
-    for (let i = 0; i < nodes.length; ++i) {
-      if (nodes[i].isMatched) return nodes[i].component
-    }
+    setRouteContext({ isMatched: isWildcard, match: null })
   })
   return {
     get isMatched() {
-      return isRouteMatched()
+      return routeContext.isMatched
     },
     get component() {
-      const matched = matches()
-      if (!props.component) return matched
+      const match = routeContext.match
+      if (!props.component) return match
       const prevRouterContext = currentRouterContext
       currentRouteContext = routeContext
       currentRouterContext = routerContext
-      const component = <props.component>{matched}</props.component>
+      const component = <props.component>{match}</props.component>
       currentRouteContext = prevRouteContext
       currentRouterContext = prevRouterContext
       return component
