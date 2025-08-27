@@ -41,7 +41,7 @@ describe('Router', () => {
               </>
             )}
           >
-            <Route path="/test" component={() => 'Test'} />
+            <Route path="/test" component={() => <div>Test</div>} />
           </Router>
         ),
         container,
@@ -62,7 +62,7 @@ describe('Router', () => {
               </>
             )}
           >
-            <Route path="/test" component={() => 'Test'} />
+            <Route path="/test" component={() => <div>Test</div>} />
           </Router>
         ),
         container,
@@ -91,7 +91,7 @@ describe('Router', () => {
                 </>
               )}
             />
-            <Route path="/about" component={() => 'About'} />
+            <Route path="/about" component={() => <div>About</div>} />
           </Router>
         ),
         container,
@@ -112,7 +112,7 @@ describe('Router', () => {
               </>
             )}
           >
-            <Route path="/test" component={() => 'Test'} />
+            <Route path="/test" component={() => <div>Test</div>} />
           </Router>
         ),
         container,
@@ -176,7 +176,7 @@ describe('Router', () => {
               </>
             )}
           >
-            <Route path="/test" sensitive component={() => 'Test'} />
+            <Route path="/test" sensitive component={() => <div>Test</div>} />
           </Router>
         ),
         container,
@@ -195,7 +195,7 @@ describe('Router', () => {
               </>
             )}
           >
-            <Route path="/test" component={() => 'Test'} />
+            <Route path="/test" component={() => <div>Test</div>} />
           </Router>
         ),
         container,
@@ -214,7 +214,7 @@ describe('Router', () => {
               </>
             )}
           >
-            <Route path="/" component={() => 'Home'} />
+            <Route path="/" component={() => <div>Home</div>} />
             <Route
               path="/test"
               component={() => (
@@ -224,7 +224,7 @@ describe('Router', () => {
                 </>
               )}
             />
-            <Route path="*" component={() => '404 Not Found'} />
+            <Route path="*" component={() => <div>404 Not Found</div>} />
           </Router>
         ),
         container,
@@ -250,9 +250,9 @@ describe('Router', () => {
           >
             <Route
               path="/parent"
-              component={(props) => `Parent${props.children ?? ''}`}
+              component={(props) => <div>Parent{props.children}</div>}
             >
-              <Route path="/child" component={() => 'Child'} />
+              <Route path="/child" component={() => <div>Child</div>} />
             </Route>
           </Router>
         ),
@@ -260,6 +260,27 @@ describe('Router', () => {
       )
       ;(container.firstElementChild as HTMLAnchorElement).click()
       expect(container.textContent).toBe('ParentChild')
+    })
+    it('should render child route content when parent route has no component', () => {
+      dispose = render(
+        () => (
+          <Router
+            root={(props) => (
+              <>
+                <Link to="/parent/child" />
+                {props.children}
+              </>
+            )}
+          >
+            <Route path="/parent">
+              <Route path="/child" component={() => <div>Test</div>} />
+            </Route>
+          </Router>
+        ),
+        container,
+      )
+      ;(container.firstElementChild as HTMLAnchorElement).click()
+      expect(container.textContent).toBe('Test')
     })
     it('should render three levels nested route content and handle navigation between routes', () => {
       dispose = render(
@@ -276,14 +297,14 @@ describe('Router', () => {
           >
             <Route
               path="/level1"
-              component={(props) => `Level1${props.children ?? ''}`}
+              component={(props) => <div>Level1{props.children}</div>}
             >
               <Route
                 path="/level2"
-                component={(props) => `Level2${props.children ?? ''}`}
+                component={(props) => <div>Level2{props.children}</div>}
               >
-                <Route path="/level3" component={() => 'Level3'} />
-                <Route path="/level3-2" component={() => 'Level3-2'} />
+                <Route path="/level3" component={() => <div>Level3</div>} />
+                <Route path="/level3-2" component={() => <div>Level3-2</div>} />
               </Route>
             </Route>
           </Router>
@@ -313,8 +334,8 @@ describe('Router', () => {
               </>
             )}
           >
-            <Route path="/" component={() => 'Home'} />
-            <Route path="/about" component={() => 'About'} />
+            <Route path="/" component={() => <div>Home</div>} />
+            <Route path="/about" component={() => <div>About</div>} />
           </Router>
         ),
         container,
@@ -340,8 +361,8 @@ describe('Router', () => {
               </>
             )}
           >
-            <Route path="/" component={() => 'Home'} />
-            <Route path="/contact" component={() => 'Contact'} />
+            <Route path="/" component={() => <div>Home</div>} />
+            <Route path="/contact" component={() => <div>Contact</div>} />
           </Router>
         ),
         container,
@@ -364,8 +385,8 @@ describe('Router', () => {
               return props.children
             }}
           >
-            <Route path="/" component={() => 'Home'} />
-            <Route path="/test" component={() => 'Test'} />
+            <Route path="/" component={() => <div>Home</div>} />
+            <Route path="/test" component={() => <div>Test</div>} />
           </Router>
         ),
         container,
@@ -389,17 +410,17 @@ describe('Router', () => {
           >
             <Route
               path="/parent"
-              component={(props) => `Parent${props.children ?? ''}`}
+              component={(props) => <div>Parent{props.children}</div>}
             >
               <Route
                 path="/child"
                 component={() => {
                   navigate = useNavigate()
-                  return 'Child'
+                  return <div>Child</div>
                 }}
               />
             </Route>
-            <Route path="/sibling" component={() => 'Sibling'} />
+            <Route path="/sibling" component={() => <div>Sibling</div>} />
           </Router>
         ),
         container,
@@ -421,8 +442,8 @@ describe('Router', () => {
               return props.children
             }}
           >
-            <Route path="/page1" component={() => 'Page 1'} />
-            <Route path="/page2" component={() => 'Page 2'} />
+            <Route path="/page1" component={() => <div>Page 1</div>} />
+            <Route path="/page2" component={() => <div>Page 2</div>} />
           </Router>
         ),
         container,
