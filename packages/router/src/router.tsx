@@ -1,5 +1,8 @@
 import {
+  getOwner,
+  on,
   onCleanup,
+  untrack,
   useMemo,
   useRenderEffect,
   useStore,
@@ -23,9 +26,9 @@ type LinkProps = NavigateOptions & {
   className?: JSX.ClassList | string | null
   children?: JSX.Element
 }
-type NavigateOptions = {
-  exact?: boolean
-  replace?: boolean
+type RouteOwner = ReturnType<typeof getOwner> & {
+  routeContext?: RouteContext
+  routerContext?: RouterContext
 }
 type RouteNode = {
   isMatched: boolean
@@ -41,59 +44,60 @@ type RouterContext = {
   path: string
   mode: RouteMode
 }
+type NavigateOptions = {
+  exact?: boolean
+  replace?: boolean
+}
 type RouteMode = 'hash' | 'history'
 type RouteEventListener = (path: string) => void
 type RouteComponent = Component<{ children?: JSX.Element }>
 type SearchParams = Record<string, string | string[]>
 
-let currentRouteContext: RouteContext | undefined
-let currentRouterContext: RouterContext | undefined
 let searchParamsStore: ReturnType<typeof useStore<SearchParams>>
 const hashchangeListeners = new Set<RouteEventListener>()
 const popstateListeners = new Set<RouteEventListener>()
 
 export function Router(props: RouterProps): JSX.Element {
-  if (currentRouterContext) return
+  if (getRouterContext()) return
+  const Root = props.root
   const mode = props.mode ?? 'hash'
   const isHashMode = mode === 'hash'
-  const [routerContext, setRouterContext] = useStore<RouterContext>({
+  const [context, setContext] = useStore<RouterContext>({
     mode,
     path: getCurrentPath(isHashMode),
   })
   const childRoutes = useMemo(() => {
-    currentRouterContext = routerContext
-    const children = props.children
-    currentRouterContext = undefined
-    return children
+    setRouterContext(context)
+    return props.children
   })
+  const routeNodes = useMemo(() => getRouteNodes(childRoutes()))
   const match = useMemo(() => {
-    const routeNodes = getRouteNodes(childRoutes())
-    for (let i = 0; i < routeNodes.length; ++i) {
-      if (routeNodes[i].isMatched) return routeNodes[i].component
+    for (const routeNode of routeNodes()) {
+      if (routeNode.isMatched) return routeNode.component
     }
   }) as unknown as JSX.Element
   if (isHashMode && !location.hash) history.replaceState(null, '', '#/')
-  onCleanup(
-    addRouteEvent((path: string) => setRouterContext({ path }), isHashMode),
-  )
-  if (!props.root) return match
-  currentRouterContext = routerContext
-  const component = <props.root>{match}</props.root>
-  currentRouterContext = undefined
-  return component
+  onCleanup(addRouteEvent((path) => setContext({ path }), isHashMode))
+  if (!Root) return match
+  return useMemo(() =>
+    untrack(() => {
+      setRouterContext(context)
+      return <Root>{match}</Root>
+    }),
+  ) as unknown as JSX.Element
 }
 
 export function Route(props: RouteProps): JSX.Element {
-  if (!currentRouterContext) return
-  const routerContext = currentRouterContext
-  const prevRouteContext = currentRouteContext
-  const [routeContext, setRouteContext] = useStore<RouteContext>({
+  const routerContext = getRouterContext()
+  if (!routerContext) return
+  const routeContext = getRouteContext()
+  const [context, setContext] = useStore<RouteContext>({
     isMatched: false,
     match: null,
     get patternPath() {
       return getFullPath(
         props.path,
-        prevRouteContext?.patternPath,
+        routeContext?.patternPath,
         true,
         !props.sensitive,
       )
@@ -101,60 +105,61 @@ export function Route(props: RouteProps): JSX.Element {
     get resolvedPath() {
       return getFullPath(
         props.path,
-        prevRouteContext?.resolvedPath,
+        routeContext?.resolvedPath,
         false,
         !props.sensitive,
       )
     },
   })
   const childRoutes = useMemo(() => {
-    const prevRouterContext = currentRouterContext
-    currentRouteContext = routeContext
-    currentRouterContext = routerContext
-    const children = props.children
-    currentRouteContext = prevRouteContext
-    currentRouterContext = prevRouterContext
-    return children
+    setRouterContext(routerContext)
+    setRouteContext(context)
+    return props.children
   })
   const routeNodes = useMemo(() => getRouteNodes(childRoutes()))
   useRenderEffect(() => {
     const isWildcard = props.path === '*'
     const currentPath = routerContext.path
-    if (!isWildcard && matchPath(routeContext.patternPath, currentPath)) {
-      return setRouteContext({ isMatched: true, match: null })
+    if (!isWildcard && matchPath(context.patternPath, currentPath)) {
+      return setContext({ isMatched: true, match: null })
     }
     for (const routeNode of routeNodes()) {
       if (routeNode.isMatched) {
-        return setRouteContext({ isMatched: true, match: routeNode.component })
+        return setContext({ isMatched: true, match: routeNode.component })
       }
     }
-    setRouteContext({ isMatched: isWildcard, match: null })
+    setContext({ isMatched: isWildcard, match: null })
   })
+  const match = useMemo(() => context.match) as unknown as JSX.Element
+  const routeComponent = useMemo(
+    on(
+      () => context.isMatched,
+      (isMatched) => {
+        if (!isMatched) return
+        if (!props.component) return match
+        setRouterContext(routerContext)
+        setRouteContext(context)
+        return <props.component>{match}</props.component>
+      },
+    ),
+  )
   return {
     get isMatched() {
-      return routeContext.isMatched
+      return context.isMatched
     },
     get component() {
-      const match = routeContext.match
-      if (!props.component) return match
-      const prevRouterContext = currentRouterContext
-      currentRouteContext = routeContext
-      currentRouterContext = routerContext
-      const component = <props.component>{match}</props.component>
-      currentRouteContext = prevRouteContext
-      currentRouterContext = prevRouterContext
-      return component
+      return routeComponent()
     },
   } as unknown as JSX.Element
 }
 
 export function Link(props: LinkProps): JSX.Element {
   const isHashMode = isHashRouterMode()
-  const routeContext = currentRouteContext
+  const routeContext = getRouteContext()
   const to = useMemo(() =>
     getParsedPath(props.to, isHashMode, props.exact, routeContext),
   )
-  const handleNavigate = (event: Event) => {
+  const handleNavigate = (event: MouseEvent) => {
     event.preventDefault()
     navigate(to(), isHashMode, props.replace)
   }
@@ -175,7 +180,7 @@ export function useNavigate(): (
   options?: NavigateOptions,
 ) => void {
   const isHashMode = isHashRouterMode()
-  const routeContext = currentRouteContext
+  const routeContext = getRouteContext()
   return (href, options) => {
     navigate(
       getParsedPath(href, isHashMode, options?.exact, routeContext),
@@ -190,8 +195,40 @@ export function useSearchParams(): [SearchParams, typeof setSearchParams] {
   return [searchParamsStore[0], setSearchParams]
 }
 
+function getRouterContext(): RouterContext | undefined {
+  return getContext('routerContext')
+}
+
+function getRouteContext(): RouteContext | undefined {
+  return getContext('routeContext')
+}
+
+function setRouterContext(routerContext: RouterContext): void {
+  setContext('routerContext', routerContext)
+}
+
+function setRouteContext(routeContext: RouteContext): void {
+  setContext('routeContext', routeContext)
+}
+
+function getContext<T extends 'routeContext' | 'routerContext'>(
+  prop: T,
+): RouteOwner[T] {
+  for (let owner = getOwner(); owner; owner = owner.owner) {
+    if (prop in owner) return (owner as RouteOwner)[prop]
+  }
+}
+
+function setContext<T extends 'routeContext' | 'routerContext'>(
+  prop: T,
+  context: RouteOwner[T],
+): void {
+  ;(getOwner() as RouteOwner)[prop] = context
+}
+
 function isHashRouterMode(): boolean {
-  return !currentRouterContext || currentRouterContext.mode === 'hash'
+  const routerContext = getRouterContext()
+  return !routerContext || routerContext.mode === 'hash'
 }
 
 function navigate(href: string, isHashMode: boolean, replace?: boolean): void {
