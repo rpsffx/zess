@@ -204,11 +204,11 @@ function getRouteContext(): RouteContext | undefined {
 }
 
 function setRouterContext(routerContext: RouterContext): void {
-  setContext('routerContext', routerContext)
+  ;(getOwner() as RouteOwner).routerContext = routerContext
 }
 
 function setRouteContext(routeContext: RouteContext): void {
-  setContext('routeContext', routeContext)
+  ;(getOwner() as RouteOwner).routeContext = routeContext
 }
 
 function getContext<T extends 'routeContext' | 'routerContext'>(
@@ -217,13 +217,6 @@ function getContext<T extends 'routeContext' | 'routerContext'>(
   for (let owner = getOwner(); owner; owner = owner.owner) {
     if (prop in owner) return (owner as RouteOwner)[prop]
   }
-}
-
-function setContext<T extends 'routeContext' | 'routerContext'>(
-  prop: T,
-  context: RouteOwner[T],
-): void {
-  ;(getOwner() as RouteOwner)[prop] = context
 }
 
 function isHashRouterMode(): boolean {
