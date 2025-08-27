@@ -84,7 +84,7 @@ export function Router(props: RouterProps): JSX.Element {
       setRouterContext(context)
       return <Root>{match}</Root>
     }),
-  ) as unknown as JSX.Element
+  )()
 }
 
 export function Route(props: RouteProps): JSX.Element {
