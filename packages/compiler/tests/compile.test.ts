@@ -48,6 +48,10 @@ describe('compile', () => {
     const result = compile('<MyComponent />')
     match(result.code, '_$createComponent(MyComponent, {})')
   })
+  it('should handle JSX member expressions', () => {
+    const result = compile('<Module.Component />')
+    match(result.code, '_$createComponent(Module.Component, {})')
+  })
   it('should handle nested JSX components', () => {
     const result = compile('<Parent><Child><Grandchild /></Child></Parent>')
     match(
@@ -87,6 +91,10 @@ describe('compile', () => {
     const result = compile('<div>{...items}</div>')
     match(result.code, '_$insert(_el$, items)')
   })
+  it('should handle empty expression containers', () => {
+    const result = compile('<div>{/* empty */}</div>')
+    match(result.code, '_$createElement("div")')
+  })
   it('should handle single expression fragments', () => {
     const result = compile('<>{userName}</>')
     match(result.code, 'userName')
@@ -115,6 +123,10 @@ describe('compile', () => {
     const result = compile('<>Text {count} {flag ? <A /> : <B />}</>')
     match(result.code, /\["Text ", .+?, .+?\]/s)
   })
+  it('should handle nested fragments correctly', () => {
+    const result = compile('<>Outer<>{Inner}</></>')
+    match(result.code, '["Outer", Inner]')
+  })
   it('should handle boolean attributes', () => {
     const result = compile('<input disabled />')
     match(result.code, '_el$.disabled = true')
@@ -122,6 +134,10 @@ describe('compile', () => {
   it('should handle innerHTML', () => {
     const result = compile('<div innerHTML={html} />')
     match(result.code, '_el$.innerHTML = html')
+  })
+  it('should handle native event listeners', () => {
+    const result = compile('<button onclick={handleClick}>Click</button>')
+    match(result.code, '_el$.onclick = handleClick')
   })
   it('should handle event listeners with delegation', () => {
     const result = compile('<button onClick={handleClick}>Click</button>')
@@ -133,9 +149,26 @@ describe('compile', () => {
     match(result.code, '_$className(_el$, className)')
     match(result.code, '_$style(_el$, styles)')
   })
-  it('should handle function refs', () => {
+  it('should handle function ref', () => {
     const result = compile('<div ref={el => this.ref = el}></div>')
     match(result.code, '_$use(el => _self$.ref = el, _el$)')
+  })
+  it('should handle object ref', () => {
+    const result = compile('<div ref={refObject}></div>')
+    match(result.code, 'const _ref$ = refObject')
+    match(
+      result.code,
+      'typeof _ref$ === "function" ? _$use(_ref$, _el$) : refObject = _el$',
+    )
+  })
+  it('should handle ref with conditional expression', () => {
+    const result = compile('<div ref={condition ? ref1 : ref2}></div>')
+    match(result.code, 'const _ref$ = condition ? ref1 : ref2')
+    match(result.code, 'typeof _ref$ === "function" && _$use(_ref$, _el$)')
+  })
+  it('should handle attribute names with special characters', () => {
+    const result = compile('<div data-custom-attr="value" />')
+    match(result.code, '_$setAttribute(_el$, "data-custom-attr", "value")')
   })
   it('should handle namespaced attributes in SVG', () => {
     const result = compile('<svg xlink:href="#test" />')
@@ -144,6 +177,12 @@ describe('compile', () => {
   it('should merge multiple spread attributes', () => {
     const result = compile('<div {...a} {...b} class="static" />')
     match(result.code, '_$mergeProps(a, b, { ["class"]: "static" })')
+  })
+  it('should handle multiple dynamic attributes', () => {
+    const result = compile('<div class={cls} style={styles} title={title} />')
+    match(result.code, '_$className(_el$, cls)')
+    match(result.code, '_$style(_el$, styles)')
+    match(result.code, '_$setAttribute(_el$, "title", title)')
   })
   it('should optimize static content', () => {
     const result = compile(
@@ -177,6 +216,17 @@ describe('compile', () => {
     `)
     match(result.code, 'const _self$ = this')
     match(result.code, '_self$.state.text')
+  })
+  it('should handle this in arrow function with JSX assignment', () => {
+    const result = compile(`
+      class Test {
+        handleClick = () => {
+          const element = <div>{this.value}</div>
+        }
+      }
+    `)
+    match(result.code, 'const _self$ = this')
+    match(result.code, '_self$.value')
   })
   it('should handle component methods in JSX', () => {
     const result = compile(`
