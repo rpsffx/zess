@@ -46,12 +46,19 @@ type CompilerResult = {
 type Location = Required<ESTree._Node>
 type Listener = FunctionExpression | RightValue
 type Stylesheet = ESTree.ObjectExpression | RightValue
-type Function = FunctionExpression | ESTree.FunctionDeclaration
-type RightValue = LeftValue | ESTree.CallExpression | ESTree.ChainExpression
 type LeftValue = ESTree.Identifier | ESTree.MemberExpression
+type Function = FunctionExpression | ESTree.FunctionDeclaration
 type FunctionExpression =
   | ESTree.FunctionExpression
   | ESTree.ArrowFunctionExpression
+type RightValue =
+  | LeftValue
+  | ESTree.CallExpression
+  | ESTree.ChainExpression
+  | ESTree.LogicalExpression
+  | ESTree.ConditionalExpression
+  | ESTree.AssignmentExpression
+  | ESTree.SequenceExpression
 
 const UPPERCASE_REGEX = /^[A-Z]/
 const NATIVE_EVENT_REGEX = /^on[a-z]+$/
@@ -1809,7 +1816,11 @@ function isRightValue(node: ESTree.Expression): node is RightValue {
   return (
     isLeftValue(node) ||
     node.type === 'CallExpression' ||
-    node.type === 'ChainExpression'
+    node.type === 'ChainExpression' ||
+    node.type === 'LogicalExpression' ||
+    node.type === 'ConditionalExpression' ||
+    node.type === 'AssignmentExpression' ||
+    node.type === 'SequenceExpression'
   )
 }
 
