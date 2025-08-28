@@ -27,7 +27,8 @@
     "access": "public"
   },
   "scripts": {
-    "build": "tsdown"
+    "build": "tsdown",
+    "dev": "tsdown --watch"
   },
   "dependencies": {
     "astring": "^1.9.0",

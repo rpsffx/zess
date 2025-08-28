@@ -29,7 +29,8 @@
     "access": "public"
   },
   "scripts": {
-    "build": "tsdown"
+    "build": "tsdown",
+    "dev": "tsdown --watch"
   },
   "peerDependencies": {
     "@zess/compiler": "workspace:*",
