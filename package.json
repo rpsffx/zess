@@ -17,7 +17,7 @@
     "format": "prettier --write --cache \"**/*.{ts,tsx}\"",
     "release": "bumpp -r && pnpm publish -r",
     "prepublishOnly": "pnpm run build",
-    "postinstall": "simple-git-hooks"
+    "postinstall": "playwright install && simple-git-hooks"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.8.1",
