@@ -54,11 +54,20 @@ type FunctionExpression =
 type RightValue =
   | LeftValue
   | ESTree.CallExpression
-  | ESTree.ChainExpression
+  | ESTree.NewExpression
   | ESTree.LogicalExpression
   | ESTree.ConditionalExpression
+  | ESTree.ChainExpression
+  | ESTree.AwaitExpression
+  | ESTree.TaggedTemplateExpression
+  | ESTree.JSXElement
+  | ESTree.JSXFragment
+  | ESTree.ThisExpression
+  | ESTree.ImportExpression
   | ESTree.AssignmentExpression
   | ESTree.SequenceExpression
+  | ESTree.YieldExpression
+  | ESTree.MetaProperty
 
 const UPPERCASE_REGEX = /^[A-Z]/
 const NATIVE_EVENT_REGEX = /^on[a-z]+$/
@@ -1813,15 +1822,28 @@ function isStylesheet(node: ESTree.Expression): node is Stylesheet {
 }
 
 function isRightValue(node: ESTree.Expression): node is RightValue {
-  return (
-    isLeftValue(node) ||
-    node.type === 'CallExpression' ||
-    node.type === 'ChainExpression' ||
-    node.type === 'LogicalExpression' ||
-    node.type === 'ConditionalExpression' ||
-    node.type === 'AssignmentExpression' ||
-    node.type === 'SequenceExpression'
-  )
+  switch (node.type) {
+    case 'Identifier':
+    case 'MemberExpression':
+    case 'CallExpression':
+    case 'NewExpression':
+    case 'LogicalExpression':
+    case 'ConditionalExpression':
+    case 'ChainExpression':
+    case 'AwaitExpression':
+    case 'TaggedTemplateExpression':
+    case 'JSXElement':
+    case 'JSXFragment':
+    case 'ThisExpression':
+    case 'ImportExpression':
+    case 'AssignmentExpression':
+    case 'SequenceExpression':
+    case 'YieldExpression':
+    case 'MetaProperty':
+      return true
+    default:
+      return false
+  }
 }
 
 function isLeftValue(node: ESTree.Expression): node is LeftValue {
