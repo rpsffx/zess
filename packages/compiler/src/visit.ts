@@ -23,6 +23,7 @@ type Node<T = NodeTypes> = Extract<ESTree.Node, { type: T }>
 type NodeTypes = ESTree.Node['type']
 
 const ESTreeNodeKeys: Partial<Record<NodeTypes, string[]>> = {
+  AccessorProperty: ['key', 'value', '$decorators'],
   ArrayExpression: ['$elements'],
   ArrayPattern: ['$elements'],
   ArrowFunctionExpression: ['$params', 'body'],
