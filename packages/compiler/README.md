@@ -6,7 +6,7 @@
 
 # @zess/compiler
 
-[![NPM Version](https://img.shields.io/npm/v/@zess/compiler.svg?style=flat-square&color=lightblue)](https://www.npmjs.com/package/@zess/compiler) [![Download](https://img.shields.io/npm/dm/@zess/compiler?style=flat-square&color=lightblue)](https://www.npmjs.com/package/@zess/compiler) [![License](https://img.shields.io/npm/l/@zess/compiler.svg?style=flat-square&color=lightblue)](https://github.com/rpsffx/zess/blob/main/LICENSE)
+[![NPM Version](https://img.shields.io/npm/v/@zess/compiler.svg?style=flat-square&color=lightblue)](https://www.npmjs.com/package/@zess/compiler) [![License](https://img.shields.io/npm/l/@zess/compiler.svg?style=flat-square&color=lightblue)](https://github.com/rpsffx/zess/blob/main/LICENSE)
 
 Zess JSX compiler - Delivers efficient code conversion for super-responsive web experiences.
 

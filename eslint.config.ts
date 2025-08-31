@@ -10,6 +10,7 @@ export default sxzz({
     'unicorn/new-for-builtins': 'off',
     'unicorn/prefer-modern-dom-apis': 'off',
     'unicorn/prefer-dom-node-remove': 'off',
+    'unicorn/prefer-add-event-listener': 'off',
     '@typescript-eslint/consistent-type-assertions': 'off',
   },
 })
