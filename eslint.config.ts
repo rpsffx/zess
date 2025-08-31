@@ -3,6 +3,7 @@ import { sxzz } from '@sxzz/eslint-config'
 export default sxzz({
   rules: {
     eqeqeq: 'off',
+    'dot-notation': 'off',
     'import/no-default-export': 'off',
     'unicorn/no-for-loop': 'off',
     'unicorn/no-new-array': 'off',
