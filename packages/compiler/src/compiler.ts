@@ -43,7 +43,7 @@ type CompilerResult = {
   code: string
   map: RawSourceMap
 }
-type Location = Required<ESTree._Node>
+type Position = Required<ESTree._Node>
 type Listener = FunctionExpression | RightValue
 type Stylesheet = ESTree.ObjectExpression | RightValue
 type LeftValue = ESTree.Identifier | ESTree.MemberExpression
@@ -290,17 +290,17 @@ export function compile(
       } else {
         const stmt = stmts[0] as ESTree.VariableDeclaration
         const id = stmt.declarations[0].id as ESTree.Identifier
-        const callExpressionLocation = copyLocation(node)
+        const callExpressionPosition = copyPosition(node)
         expression = createCallExpression(
           createArrowFunctionExpression(
             createBlockStatement(
-              [...stmts, createReturnStatement(id, callExpressionLocation)],
-              callExpressionLocation,
+              [...stmts, createReturnStatement(id, callExpressionPosition)],
+              callExpressionPosition,
             ),
-            callExpressionLocation,
+            callExpressionPosition,
           ),
           [],
-          callExpressionLocation,
+          callExpressionPosition,
         )
       }
       currentContext.JSXParent ??= expression
@@ -312,7 +312,7 @@ export function compile(
       currentContext.thisId ??= 0
       const expression = transformFragment(
         node.children,
-        copyLocation(node.openingFragment),
+        copyPosition(node.openingFragment),
       )!
       currentContext.JSXParent ??= expression
       this.replace(expression)
@@ -377,45 +377,45 @@ function transformElement(node: ESTree.JSXElement): ESTree.Statement[] {
   const stmts: ESTree.Statement[] = []
   const opening = node.openingElement
   const tagName = transformJSXTagName(opening.name)
-  const tagNameLocation = copyLocation(tagName)
+  const tagNamePosition = copyPosition(tagName)
   if (tagName.type === 'Literal') {
     const value = tagName.value as string
-    const args = [createLiteral(value, tagNameLocation)]
-    const JSXId = createIdentifier(getUniqueId('el', 'JSXId'), tagNameLocation)
+    const args = [createLiteral(value, tagNamePosition)]
+    const JSXId = createIdentifier(getUniqueId('el', 'JSXId'), tagNamePosition)
     const namespace = SVGTags.has(value) ? 1 : MathMLTags.has(value) ? 2 : 0
-    if (namespace) args.push(createLiteral(namespace, tagNameLocation))
+    if (namespace) args.push(createLiteral(namespace, tagNamePosition))
     currentContext.shouldImportCreateElement = true
     stmts.push(
       createVariableDeclaration(
         JSXId,
         createCallExpression(
-          createIdentifier('_$createElement', tagNameLocation),
+          createIdentifier('_$createElement', tagNamePosition),
           args,
-          tagNameLocation,
+          tagNamePosition,
         ),
-        tagNameLocation,
+        tagNamePosition,
       ),
       ...transformAttributes(opening.attributes, JSXId),
       ...transformChildren(node.children, JSXId),
     )
   } else {
-    const elementLocation = copyLocation(node)
+    const elementPosition = copyPosition(node)
     currentContext.shouldImportCreateComponent = true
     stmts.push(
       createExpressionStatement(
         createCallExpression(
-          createIdentifier('_$createComponent', elementLocation),
+          createIdentifier('_$createComponent', elementPosition),
           [
             tagName,
             transformProperties(
               opening.attributes,
               node.children,
-              copyLocation(opening),
+              copyPosition(opening),
             ),
           ],
-          elementLocation,
+          elementPosition,
         ),
-        elementLocation,
+        elementPosition,
       ),
     )
   }
@@ -424,15 +424,15 @@ function transformElement(node: ESTree.JSXElement): ESTree.Statement[] {
 
 function transformFragment(
   children: ESTree.JSXChild[],
-  location: Location,
+  position: Position,
   isInComponent?: boolean,
 ): ESTree.Expression | void {
   const elements: ESTree.Expression[] = []
   let hasDynamicChildren = false
   let shouldImportUseMemo = false
   let textContent: string | undefined
-  let textLocation: Location | undefined
-  let elementsLocation: Location | undefined
+  let textPosition: Position | undefined
+  let elementsPosition: Position | undefined
   let childExpression: ESTree.Expression | undefined
   for (let i = 0; i < children.length; ++i) {
     const childNode = children[i]
@@ -443,19 +443,19 @@ function transformFragment(
         textContent = `${textContent}${value}`
       } else {
         textContent = value
-        textLocation = copyLocation(childNode)
-        elementsLocation ??= textLocation
+        textPosition = copyPosition(childNode)
+        elementsPosition ??= textPosition
       }
     } else if (isJSXEmptyExpression(childNode)) {
       continue
     } else if (childNode.type === 'JSXFragment') {
       children.splice(i--, 1, ...childNode.children)
     } else {
-      const childLocation = copyLocation(childNode)
+      const childPosition = copyPosition(childNode)
       let childElement: ESTree.Expression
       if (textContent) {
-        elements.push(createLiteral(decodeHTML(textContent), textLocation!))
-        textContent = textLocation = undefined
+        elements.push(createLiteral(decodeHTML(textContent), textPosition!))
+        textContent = textPosition = undefined
       }
       if (childNode.type === 'JSXElement') {
         const stmts = transformElement(childNode)
@@ -466,13 +466,13 @@ function transformFragment(
           childElement = createCallExpression(
             createArrowFunctionExpression(
               createBlockStatement(
-                [...stmts, createReturnStatement(id, childLocation)],
-                childLocation,
+                [...stmts, createReturnStatement(id, childPosition)],
+                childPosition,
               ),
-              childLocation,
+              childPosition,
             ),
             [],
-            childLocation,
+            childPosition,
           )
         } else if (stmts[0].type === 'VariableDeclaration') {
           childElement = stmts[0].declarations[0].init!
@@ -485,27 +485,27 @@ function transformFragment(
         if (isDynamicExpression(expression, isInComponent)) {
           shouldImportUseMemo = hasDynamicChildren = true
           childElement = createCallExpression(
-            createIdentifier('_$memo', childLocation),
+            createIdentifier('_$memo', childPosition),
             [
               !isInComponent && isBareIdentifierCall(expression)
                 ? expression.callee
                 : createArrowFunctionExpression(
                     expression,
-                    copyLocation(expression),
+                    copyPosition(expression),
                   ),
             ],
-            childLocation,
+            childPosition,
           )
         } else {
           childElement = expression
         }
       }
       elements.push(childElement)
-      elementsLocation ??= childLocation
+      elementsPosition ??= childPosition
     }
   }
   if (textContent) {
-    elements.push(createLiteral(decodeHTML(textContent), textLocation!))
+    elements.push(createLiteral(decodeHTML(textContent), textPosition!))
   }
   if (isInComponent) {
     currentContext.prevHasDynamicChildrenInComponent =
@@ -514,7 +514,7 @@ function transformFragment(
   }
   if (elements.length > 1) {
     if (shouldImportUseMemo) currentContext.shouldImportUseMemo = true
-    return createArrayExpression(elements, elementsLocation!)
+    return createArrayExpression(elements, elementsPosition!)
   }
   if (elements.length === 1) {
     if (!childExpression) {
@@ -523,7 +523,7 @@ function transformFragment(
     }
     return childExpression
   }
-  if (!isInComponent) return createArrayExpression(elements, location)
+  if (!isInComponent) return createArrayExpression(elements, position)
 }
 
 function transformThisExpression(
@@ -532,12 +532,12 @@ function transformThisExpression(
   if (!currentContext.JSXParent) return
   const thisId = createIdentifier(
     getUniqueId('self', 'thisId'),
-    copyLocation(node),
+    copyPosition(node),
   )
   if (!currentContext.functionParent) {
     if (currentContext.hasThisInProgram) return thisId
     const { body } = currentContext.ast
-    const programLocation = copyLocation(currentContext.ast)
+    const programPosition = copyPosition(currentContext.ast)
     currentContext.hasThisInProgram = true
     for (let i = 0; i < body.length; ++i) {
       if (body[i].type === 'ImportDeclaration') continue
@@ -546,27 +546,27 @@ function transformThisExpression(
         0,
         createVariableDeclaration(
           thisId,
-          createThisExpression(programLocation),
-          programLocation,
+          createThisExpression(programPosition),
+          programPosition,
         ),
       )
       break
     }
   } else if (!currentContext.hasThisInFunction) {
-    const functionLocation = copyLocation(currentContext.functionParent)
+    const functionPosition = copyPosition(currentContext.functionParent)
     const block = currentContext.functionParent.body!
     const declaration = createVariableDeclaration(
       thisId,
-      createThisExpression(functionLocation),
-      functionLocation,
+      createThisExpression(functionPosition),
+      functionPosition,
     )
     currentContext.hasThisInFunction = true
     if (block.type === 'BlockStatement') {
       block.body.unshift(declaration)
     } else {
       currentContext.functionParent.body = createBlockStatement(
-        [declaration, createReturnStatement(block, copyLocation(block))],
-        functionLocation,
+        [declaration, createReturnStatement(block, copyPosition(block))],
+        functionPosition,
       )
     }
   }
@@ -575,13 +575,13 @@ function transformThisExpression(
 
 function injectRuntimeImport(ast: ESTree.Program): void {
   const specifiers: ESTree.ImportSpecifier[] = []
-  const programLocation = copyLocation(ast)
+  const programPosition = copyPosition(ast)
   if (currentContext.shouldImportCreateComponent) {
     specifiers.push(
       createImportSpecifier(
         '_$createComponent',
         'createComponent',
-        programLocation,
+        programPosition,
       ),
     )
   }
@@ -590,7 +590,7 @@ function injectRuntimeImport(ast: ESTree.Program): void {
       createImportSpecifier(
         '_$createElement',
         'createElement',
-        programLocation,
+        programPosition,
       ),
     )
   }
@@ -599,33 +599,33 @@ function injectRuntimeImport(ast: ESTree.Program): void {
       createImportSpecifier(
         '_$delegateEvents',
         'delegateEvents',
-        programLocation,
+        programPosition,
       ),
     )
     ast.body.push(
       createExpressionStatement(
         createCallExpression(
-          createIdentifier('_$delegateEvents', programLocation),
-          [createArrayExpression(currentContext.events, programLocation)],
-          programLocation,
+          createIdentifier('_$delegateEvents', programPosition),
+          [createArrayExpression(currentContext.events, programPosition)],
+          programPosition,
         ),
-        programLocation,
+        programPosition,
       ),
     )
   }
   if (currentContext.shouldImportInsert) {
     specifiers.push(
-      createImportSpecifier('_$insert', 'insert', programLocation),
+      createImportSpecifier('_$insert', 'insert', programPosition),
     )
   }
   if (currentContext.shouldImportMergeProps) {
     specifiers.push(
-      createImportSpecifier('_$mergeProps', 'mergeProps', programLocation),
+      createImportSpecifier('_$mergeProps', 'mergeProps', programPosition),
     )
   }
   if (currentContext.shouldImportSetAttribute) {
     specifiers.push(
-      createImportSpecifier('_$setAttribute', 'setAttribute', programLocation),
+      createImportSpecifier('_$setAttribute', 'setAttribute', programPosition),
     )
   }
   if (currentContext.shouldImportSetAttributeNS) {
@@ -633,43 +633,43 @@ function injectRuntimeImport(ast: ESTree.Program): void {
       createImportSpecifier(
         '_$setAttributeNS',
         'setAttributeNS',
-        programLocation,
+        programPosition,
       ),
     )
   }
   if (currentContext.shouldImportSetClassName) {
     specifiers.push(
-      createImportSpecifier('_$className', 'setClassName', programLocation),
+      createImportSpecifier('_$className', 'setClassName', programPosition),
     )
   }
   if (currentContext.shouldImportSetStyle) {
     specifiers.push(
-      createImportSpecifier('_$style', 'setStyle', programLocation),
+      createImportSpecifier('_$style', 'setStyle', programPosition),
     )
   }
   if (currentContext.shouldImportSpread) {
     specifiers.push(
-      createImportSpecifier('_$spread', 'spread', programLocation),
+      createImportSpecifier('_$spread', 'spread', programPosition),
     )
   }
   if (currentContext.shouldImportUse) {
-    specifiers.push(createImportSpecifier('_$use', 'use', programLocation))
+    specifiers.push(createImportSpecifier('_$use', 'use', programPosition))
   }
   if (currentContext.shouldImportUseEffect) {
     specifiers.push(
-      createImportSpecifier('_$effect', 'useRenderEffect', programLocation),
+      createImportSpecifier('_$effect', 'useRenderEffect', programPosition),
     )
   }
   if (currentContext.shouldImportUseMemo) {
-    specifiers.push(createImportSpecifier('_$memo', 'useMemo', programLocation))
+    specifiers.push(createImportSpecifier('_$memo', 'useMemo', programPosition))
   }
   if (specifiers.length) {
     ast.body.unshift({
       type: 'ImportDeclaration',
       specifiers,
       attributes: [],
-      source: createLiteral(currentContext.config.modulePath, programLocation),
-      ...programLocation,
+      source: createLiteral(currentContext.config.modulePath, programPosition),
+      ...programPosition,
     })
   }
 }
@@ -677,25 +677,26 @@ function injectRuntimeImport(ast: ESTree.Program): void {
 function transformJSXTagName(
   node: ESTree.JSXTagNameExpression,
 ): ESTree.PropertyName | ESTree.MemberExpression {
-  const tagNameLocation = copyLocation(node)
+  const tagNamePosition = copyPosition(node)
   if (node.type === 'JSXNamespacedName') {
     const namespace = node.namespace as ESTree.JSXIdentifier
-    return createLiteral(`${namespace.name}:${node.name.name}`, tagNameLocation)
+    return createLiteral(`${namespace.name}:${node.name.name}`, tagNamePosition)
   }
-  let object: Record<string, any>
+  let object: ESTree.MemberExpression | ESTree.Identifier
   let expression: ESTree.PropertyName | ESTree.MemberExpression | undefined
   if (node.type === 'JSXMemberExpression') {
-    object = tagNameLocation
-    expression = object as ESTree.MemberExpression
+    object = expression = tagNamePosition as ESTree.MemberExpression
     do {
       const isValidPropertyName = isValidIdentifier(node.property.name)
-      const propertyLocation = copyLocation(node.property)
+      const propertyPosition = copyPosition(node.property)
       object.type = 'MemberExpression'
-      object.property = isValidPropertyName
-        ? createIdentifier(node.property.name, propertyLocation)
-        : createLiteral(node.property.name, propertyLocation)
-      object.computed = !isValidPropertyName
-      object = object.object = copyLocation(node.object)
+      ;(object as ESTree.MemberExpression).property = isValidPropertyName
+        ? createIdentifier(node.property.name, propertyPosition)
+        : createLiteral(node.property.name, propertyPosition)
+      ;(object as ESTree.MemberExpression).computed = !isValidPropertyName
+      ;(object as ESTree.MemberExpression).object = object = copyPosition(
+        node.object,
+      ) as ESTree.MemberExpression
       node = node.object
     } while (node.type === 'JSXMemberExpression')
   }
@@ -704,19 +705,19 @@ function transformJSXTagName(
     const id = transformThisExpression(tagName)!
     if (expression) {
       object!.type = 'Identifier'
-      object!.name = id.name
+      ;(object! as ESTree.Identifier).name = id.name
     } else {
       expression = id
     }
   } else if (expression || UPPERCASE_REGEX.test(tagName.name)) {
     if (expression) {
       object!.type = 'Identifier'
-      object!.name = tagName.name
+      ;(object! as ESTree.Identifier).name = tagName.name
     } else {
-      expression = createIdentifier(tagName.name, tagNameLocation)
+      expression = createIdentifier(tagName.name, tagNamePosition)
     }
   } else {
-    expression = createLiteral(tagName.name, tagNameLocation)
+    expression = createLiteral(tagName.name, tagNamePosition)
   }
   return expression
 }
@@ -737,29 +738,29 @@ function transformAttributes(
   let shouldImportUseEffect: boolean | undefined
   let ref: ESTree.Statement[] | undefined
   let events: ESTree.Statement[] | undefined
-  let objectLocation: Location | undefined
+  let objectPosition: Position | undefined
   let spreadArgs: ESTree.Expression[] | undefined
-  let spreadArgsLocation: Location | undefined
+  let spreadArgsPosition: Position | undefined
   let effect: ESTree.CallExpression | undefined
   let effectProperty: ESTree.Property | undefined
   let effectStmts: ESTree.Statement[] | undefined
   let effectParameter: ESTree.Identifier | undefined
   let effectFunction: ESTree.ArrowFunctionExpression
-  let effectLocation: Location
+  let effectPosition: Position
   let dynamicCount: number
   for (let i = 0; i < attrs.length; ++i) {
     let expression: ESTree.Expression
     const attr = attrs[i]
-    const attributeLocation = copyLocation(attr)
+    const attributePosition = copyPosition(attr)
     if (attr.type === 'JSXAttribute') {
       const attributeName = getAttributeName(attr.name)
       if (attributeNameCache.has(attributeName)) continue
       let value: ESTree.Expression
       let isDynamicValue = false
-      const attributeNameLocation = copyLocation(attr.name)
+      const attributeNamePosition = copyPosition(attr.name)
       attributeNameCache.add(attributeName)
       if (!attr.value) {
-        value = createLiteral(true, attributeNameLocation)
+        value = createLiteral(true, attributeNamePosition)
       } else if (attr.value.type === 'Literal') {
         value = attr.value
       } else if (attr.value.type === 'JSXExpressionContainer') {
@@ -768,22 +769,22 @@ function transformAttributes(
           if (matchesType(expression, isRightValue)) {
             const refId = createIdentifier(
               getUniqueId('ref', 'refId'),
-              attributeNameLocation,
+              attributeNamePosition,
             )
             const binaryExpression = createBinaryExpression(
-              createUnaryExpression(refId, attributeLocation),
-              createLiteral('function', attributeLocation),
+              createUnaryExpression(refId, attributePosition),
+              createLiteral('function', attributePosition),
               '===',
-              attributeLocation,
+              attributePosition,
             )
             const callExpression = createCallExpression(
-              createIdentifier('_$use', attributeLocation),
+              createIdentifier('_$use', attributePosition),
               [refId, id],
-              attributeLocation,
+              attributePosition,
             )
             currentContext.shouldImportUse = true
             ref = [
-              createVariableDeclaration(refId, expression, attributeLocation),
+              createVariableDeclaration(refId, expression, attributePosition),
               createExpressionStatement(
                 isLeftValue(expression)
                   ? createConditionalExpression(
@@ -792,16 +793,16 @@ function transformAttributes(
                       createAssignmentExpression(
                         expression,
                         id,
-                        attributeLocation,
+                        attributePosition,
                       ),
-                      attributeLocation,
+                      attributePosition,
                     )
                   : createLogicalExpression(
                       binaryExpression,
                       callExpression,
-                      attributeLocation,
+                      attributePosition,
                     ),
-                attributeLocation,
+                attributePosition,
               ),
             ]
             continue
@@ -811,11 +812,11 @@ function transformAttributes(
             ref = [
               createExpressionStatement(
                 createCallExpression(
-                  createIdentifier('_$use', attributeLocation),
+                  createIdentifier('_$use', attributePosition),
                   [expression, id],
-                  attributeLocation,
+                  attributePosition,
                 ),
-                attributeLocation,
+                attributePosition,
               ),
             ]
             continue
@@ -834,7 +835,7 @@ function transformAttributes(
             if (!currentContext.eventsCache.has(eventName)) {
               currentContext.eventsCache.add(eventName)
               currentContext.events.push(
-                createLiteral(eventName, attributeNameLocation),
+                createLiteral(eventName, attributeNamePosition),
               )
             }
             eventName = `$$${eventName}`
@@ -844,14 +845,14 @@ function transformAttributes(
               createAssignmentExpression(
                 createMemberExpression(
                   id,
-                  createIdentifier(eventName, attributeNameLocation),
+                  createIdentifier(eventName, attributeNamePosition),
                   false,
-                  attributeNameLocation,
+                  attributeNamePosition,
                 ),
                 expression,
-                attributeLocation,
+                attributePosition,
               ),
-              attributeLocation,
+              attributePosition,
             ),
           )
           continue
@@ -862,19 +863,19 @@ function transformAttributes(
       const isValidPropertyName = isValidIdentifier(attributeName)
       const property = createProperty(
         isValidPropertyName
-          ? createIdentifier(attributeName, attributeNameLocation)
-          : createLiteral(attributeName, attributeNameLocation),
+          ? createIdentifier(attributeName, attributeNamePosition)
+          : createLiteral(attributeName, attributeNamePosition),
         isDynamicValue
           ? createFunctionExpression([
-              createReturnStatement(value!, attributeLocation),
+              createReturnStatement(value!, attributePosition),
             ])
           : value!,
         isDynamicValue ? 'get' : 'init',
         !isValidPropertyName,
         false,
-        attributeLocation,
+        attributePosition,
       )
-      objectLocation ??= attributeLocation
+      objectPosition ??= attributePosition
       properties.push(property)
       if (shouldImportSpread) continue
       let styleOrClassArgs: ESTree.Expression[] | undefined
@@ -882,45 +883,45 @@ function transformAttributes(
         if (matchesType(value!, isStylesheet)) {
           shouldImportSetStyle = true
           expression = createCallExpression(
-            createIdentifier('_$style', attributeNameLocation),
+            createIdentifier('_$style', attributeNamePosition),
             (styleOrClassArgs = [id, value!]),
-            attributeLocation,
+            attributePosition,
           )
         } else {
           expression = createAssignmentExpression(
             createMemberExpression(
               createMemberExpression(
                 id,
-                createIdentifier(attributeName, attributeNameLocation),
+                createIdentifier(attributeName, attributeNamePosition),
                 false,
-                attributeNameLocation,
+                attributeNamePosition,
               ),
-              createIdentifier('cssText', attributeNameLocation),
+              createIdentifier('cssText', attributeNamePosition),
               false,
-              attributeNameLocation,
+              attributeNamePosition,
             ),
             value!,
-            attributeLocation,
+            attributePosition,
           )
         }
       } else if (attributeName === 'class' || attributeName === 'className') {
         if (matchesType(value!, isStylesheet)) {
           shouldImportSetClassName = true
           expression = createCallExpression(
-            createIdentifier('_$className', attributeNameLocation),
+            createIdentifier('_$className', attributeNamePosition),
             (styleOrClassArgs = [id, value!]),
-            attributeLocation,
+            attributePosition,
           )
         } else {
           expression = createAssignmentExpression(
             createMemberExpression(
               id,
-              createIdentifier('className', attributeNameLocation),
+              createIdentifier('className', attributeNamePosition),
               false,
-              attributeNameLocation,
+              attributeNamePosition,
             ),
             value!,
-            attributeLocation,
+            attributePosition,
           )
         }
       } else if (
@@ -930,25 +931,25 @@ function transformAttributes(
         expression = createAssignmentExpression(
           createMemberExpression(
             id,
-            createIdentifier(attributeName, attributeNameLocation),
+            createIdentifier(attributeName, attributeNamePosition),
             false,
-            attributeNameLocation,
+            attributeNamePosition,
           ),
           value!,
-          attributeLocation,
+          attributePosition,
         )
       } else {
         let method: string
         let attributeArgs: ESTree.Expression[]
         const prefix = attributeName.split(':')[0]
         const namespace = prefix === 'xlink' ? 3 : prefix === 'xml' ? 4 : 0
-        const name = createLiteral(attributeName, attributeNameLocation)
+        const name = createLiteral(attributeName, attributeNamePosition)
         if (namespace) {
           method = '_$setAttributeNS'
           shouldImportSetAttributeNS = true
           attributeArgs = [
             id,
-            createLiteral(namespace, attributeNameLocation),
+            createLiteral(namespace, attributeNamePosition),
             name,
             value!,
           ]
@@ -958,9 +959,9 @@ function transformAttributes(
           attributeArgs = [id, name, value!]
         }
         expression = createCallExpression(
-          createIdentifier(method, attributeNameLocation),
+          createIdentifier(method, attributeNamePosition),
           attributeArgs,
-          attributeLocation,
+          attributePosition,
         )
       }
       if (isDynamicValue) {
@@ -982,19 +983,19 @@ function transformAttributes(
               hasEffectParameter = false
               effectParameter = createIdentifier(
                 getUniqueId('p'),
-                effectLocation!,
+                effectPosition!,
               )
             }
             dynamicCount = 0
             valueId = createIdentifier(
               getUniqueId('v', ++dynamicCount),
-              effectLocation!,
+              effectPosition!,
             )
             member = createMemberExpression(
               effectParameter,
               effectKey,
               effectProperty!.computed,
-              effectLocation!,
+              effectPosition!,
             )
             if (hasEffectParameter) {
               const args = (effectCall as ESTree.CallExpression).arguments
@@ -1004,13 +1005,13 @@ function transformAttributes(
               effectCall = createAssignmentExpression(
                 member,
                 effectCall,
-                effectLocation!,
+                effectPosition!,
               )
             } else {
               assignment = createAssignmentExpression(
                 member,
                 valueId,
-                effectLocation!,
+                effectPosition!,
               )
               if (effectCall.type === 'CallExpression') {
                 const index = effectCall.arguments.length - 1
@@ -1021,37 +1022,37 @@ function transformAttributes(
                 ;(effectCall as ESTree.AssignmentExpression).right = assignment
               }
               effectCall = createLogicalExpression(
-                createBinaryExpression(valueId, member, '!==', effectLocation!),
+                createBinaryExpression(valueId, member, '!==', effectPosition!),
                 effectCall,
-                effectLocation!,
+                effectPosition!,
               )
               effectFunction!.params.push(effectParameter)
             }
             declaration = createVariableDeclaration(
               valueId,
               effectValue,
-              effectLocation!,
+              effectPosition!,
             )
             effectStmts = [
               declaration,
-              createExpressionStatement(effectCall, effectLocation!),
+              createExpressionStatement(effectCall, effectPosition!),
             ]
             effectFunction!.body = createBlockStatement(
               effectStmts,
-              effectLocation!,
+              effectPosition!,
             )
             object = createObjectExpression(
               [
                 createProperty(
                   effectKey,
-                  createIdentifier('undefined', effectLocation!),
+                  createIdentifier('undefined', effectPosition!),
                   'init',
                   effectProperty!.computed,
                   false,
-                  effectLocation!,
+                  effectPosition!,
                 ),
               ],
-              effectLocation!,
+              effectPosition!,
             )
             effect.arguments.push(object)
           } else {
@@ -1061,13 +1062,13 @@ function transformAttributes(
           effectKey = property.key as ESTree.PropertyName
           valueId = createIdentifier(
             getUniqueId('v', ++dynamicCount!),
-            attributeLocation,
+            attributePosition,
           )
           member = createMemberExpression(
             effectParameter!,
             effectKey,
             property.computed,
-            attributeLocation,
+            attributePosition,
           )
           if (styleOrClassArgs) {
             styleOrClassArgs[1] = valueId
@@ -1075,13 +1076,13 @@ function transformAttributes(
             expression = createAssignmentExpression(
               member,
               expression,
-              attributeLocation,
+              attributePosition,
             )
           } else {
             assignment = createAssignmentExpression(
               member,
               valueId,
-              attributeLocation,
+              attributePosition,
             )
             if (expression.type === 'CallExpression') {
               expression.arguments[expression.arguments.length - 1] = assignment
@@ -1089,66 +1090,66 @@ function transformAttributes(
               ;(expression as ESTree.AssignmentExpression).right = assignment
             }
             expression = createLogicalExpression(
-              createBinaryExpression(valueId, member, '!==', attributeLocation),
+              createBinaryExpression(valueId, member, '!==', attributePosition),
               expression,
-              attributeLocation,
+              attributePosition,
             )
           }
           object.properties.push(
             createProperty(
               effectKey,
-              createIdentifier('undefined', attributeLocation),
+              createIdentifier('undefined', attributePosition),
               'init',
               property.computed,
               false,
-              attributeLocation,
+              attributePosition,
             ),
           )
           declaration.declarations.push(
-            createVariableDeclarator(valueId, value!, attributeLocation),
+            createVariableDeclarator(valueId, value!, attributePosition),
           )
           effectStmts!.push(
-            createExpressionStatement(expression, attributeLocation),
+            createExpressionStatement(expression, attributePosition),
           )
           continue
         }
         effectProperty = property
-        effectLocation = attributeLocation
+        effectPosition = attributePosition
         effectFunction = createArrowFunctionExpression(
           expression,
-          effectLocation,
+          effectPosition,
         )
         if (styleOrClassArgs) {
-          effectParameter = createIdentifier(getUniqueId('p'), effectLocation)
+          effectParameter = createIdentifier(getUniqueId('p'), effectPosition)
           effectFunction.params.push(effectParameter)
           styleOrClassArgs.push(effectParameter)
         }
         shouldImportUseEffect = true
         expression = effect = createCallExpression(
-          createIdentifier('_$effect', effectLocation),
+          createIdentifier('_$effect', effectPosition),
           [effectFunction],
-          effectLocation,
+          effectPosition,
         )
       }
     } else {
       let { argument } = attr
       spreadArgs ??= [id]
       if (properties.length) {
-        spreadArgs.push(createObjectExpression(properties, objectLocation!))
+        spreadArgs.push(createObjectExpression(properties, objectPosition!))
         properties = []
-        spreadArgsLocation ??= objectLocation
-        objectLocation = undefined
+        spreadArgsPosition ??= objectPosition
+        objectPosition = undefined
       }
       if (isDynamicExpression(argument)) {
         shouldImportMergeProps = true
         argument = isBareIdentifierCall(argument)
           ? argument.callee
-          : createArrowFunctionExpression(argument, copyLocation(argument))
+          : createArrowFunctionExpression(argument, copyPosition(argument))
       }
       spreadArgs.push(argument)
       if (shouldImportSpread) continue
       currentContext.shouldImportSpread = shouldImportSpread = true
-      spreadArgsLocation ??= attributeLocation
+      spreadArgsPosition ??= attributePosition
       shouldImportSetStyle = false
       shouldImportSetClassName = false
       shouldImportSetAttribute = false
@@ -1156,16 +1157,16 @@ function transformAttributes(
       shouldImportUseEffect = false
       stmts.length = 0
       expression = createCallExpression(
-        createIdentifier('_$spread', attributeLocation),
+        createIdentifier('_$spread', attributePosition),
         spreadArgs,
-        attributeLocation,
+        attributePosition,
       )
     }
-    stmts.push(createExpressionStatement(expression, attributeLocation))
+    stmts.push(createExpressionStatement(expression, attributePosition))
   }
   if (spreadArgs) {
     if (properties.length) {
-      spreadArgs.push(createObjectExpression(properties, objectLocation!))
+      spreadArgs.push(createObjectExpression(properties, objectPosition!))
     }
     if (shouldImportMergeProps || spreadArgs.length > 2) {
       currentContext.shouldImportMergeProps = true
@@ -1173,9 +1174,9 @@ function transformAttributes(
         1,
         spreadArgs.length - 1,
         createCallExpression(
-          createIdentifier('_$mergeProps', spreadArgsLocation!),
+          createIdentifier('_$mergeProps', spreadArgsPosition!),
           spreadArgs.slice(1),
-          spreadArgsLocation!,
+          spreadArgsPosition!,
         ),
       )
     }
@@ -1196,7 +1197,7 @@ function transformAttributes(
       currentContext.shouldImportUseEffect = true
       if (effectStmts) {
         effectStmts.push(
-          createReturnStatement(effectParameter!, effectLocation!),
+          createReturnStatement(effectParameter!, effectPosition!),
         )
       }
     }
@@ -1213,8 +1214,8 @@ function transformChildren(
   const stmts: ESTree.Statement[] = []
   let elements: ESTree.Expression[] = []
   let textContent: string | undefined
-  let textLocation: Location | undefined
-  let elementsLocation: Location | undefined
+  let textPosition: Position | undefined
+  let elementsPosition: Position | undefined
   for (let i = 0; i < children.length; ++i) {
     const childNode = children[i]
     if (childNode.type === 'JSXText') {
@@ -1224,31 +1225,31 @@ function transformChildren(
         textContent = `${textContent}${value}`
       } else {
         textContent = value
-        textLocation = copyLocation(childNode)
-        elementsLocation ??= textLocation
+        textPosition = copyPosition(childNode)
+        elementsPosition ??= textPosition
       }
     } else if (isJSXEmptyExpression(childNode)) {
       continue
     } else if (childNode.type === 'JSXFragment') {
       children.splice(i--, 1, ...childNode.children)
     } else {
-      const childLocation = copyLocation(childNode)
+      const childPosition = copyPosition(childNode)
       let expression: ESTree.Expression
       if (textContent) {
-        elements.push(createLiteral(decodeHTML(textContent), textLocation!))
-        textContent = textLocation = undefined
+        elements.push(createLiteral(decodeHTML(textContent), textPosition!))
+        textContent = textPosition = undefined
       }
       if (childNode.type === 'JSXElement') {
         const childStmts = transformElement(childNode)
         if (childStmts.length > 1) {
           const stmt = childStmts[0] as ESTree.VariableDeclaration
           elements.push(stmt.declarations[0].id as ESTree.Identifier)
-          elementsLocation ??= childLocation
+          elementsPosition ??= childPosition
           stmts.push(...childStmts)
           continue
         } else if (childStmts[0].type === 'VariableDeclaration') {
           elements.push(childStmts[0].declarations[0].init!)
-          elementsLocation ??= childLocation
+          elementsPosition ??= childPosition
           continue
         } else {
           expression = (childStmts[0] as ESTree.ExpressionStatement).expression
@@ -1260,7 +1261,7 @@ function transformChildren(
         } else if (isDynamicExpression(expression)) {
           expression = createArrowFunctionExpression(
             expression,
-            copyLocation(expression),
+            copyPosition(expression),
           )
         }
       }
@@ -1270,34 +1271,34 @@ function transformChildren(
             createCallExpression(
               createMemberExpression(
                 id,
-                createIdentifier('append', elementsLocation!),
+                createIdentifier('append', elementsPosition!),
                 false,
-                elementsLocation!,
+                elementsPosition!,
               ),
               elements,
-              elementsLocation!,
+              elementsPosition!,
             ),
-            elementsLocation!,
+            elementsPosition!,
           ),
         )
         elements = []
-        elementsLocation = undefined
+        elementsPosition = undefined
       }
       currentContext.shouldImportInsert = true
       stmts.push(
         createExpressionStatement(
           createCallExpression(
-            createIdentifier('_$insert', childLocation),
+            createIdentifier('_$insert', childPosition),
             [id, expression],
-            childLocation,
+            childPosition,
           ),
-          childLocation,
+          childPosition,
         ),
       )
     }
   }
   if (textContent) {
-    elements.push(createLiteral(decodeHTML(textContent), textLocation!))
+    elements.push(createLiteral(decodeHTML(textContent), textPosition!))
   }
   if (elements.length) {
     stmts.push(
@@ -1305,14 +1306,14 @@ function transformChildren(
         createCallExpression(
           createMemberExpression(
             id,
-            createIdentifier('append', elementsLocation!),
+            createIdentifier('append', elementsPosition!),
             false,
-            elementsLocation!,
+            elementsPosition!,
           ),
           elements,
-          elementsLocation!,
+          elementsPosition!,
         ),
-        elementsLocation!,
+        elementsPosition!,
       ),
     )
   }
@@ -1322,26 +1323,26 @@ function transformChildren(
 function transformProperties(
   attrs: ESTree.JSXOpeningElement['attributes'],
   children: ESTree.JSXChild[],
-  location: Location,
+  position: Position,
 ): ESTree.Expression {
   const args: ESTree.Expression[] = []
   const propertyNameCache = new Set(['children'])
   let shouldImportMergeProps = false
   let properties: ESTree.Property[] = []
-  let objectLocation: Location | undefined
-  let argsLocation: Location | undefined
+  let objectPosition: Position | undefined
+  let argsPosition: Position | undefined
   for (let i = 0; i < attrs.length; ++i) {
     const attr = attrs[i]
-    const propertyLocation = copyLocation(attr)
+    const propertyPosition = copyPosition(attr)
     if (attr.type === 'JSXAttribute') {
       const propertyName = getAttributeName(attr.name)
       if (propertyNameCache.has(propertyName)) continue
       let value: ESTree.Expression
       let isDynamicValue = false
-      const propertyNameLocation = copyLocation(attr.name)
+      const propertyNamePosition = copyPosition(attr.name)
       propertyNameCache.add(propertyName)
       if (!attr.value) {
-        value = createLiteral(true, propertyNameLocation)
+        value = createLiteral(true, propertyNamePosition)
       } else if (attr.value.type === 'Literal') {
         value = attr.value
       } else if (attr.value.type === 'JSXExpressionContainer') {
@@ -1350,33 +1351,33 @@ function transformProperties(
           if (matchesType(expression, isRightValue)) {
             const refId = createIdentifier(
               getUniqueId('ref', 'refId'),
-              propertyNameLocation,
+              propertyNamePosition,
             )
             const argument = createIdentifier(
               getUniqueId('r'),
-              copyLocation(expression),
+              copyPosition(expression),
             )
             const binaryExpression = createBinaryExpression(
-              createUnaryExpression(refId, propertyLocation),
-              createLiteral('function', propertyLocation),
+              createUnaryExpression(refId, propertyPosition),
+              createLiteral('function', propertyPosition),
               '===',
-              propertyLocation,
+              propertyPosition,
             )
             const callExpression = createCallExpression(
               refId,
               [argument],
-              propertyLocation,
+              propertyPosition,
             )
-            objectLocation ??= propertyLocation
+            objectPosition ??= propertyPosition
             properties.push(
               createProperty(
-                createIdentifier(propertyName, propertyNameLocation),
+                createIdentifier(propertyName, propertyNamePosition),
                 createFunctionExpression(
                   [
                     createVariableDeclaration(
                       refId,
                       expression,
-                      propertyLocation,
+                      propertyPosition,
                     ),
                     createExpressionStatement(
                       isLeftValue(expression)
@@ -1386,16 +1387,16 @@ function transformProperties(
                             createAssignmentExpression(
                               expression,
                               argument,
-                              propertyLocation,
+                              propertyPosition,
                             ),
-                            propertyLocation,
+                            propertyPosition,
                           )
                         : createLogicalExpression(
                             binaryExpression,
                             callExpression,
-                            propertyLocation,
+                            propertyPosition,
                           ),
-                      propertyLocation,
+                      propertyPosition,
                     ),
                   ],
                   argument,
@@ -1403,19 +1404,19 @@ function transformProperties(
                 'init',
                 false,
                 true,
-                propertyLocation,
+                propertyPosition,
               ),
             )
           } else if (isFunctionExpression(expression)) {
-            objectLocation ??= propertyLocation
+            objectPosition ??= propertyPosition
             properties.push(
               createProperty(
-                createIdentifier(propertyName, propertyNameLocation),
+                createIdentifier(propertyName, propertyNamePosition),
                 expression,
                 'init',
                 false,
                 false,
-                propertyLocation,
+                propertyPosition,
               ),
             )
           }
@@ -1425,62 +1426,62 @@ function transformProperties(
         isDynamicValue = isDynamicExpression(value, true)
       }
       const isValidPropertyName = isValidIdentifier(propertyName)
-      objectLocation ??= propertyLocation
+      objectPosition ??= propertyPosition
       properties.push(
         createProperty(
           isValidPropertyName
-            ? createIdentifier(propertyName, propertyNameLocation)
-            : createLiteral(propertyName, propertyNameLocation),
+            ? createIdentifier(propertyName, propertyNamePosition)
+            : createLiteral(propertyName, propertyNamePosition),
           isDynamicValue
             ? createFunctionExpression([
-                createReturnStatement(value!, propertyLocation),
+                createReturnStatement(value!, propertyPosition),
               ])
             : value!,
           isDynamicValue ? 'get' : 'init',
           !isValidPropertyName,
           false,
-          propertyLocation,
+          propertyPosition,
         ),
       )
     } else {
       let { argument } = attr
       if (properties.length) {
-        args.push(createObjectExpression(properties, objectLocation!))
+        args.push(createObjectExpression(properties, objectPosition!))
         properties = []
-        argsLocation ??= objectLocation
-        objectLocation = undefined
+        argsPosition ??= objectPosition
+        objectPosition = undefined
       }
       if (isDynamicExpression(argument)) {
         shouldImportMergeProps = true
         argument = isBareIdentifierCall(argument)
           ? argument.callee
-          : createArrowFunctionExpression(argument, copyLocation(argument))
+          : createArrowFunctionExpression(argument, copyPosition(argument))
       }
       args.push(argument)
-      argsLocation ??= propertyLocation
+      argsPosition ??= propertyPosition
     }
   }
   if (children.length) {
-    const childrenLocation = copyLocation(children[0])
+    const childrenPosition = copyPosition(children[0])
     const childrenExpression = transformFragment(
       children,
-      childrenLocation,
+      childrenPosition,
       true,
     )
     if (childrenExpression) {
       const hasDynamicChildren = currentContext.hasDynamicChildrenInComponent
       properties.push(
         createProperty(
-          createIdentifier('children', childrenLocation),
+          createIdentifier('children', childrenPosition),
           hasDynamicChildren
             ? createFunctionExpression([
-                createReturnStatement(childrenExpression, childrenLocation),
+                createReturnStatement(childrenExpression, childrenPosition),
               ])
             : childrenExpression,
           hasDynamicChildren ? 'get' : 'init',
           false,
           false,
-          childrenLocation,
+          childrenPosition,
         ),
       )
     }
@@ -1488,19 +1489,19 @@ function transformProperties(
       currentContext.prevHasDynamicChildrenInComponent
   }
   if (properties.length) {
-    args.push(createObjectExpression(properties, objectLocation!))
-    argsLocation ??= objectLocation
+    args.push(createObjectExpression(properties, objectPosition!))
+    argsPosition ??= objectPosition
   }
   if (shouldImportMergeProps || args.length > 1) {
     currentContext.shouldImportMergeProps = true
     return createCallExpression(
-      createIdentifier('_$mergeProps', argsLocation!),
+      createIdentifier('_$mergeProps', argsPosition!),
       args,
-      argsLocation!,
+      argsPosition!,
     )
   }
   if (args.length === 1) return args[0]
-  return createObjectExpression(properties, location)
+  return createObjectExpression(properties, position)
 }
 
 function getAttributeName(node: ESTree.JSXAttribute['name']): string {
@@ -1509,7 +1510,7 @@ function getAttributeName(node: ESTree.JSXAttribute['name']): string {
   return `${namespace.name}:${node.name.name}`
 }
 
-function copyLocation(node: ESTree.Node): Location {
+function copyPosition(node: ESTree.Node): Position {
   return {
     start: node.start!,
     end: node.end!,
@@ -1520,53 +1521,53 @@ function copyLocation(node: ESTree.Node): Location {
 
 function createExpressionStatement(
   expression: ESTree.Expression,
-  location: Location,
+  position: Position,
 ): ESTree.ExpressionStatement {
   return {
     type: 'ExpressionStatement',
     expression,
-    ...location,
+    ...position,
   }
 }
 
 function createVariableDeclaration(
   id: ESTree.Identifier,
   init: ESTree.Expression,
-  location: Location,
+  position: Position,
 ): ESTree.VariableDeclaration {
   return {
     type: 'VariableDeclaration',
     kind: 'const',
-    declarations: [createVariableDeclarator(id, init, location)],
-    ...location,
+    declarations: [createVariableDeclarator(id, init, position)],
+    ...position,
   }
 }
 
 function createReturnStatement(
   argument: ESTree.Expression,
-  location: Location,
+  position: Position,
 ): ESTree.ReturnStatement {
   return {
     type: 'ReturnStatement',
     argument,
-    ...location,
+    ...position,
   }
 }
 
 function createBlockStatement(
   body: ESTree.Statement[],
-  location: Location,
+  position: Position,
 ): ESTree.BlockStatement {
   return {
     type: 'BlockStatement',
     body,
-    ...location,
+    ...position,
   }
 }
 
 function createArrowFunctionExpression(
   body: ESTree.Expression | ESTree.BlockStatement,
-  location: Location,
+  position: Position,
 ): ESTree.ArrowFunctionExpression {
   return {
     type: 'ArrowFunctionExpression',
@@ -1575,7 +1576,7 @@ function createArrowFunctionExpression(
     async: false,
     generator: false,
     expression: body.type !== 'BlockStatement',
-    ...location,
+    ...position,
   }
 }
 
@@ -1583,15 +1584,15 @@ function createFunctionExpression(
   body: ESTree.Statement[],
   parameter?: ESTree.Identifier,
 ): ESTree.FunctionExpression {
-  const functionLocation = copyLocation(body[0])
+  const functionPosition = copyPosition(body[0])
   const FunctionExpression: ESTree.FunctionExpression = {
     type: 'FunctionExpression',
     params: parameter ? [parameter] : [],
-    body: createBlockStatement(body, functionLocation),
+    body: createBlockStatement(body, functionPosition),
     async: false,
     generator: false,
     id: null,
-    ...functionLocation,
+    ...functionPosition,
   }
   currentContext.generatedFunctions.add(FunctionExpression)
   return FunctionExpression
@@ -1600,14 +1601,14 @@ function createFunctionExpression(
 function createCallExpression(
   callee: ESTree.Expression,
   args: ESTree.Expression[],
-  location: Location,
+  position: Position,
 ): ESTree.CallExpression {
   return {
     type: 'CallExpression',
     callee,
     arguments: args,
     optional: false,
-    ...location,
+    ...position,
   }
 }
 
@@ -1615,7 +1616,7 @@ function createMemberExpression(
   object: ESTree.Expression,
   property: ESTree.Expression,
   computed: boolean,
-  location: Location,
+  position: Position,
 ): ESTree.MemberExpression {
   return {
     type: 'MemberExpression',
@@ -1623,7 +1624,7 @@ function createMemberExpression(
     property,
     computed,
     optional: false,
-    ...location,
+    ...position,
   }
 }
 
@@ -1633,7 +1634,7 @@ function createProperty(
   kind: ESTree.Property['kind'],
   computed: boolean,
   method: boolean,
-  location: Location,
+  position: Position,
 ): ESTree.Property {
   return {
     type: 'Property',
@@ -1643,56 +1644,56 @@ function createProperty(
     computed,
     method,
     shorthand: false,
-    ...location,
+    ...position,
   }
 }
 
 function createImportSpecifier(
   local: string,
   imported: string,
-  location: Location,
+  position: Position,
 ): ESTree.ImportSpecifier {
   return {
     type: 'ImportSpecifier',
-    local: createIdentifier(local, location),
-    imported: createIdentifier(imported, location),
-    ...location,
+    local: createIdentifier(local, position),
+    imported: createIdentifier(imported, position),
+    ...position,
   }
 }
 
 function createObjectExpression(
   properties: ESTree.Property[],
-  location: Location,
+  position: Position,
 ): ESTree.ObjectExpression {
   return {
     type: 'ObjectExpression',
     properties,
-    ...location,
+    ...position,
   }
 }
 
 function createArrayExpression(
   elements: ESTree.Expression[],
-  location: Location,
+  position: Position,
 ): ESTree.ArrayExpression {
   return {
     type: 'ArrayExpression',
     elements,
-    ...location,
+    ...position,
   }
 }
 
 function createAssignmentExpression(
   left: ESTree.Expression,
   right: ESTree.Expression,
-  location: Location,
+  position: Position,
 ): ESTree.AssignmentExpression {
   return {
     type: 'AssignmentExpression',
     left,
     right,
     operator: '=',
-    ...location,
+    ...position,
   }
 }
 
@@ -1700,28 +1701,28 @@ function createBinaryExpression(
   left: ESTree.Expression,
   right: ESTree.Expression,
   operator: string,
-  location: Location,
+  position: Position,
 ): ESTree.BinaryExpression {
   return {
     type: 'BinaryExpression',
     left,
     right,
     operator,
-    ...location,
+    ...position,
   }
 }
 
 function createLogicalExpression(
   left: ESTree.Expression,
   right: ESTree.Expression,
-  location: Location,
+  position: Position,
 ): ESTree.LogicalExpression {
   return {
     type: 'LogicalExpression',
     left,
     right,
     operator: '&&',
-    ...location,
+    ...position,
   }
 }
 
@@ -1729,56 +1730,56 @@ function createConditionalExpression(
   test: ESTree.Expression,
   consequent: ESTree.Expression,
   alternate: ESTree.Expression,
-  location: Location,
+  position: Position,
 ): ESTree.ConditionalExpression {
   return {
     type: 'ConditionalExpression',
     test,
     consequent,
     alternate,
-    ...location,
+    ...position,
   }
 }
 
 function createUnaryExpression(
   argument: ESTree.Identifier,
-  location: Location,
+  position: Position,
 ): ESTree.UnaryExpression {
   return {
     type: 'UnaryExpression',
     operator: 'typeof',
     argument,
     prefix: true,
-    ...location,
+    ...position,
   }
 }
 
 function createVariableDeclarator(
   id: ESTree.Identifier,
   init: ESTree.Expression,
-  location: Location,
+  position: Position,
 ): ESTree.VariableDeclarator {
   return {
     type: 'VariableDeclarator',
     id,
     init,
-    ...location,
+    ...position,
   }
 }
 
-function createIdentifier(name: string, location: Location): ESTree.Identifier {
-  return { type: 'Identifier', name, ...location }
+function createIdentifier(name: string, position: Position): ESTree.Identifier {
+  return { type: 'Identifier', name, ...position }
 }
 
 function createLiteral(
   value: ESTree.Literal['value'],
-  location: Location,
+  position: Position,
 ): ESTree.Literal {
-  return { type: 'Literal', value, raw: JSON.stringify(value), ...location }
+  return { type: 'Literal', value, raw: JSON.stringify(value), ...position }
 }
 
-function createThisExpression(location: Location): ESTree.ThisExpression {
-  return { type: 'ThisExpression', ...location }
+function createThisExpression(position: Position): ESTree.ThisExpression {
+  return { type: 'ThisExpression', ...position }
 }
 
 function getUniqueId(
