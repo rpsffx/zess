@@ -54,19 +54,13 @@ type FunctionExpression =
 type RightValue =
   | LeftValue
   | ESTree.CallExpression
-  | ESTree.NewExpression
-  | ESTree.LogicalExpression
-  | ESTree.ConditionalExpression
   | ESTree.ChainExpression
-  | ESTree.AwaitExpression
-  | ESTree.TaggedTemplateExpression
   | ESTree.JSXElement
   | ESTree.JSXFragment
   | ESTree.ThisExpression
+  | ESTree.NewExpression
+  | ESTree.TaggedTemplateExpression
   | ESTree.ImportExpression
-  | ESTree.AssignmentExpression
-  | ESTree.SequenceExpression
-  | ESTree.YieldExpression
   | ESTree.MetaProperty
 
 const UPPERCASE_REGEX = /^[A-Z]/
@@ -771,7 +765,7 @@ function transformAttributes(
       } else if (attr.value.type === 'JSXExpressionContainer') {
         expression = attr.value.expression as ESTree.Expression
         if (attributeName === 'ref') {
-          if (isRightValue(expression)) {
+          if (matchesType(expression, isRightValue)) {
             const refId = createIdentifier(
               getUniqueId('ref', 'refId'),
               attributeNameLocation,
@@ -829,7 +823,7 @@ function transformAttributes(
         } else if (
           !shouldImportSpread &&
           attributeName.startsWith('on') &&
-          isListener(expression)
+          matchesType(expression, isListener)
         ) {
           let eventName: string
           if (NATIVE_EVENT_REGEX.test(attributeName)) {
@@ -885,7 +879,7 @@ function transformAttributes(
       if (shouldImportSpread) continue
       let styleOrClassArgs: ESTree.Expression[] | undefined
       if (attributeName === 'style') {
-        if (isStylesheet(value!)) {
+        if (matchesType(value!, isStylesheet)) {
           shouldImportSetStyle = true
           expression = createCallExpression(
             createIdentifier('_$style', attributeNameLocation),
@@ -910,7 +904,7 @@ function transformAttributes(
           )
         }
       } else if (attributeName === 'class' || attributeName === 'className') {
-        if (isStylesheet(value!)) {
+        if (matchesType(value!, isStylesheet)) {
           shouldImportSetClassName = true
           expression = createCallExpression(
             createIdentifier('_$className', attributeNameLocation),
@@ -1353,7 +1347,7 @@ function transformProperties(
       } else if (attr.value.type === 'JSXExpressionContainer') {
         const expression = attr.value.expression as ESTree.Expression
         if (propertyName === 'ref') {
-          if (isRightValue(expression)) {
+          if (matchesType(expression, isRightValue)) {
             const refId = createIdentifier(
               getUniqueId('ref', 'refId'),
               propertyNameLocation,
@@ -1813,6 +1807,28 @@ function isValidIdentifier(name: string): boolean {
   return IDENTIFIER_REGEX.test(name) && !keywords.has(name)
 }
 
+function matchesType<T extends ESTree.Expression>(
+  node: ESTree.Expression,
+  predicate: (childNode: ESTree.Expression) => childNode is T,
+): node is T {
+  if (predicate(node)) return true
+  if (node.type === 'LogicalExpression') {
+    return predicate(node.left) || predicate(node.right)
+  }
+  if (node.type === 'ConditionalExpression') {
+    return predicate(node.consequent) || predicate(node.alternate)
+  }
+  if (node.type === 'AssignmentExpression') return predicate(node.right)
+  if (node.type === 'AwaitExpression') return predicate(node.argument)
+  if (node.type === 'YieldExpression' && node.argument) {
+    return predicate(node.argument)
+  }
+  if (node.type === 'SequenceExpression') {
+    return predicate(node.expressions.at(-1)!)
+  }
+  return false
+}
+
 function isListener(node: ESTree.Expression): node is Listener {
   return isFunctionExpression(node) || isRightValue(node)
 }
@@ -1822,28 +1838,18 @@ function isStylesheet(node: ESTree.Expression): node is Stylesheet {
 }
 
 function isRightValue(node: ESTree.Expression): node is RightValue {
-  switch (node.type) {
-    case 'Identifier':
-    case 'MemberExpression':
-    case 'CallExpression':
-    case 'NewExpression':
-    case 'LogicalExpression':
-    case 'ConditionalExpression':
-    case 'ChainExpression':
-    case 'AwaitExpression':
-    case 'TaggedTemplateExpression':
-    case 'JSXElement':
-    case 'JSXFragment':
-    case 'ThisExpression':
-    case 'ImportExpression':
-    case 'AssignmentExpression':
-    case 'SequenceExpression':
-    case 'YieldExpression':
-    case 'MetaProperty':
-      return true
-    default:
-      return false
-  }
+  return (
+    isLeftValue(node) ||
+    node.type === 'CallExpression' ||
+    node.type === 'ChainExpression' ||
+    node.type === 'JSXElement' ||
+    node.type === 'JSXFragment' ||
+    node.type === 'ThisExpression' ||
+    node.type === 'NewExpression' ||
+    node.type === 'TaggedTemplateExpression' ||
+    node.type === 'ImportExpression' ||
+    node.type === 'MetaProperty'
+  )
 }
 
 function isLeftValue(node: ESTree.Expression): node is LeftValue {
