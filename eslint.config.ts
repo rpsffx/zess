@@ -1,16 +1,18 @@
-import { sxzz } from '@sxzz/eslint-config'
+import { sxzz, type Config } from '@sxzz/eslint-config'
+import { globalIgnores } from 'eslint/config'
 
-export default sxzz({
-  rules: {
-    eqeqeq: 'off',
-    'dot-notation': 'off',
-    'import/no-default-export': 'off',
-    'unicorn/no-for-loop': 'off',
-    'unicorn/no-new-array': 'off',
-    'unicorn/new-for-builtins': 'off',
-    'unicorn/prefer-modern-dom-apis': 'off',
-    'unicorn/prefer-dom-node-remove': 'off',
-    'unicorn/prefer-add-event-listener': 'off',
-    '@typescript-eslint/consistent-type-assertions': 'off',
+export default sxzz([
+  globalIgnores(['**/README.md']) as Config,
+  {
+    rules: {
+      eqeqeq: 'off',
+      'import/no-default-export': 'off',
+      'unicorn/no-for-loop': 'off',
+      'unicorn/no-new-array': 'off',
+      'unicorn/new-for-builtins': 'off',
+      'unicorn/prefer-modern-dom-apis': 'off',
+      'unicorn/prefer-dom-node-remove': 'off',
+      '@typescript-eslint/consistent-type-assertions': 'off',
+    },
   },
-})
+])
