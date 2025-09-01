@@ -8,7 +8,7 @@
 
 [![NPM Version](https://img.shields.io/npm/v/@zess/compiler.svg?style=flat-square&color=lightblue)](https://www.npmjs.com/package/@zess/compiler) [![License](https://img.shields.io/npm/l/@zess/compiler.svg?style=flat-square&color=lightblue)](https://github.com/rpsffx/zess/blob/main/LICENSE)
 
-Zess JSX compiler - Delivers efficient code conversion for super-responsive web experiences.
+Zess JSX compiler 💥 Delivers efficient code conversion for super - responsive web experiences.
 
 ## Features
 
@@ -26,7 +26,7 @@ Zess JSX compiler - Delivers efficient code conversion for super-responsive web 
   - Dynamic class and style attributes
   - Ref handling
   - Support for special characters in attribute names
-- **High Performance**: Uses Meriyah for parsing, ensuring extremely fast processing
+- **High Performance**: Uses [Meriyah](https://github.com/meriyah/meriyah) for parsing, ensuring extremely fast processing
 - **Smart Code Optimization**: Static content optimization and runtime function importing on demand
 - **Source Map Support**: For easy debugging of compiled code
 - **Type Safety**: Complete TypeScript type definitions
