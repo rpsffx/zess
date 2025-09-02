@@ -120,15 +120,15 @@ export function Route(props: RouteProps): JSX.Element {
   useRenderEffect(() => {
     const isWildcard = props.path === '*'
     const currentPath = routerContext.path
-    if (!isWildcard && matchPath(context.patternPath, currentPath)) {
-      return setContext({ isMatched: true, match: null })
-    }
     for (const routeNode of routeNodes()) {
       if (routeNode.isMatched) {
         return setContext({ isMatched: true, match: routeNode.component })
       }
     }
-    setContext({ isMatched: isWildcard, match: null })
+    setContext({
+      isMatched: isWildcard || matchPath(context.patternPath, currentPath),
+      match: null,
+    })
   })
   const match = useMemo(() => context.match) as unknown as JSX.Element
   const routeComponent = useMemo(
