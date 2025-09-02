@@ -7,7 +7,6 @@ export default function zess(
     include?: FilterPattern
     exclude?: FilterPattern
     modulePath?: string
-    rolldown?: boolean
   } = {},
 ): Plugin {
   const filter = createFilter(
@@ -28,7 +27,7 @@ export default function zess(
           jsx: 'preserve',
         },
         force: true,
-        include: ['@zess/core'],
+        include: ['@zess/compiler', '@zess/core'],
         exclude: ['@zess/router'],
       },
     }),
