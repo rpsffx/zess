@@ -904,9 +904,8 @@ console.log(user.address.city) // 'New York'
 
 The Zess core runtime is compatible with modern JavaScript environments including:
 
-- All modern browsers (Chrome, Firefox, Safari, Edge)
 - Node.js >=18.12.0
-- TypeScript 5.8.3 and above
+- Modern browsers (Chrome, Firefox, Safari, Edge)
 
 ## License
 
