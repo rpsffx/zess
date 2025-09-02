@@ -1,3 +1,386 @@
-# @scope/foo [![npm](https://img.shields.io/npm/v/@scope/foo.svg)](https://npmjs.com/package/@scope/foo)
+<div align="center">
+  <picture>
+    <img src="https://pic1.imgdb.cn/item/68b4736558cb8da5c867a867.png" alt="Zess Logo" width="300" style="height: auto;">
+  </picture>
+</div>
 
-Please refer to [README.md](https://github.com/sxzz/project-name#readme)
+# @zess/router
+
+[![NPM Version](https://img.shields.io/npm/v/@zess/router.svg?style=flat-square&color=lightblue)](https://www.npmjs.com/package/@zess/router) [![License](https://img.shields.io/npm/l/@zess/router.svg?style=flat-square&color=lightblue)](https://github.com/rpsffx/zess/blob/main/LICENSE)
+
+Zess router 📍 Client-side navigation, dynamic & nested routing for web apps.
+
+## Features
+
+- **Simple and Lightweight**: Easy-to-use API with minimal configuration required
+- **Performance Optimized**: Caches each route component for excellent rendering performance
+- **Multiple Modes**: Supports both hash mode and history mode for different deployment environments
+- **Nested Routes**: Create complex route hierarchies with nested components
+- **Dynamic Navigation**: Programmatically navigate between routes using hooks
+- **Search Params Handling**: Built-in support for managing query parameters
+- **Type Safety**: Complete TypeScript type definitions
+- **Seamless Integration**: Works perfectly with @zess/core reactive system
+
+## Installation
+
+```bash
+# Using npm
+npm install @zess/router
+
+# Using yarn
+yarn add @zess/router
+
+# Using pnpm
+pnpm add @zess/router
+```
+
+## Basic Usage
+
+### Setting Up the Router
+
+```jsx
+import { render } from '@zess/core'
+import { Router, Route } from '@zess/router'
+
+function RootLayout(props) {
+  return <div>{props.children}</div>
+}
+
+function HomePage() {
+  return <h1>Welcome to Home Page</h1>
+}
+
+function AboutPage() {
+  return <h1>About Us</h1>
+}
+
+render(
+  () => (
+    <Router root={RootLayout}>
+      <Route path="/" component={HomePage} />
+      <Route path="/about" component={AboutPage} />
+    </Router>
+  ),
+  document.getElementById('app'),
+)
+```
+
+### Using Navigation Links
+
+```jsx
+import { Link } from '@zess/router'
+
+function Navigation() {
+  return (
+    <nav>
+      <Link to="/" className="nav-link">
+        Home
+      </Link>
+      <Link to="/about" className="nav-link">
+        About
+      </Link>
+    </nav>
+  )
+}
+```
+
+### Programmatically Navigating
+
+```jsx
+import { useNavigate } from '@zess/router'
+
+function NavigationButtons() {
+  const navigate = useNavigate()
+
+  return (
+    <div>
+      <button onClick={() => navigate('/')}>Go to Home</button>
+      <button onClick={() => navigate('/about', { replace: true })}>
+        Go to About
+      </button>
+    </div>
+  )
+}
+```
+
+## Advanced Usage
+
+### Nested Routes
+
+```jsx
+import { Router, Route } from '@zess/router'
+
+function AppLayout(props) {
+  return (
+    <div className="app">
+      <header>Zess Application</header>
+      <main>{props.children}</main>
+    </div>
+  )
+}
+
+function UserLayout(props) {
+  return (
+    <div className="user-section">
+      <nav className="user-nav">User Navigation</nav>
+      <div className="user-content">{props.children}</div>
+    </div>
+  )
+}
+
+function HomePage() {
+  return <h1>Welcome to Home Page</h1>
+}
+
+function UserList() {
+  return <h2>User List</h2>
+}
+
+function UserProfile() {
+  return <h2>User Profile</h2>
+}
+
+render(
+  () => (
+    <Router root={AppLayout}>
+      <Route path="/" component={HomePage} />
+
+      {/* Nested routes */}
+      <Route path="/users" component={UserLayout}>
+        <Route path="/" component={UserList} />
+        <Route path="/profile" component={UserProfile} />
+      </Route>
+    </Router>
+  ),
+  document.getElementById('app'),
+)
+```
+
+### Working with Search Parameters
+
+```jsx
+import { useSearchParams } from '@zess/router'
+
+function SearchComponent() {
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  const handleSearch = (event) => {
+    event.preventDefault()
+    const formData = new FormData(event.target)
+    const query = formData.get('query')
+
+    setSearchParams({ query })
+  }
+
+  return (
+    <div>
+      <form onSubmit={handleSearch}>
+        <input type="text" name="query" defaultValue={searchParams.query} />
+        <button type="submit">Search</button>
+      </form>
+
+      {searchParams.query && <p>Searching for: {searchParams.query}</p>}
+    </div>
+  )
+}
+```
+
+### Using Different Router Modes
+
+```jsx
+// Hash mode (default)
+render(
+  () => (
+    <Router mode="hash" root={RootLayout}>
+      <Route path="/" component={HomePage} />
+    </Router>
+  ),
+  document.getElementById('app'),
+)
+
+// History mode
+render(
+  () => (
+    <Router mode="history" root={RootLayout}>
+      <Route path="/" component={HomePage} />
+    </Router>
+  ),
+  document.getElementById('app'),
+)
+```
+
+## API Reference
+
+### Components
+
+#### `Router(props: RouterProps): JSX.Element`
+
+The main router component that wraps all your routes and provides the routing context.
+
+**Parameters:**
+
+- `mode`: Optional routing mode, either `'hash'` or `'history'`. Defaults to `'hash'`
+- `root`: Optional root component that wraps all route children
+- `children`: `<Route>` components to be rendered
+
+**Example:**
+
+```jsx
+<Router mode="hash" root={RootLayout}>
+  <Route path="/" component={HomePage} />
+  <Route path="/about" component={AboutPage} />
+</Router>
+```
+
+#### `Route(props: RouteProps): JSX.Element`
+
+Defines a route and its corresponding component.
+
+**Parameters:**
+
+- `path`: The path pattern for this route
+- `sensitive`: Optional flag to make the path matching case-sensitive. Defaults to `false`
+- `component`: Optional component to render when the route is matched
+- `children`: Optional nested `<Route>` components
+
+**Example:**
+
+```jsx
+// Basic route
+<Route path="/about" component={AboutPage} />
+
+// Case-sensitive route
+<Route path="/API" sensitive component={ApiPage} />
+
+// Route with nested routes
+<Route path="/dashboard" component={DashboardLayout}>
+  <Route path="/stats" component={StatsPage} />
+  <Route path="/settings" component={SettingsPage} />
+</Route>
+
+// Wildcard route (matches any path)
+<Route path="*" component={NotFoundPage} />
+```
+
+#### `Link(props: LinkProps): JSX.Element`
+
+Creates a navigable link to another route.
+
+**Parameters:**
+
+- `to`: The destination path, can include query strings
+- `exact`: Optional flag to navigate to the exact path without relative base
+- `replace`: Optional flag to replace the current history entry instead of pushing a new one
+- `style`: Optional CSS styles
+- `className`: Optional CSS class name
+- `children`: Optional content for the link
+
+**Example:**
+
+```jsx
+// Basic link
+<Link to="/home">Home</Link>
+
+// Link with exact path
+<Link to="/about" exact>About (Exact)</Link>
+
+// Link with replace
+<Link to="/login" replace>Login</Link>
+
+// Link with styles
+<Link to="/contact" style={{ color: 'blue' }}>Contact</Link>
+
+// Link with className
+<Link to="/profile" className="user-link">Profile</Link>
+
+// Link with query parameters
+<Link to="/products?category=electronics&sort=price">Products (Electronics)</Link>
+```
+
+### Primitives
+
+#### `useNavigate(): (href: string, options?: NavigateOptions) => void`
+
+Hook that returns a function to programmatically navigate between routes.
+
+**Returns:** A function that accepts a path and optional navigation options
+
+- `href`: The destination path, can include query strings
+- `options`: Optional configuration
+  - `exact`: If true, navigates to the exact path without relative base
+  - `replace`: If true, replaces the current history entry
+
+**Example:**
+
+```jsx
+function NavigationComponent() {
+  const navigate = useNavigate()
+
+  return (
+    <>
+      <button onClick={() => navigate('/')}>Home</button>
+      <button onClick={() => navigate('/products', { exact: true })}>
+        Products
+      </button>
+      <button onClick={() => navigate('/login', { replace: true })}>
+        Login
+      </button>
+      <button onClick={() => navigate('/search?q=react&page=1')}>
+        Search React (Page 1)
+      </button>
+    </>
+  )
+}
+```
+
+#### `useSearchParams(): [SearchParams, (params: Record<string, any>, replace?: boolean) => void]`
+
+Hook that provides access to search parameters and a function to update them.
+
+**Returns:** An array containing
+
+- `searchParams`: A reactive object with current search parameters that auto-updates when `location.search` changes or when modified via `setSearchParams`
+- `setSearchParams`: A function to update search parameters
+  - `params`: New search parameters object. Setting a property value to `undefined` removes that property
+  - `replace`: Optional flag to replace the current history entry
+
+**Example:**
+
+```jsx
+function SearchPage() {
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  const handleFilterChange = (category) => {
+    setSearchParams({
+      ...searchParams,
+      category,
+    })
+  }
+
+  const resetFilters = () => {
+    setSearchParams({})
+  }
+
+  return (
+    <div>
+      <p>Current filters: {searchParams.category || 'All'}</p>
+      <button onClick={() => handleFilterChange('electronics')}>
+        Electronics
+      </button>
+      <button onClick={() => handleFilterChange('clothing')}>Clothing</button>
+      <button onClick={resetFilters}>Reset</button>
+    </div>
+  )
+}
+```
+
+## Compatibility
+
+The Zess router is compatible with:
+
+- Node.js >=18.12.0
+- Modern browsers (Chrome, Firefox, Safari, Edge)
+
+## License
+
+[MIT](https://github.com/rpsffx/zess/blob/main/LICENSE)
