@@ -423,7 +423,7 @@ const withRefs = [
 
 ## Compatibility
 
-The Zess JSX compiler is compatible with modern JavaScript environments including:
+The Zess JSX compiler is compatible with:
 
 - Node.js >=18.12.0
 - Modern browsers (Chrome, Firefox, Safari, Edge)
