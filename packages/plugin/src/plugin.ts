@@ -27,7 +27,7 @@ export default function zess(
           jsx: 'preserve',
         },
         force: true,
-        include: ['@zess/compiler', '@zess/core'],
+        include: ['@zess/core'],
         exclude: ['@zess/router'],
       },
     }),
