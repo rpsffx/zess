@@ -871,7 +871,7 @@ Creates a reactive store from an initial state object or array. Stores provide a
 **Returns:** An array containing the reactive store object and a setter function
 
 - `Store<T>`: The reactive store object with getters for each property
-- `SetStoreFunction<T>`: A function that updates the store, accepting either a new partial state object or a function that takes the current state and returns a new partial state
+- `SetStoreFunction<T>`: A function that updates the store, accepting either a new partial state object (merged with existing state) or a function that takes the current state and returns a new partial state. Properties set to `undefined` will be removed from the store
 
 **Example:**
 
