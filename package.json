@@ -3,7 +3,7 @@
   "version": "0.10.0",
   "private": true,
   "packageManager": "pnpm@10.15.0",
-  "description": "Zess ⚡ A precompiled JavaScript library for building user interfaces, fast and efficient.",
+  "description": "Zess ⚡ A JavaScript library that uses a compiler to build user interfaces, fast and efficient.",
   "type": "module",
   "license": "MIT",
   "author": "Columsys",
