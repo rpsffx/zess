@@ -9,6 +9,16 @@
     "router"
   ],
   "license": "MIT",
+  "homepage": "https://github.com/rpsffx/zess/tree/main/packages/router#readme",
+  "bugs": {
+    "url": "https://github.com/rpsffx/zess/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rpsffx/zess.git",
+    "directory": "packages/router"
+  },
+  "author": "Columsys",
   "files": [
     "dist"
   ],

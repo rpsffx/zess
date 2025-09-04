@@ -1,0 +1,32 @@
+{
+  "name": "@zess/cli",
+  "version": "0.10.0",
+  "packageManager": "pnpm@10.15.0",
+  "description": "Zess CLI tool 🔨 For easily creating Vite-powered Zess project.",
+  "type": "module",
+  "keywords": [
+    "zess",
+    "vite",
+    "cli"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/rpsffx/zess/tree/main/packages/cli#readme",
+  "bugs": {
+    "url": "https://github.com/rpsffx/zess/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rpsffx/zess.git",
+    "directory": "packages/cli"
+  },
+  "author": "Columsys",
+  "files": [
+    "index.ts"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=18.12.0"
+  }
+}

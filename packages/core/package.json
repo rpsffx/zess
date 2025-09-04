@@ -13,6 +13,16 @@
     "framework"
   ],
   "license": "MIT",
+  "homepage": "https://github.com/rpsffx/zess/tree/main/packages/core#readme",
+  "bugs": {
+    "url": "https://github.com/rpsffx/zess/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rpsffx/zess.git",
+    "directory": "packages/core"
+  },
+  "author": "Columsys",
   "files": [
     "dist",
     "types"
