@@ -73,4 +73,16 @@ describe('delegateEvents', () => {
     target.dispatchEvent(event)
     expect(handler).not.toHaveBeenCalled()
   })
+  it('should bind this to the target element in the handler', () => {
+    let context: DelegationTarget | undefined
+    const eventName = 'click'
+    const handler = function (this: DelegationTarget) {
+      context = this
+    }
+    target[`$$${eventName}`] = handler
+    delegateEvents([eventName])
+    const event = new Event(eventName, { bubbles: true })
+    target.dispatchEvent(event)
+    expect(context).toBe(target)
+  })
 })
