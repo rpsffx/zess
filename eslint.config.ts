@@ -12,6 +12,7 @@ export default sxzz([
       'unicorn/new-for-builtins': 'off',
       'unicorn/prefer-modern-dom-apis': 'off',
       'unicorn/prefer-dom-node-remove': 'off',
+      '@typescript-eslint/no-this-alias': 'off',
       '@typescript-eslint/consistent-type-assertions': 'off',
     },
   },
