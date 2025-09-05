@@ -59,7 +59,6 @@ export function delegateEvents(events: string[]): void {
       const endIndex = path.length - 3
       const step = capture ? 1 : -1
       let startIndex = capture ? 0 : endIndex
-      let hasHandled = false
       e.stopPropagation = () => {
         e.propagationStopped = true
         originalStopPropagation.call(e)
@@ -72,19 +71,11 @@ export function delegateEvents(events: string[]): void {
       while (startIndex >= 0 && startIndex <= endIndex) {
         const node = path[startIndex]
         const handler = node[eventKey as keyof EventTarget]
-        if (handler) {
-          try {
-            ;(handler as DelegationEventListener)(e)
-          } finally {
-            hasHandled = true
-          }
+        if (handler && !(node as HTMLInputElement).disabled) {
+          ;(handler as DelegationEventListener).call(node, e)
           if (e.propagationStopped) break
         }
         startIndex += step
-      }
-      if (!hasHandled) {
-        delegationEvents.delete(event)
-        document.removeEventListener(event, listener, options)
       }
     }
     delegationEvents.add(event)
