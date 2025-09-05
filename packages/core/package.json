@@ -1,7 +1,7 @@
 {
   "name": "@zess/core",
   "version": "0.10.0",
-  "packageManager": "pnpm@10.15.0",
+  "packageManager": "pnpm@10.15.1",
   "description": "Zess core module ⚙️ Provides powerful runtime functionality for high - performance web applications.",
   "type": "module",
   "keywords": [
