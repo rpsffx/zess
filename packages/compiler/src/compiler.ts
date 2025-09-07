@@ -65,8 +65,8 @@ type RightValue =
 
 const UPPERCASE_REGEX = /^[A-Z]/
 const NATIVE_EVENT_REGEX = /^on[a-z]+$/
-const LINE_BREAK_REGEX = /[\r\n]/
-const EMPTY_LINE_REGEX = /^\s+$|^\s*[\r\n]\s*|[\r\n]\s*$/g
+const NON_BLANK_LINE_REGEX = /\S|^[^\S\r\n]+$/
+const EDGE_SPACE_REGEX = /^\s*[\r\n]\s*|[\r\n]\s*$/g
 const SPACE_REGEX = /\s+/g
 const IDENTIFIER_REGEX = /^[a-z_$][\w$]*$/i
 const SVGTags = new Set([
@@ -438,12 +438,12 @@ function transformFragment(
   for (let i = 0; i < children.length; ++i) {
     const childNode = children[i]
     if (childNode.type === 'JSXText') {
-      const value = trimWhitespace(childNode.value)
-      if (!value) continue
+      const text = childNode.value
+      if (isBlankLine(text)) continue
       if (textContent) {
-        textContent = `${textContent}${value}`
+        textContent = `${textContent}${text}`
       } else {
-        textContent = value
+        textContent = text
         textPosition = copyPosition(childNode)
         elementsPosition ??= textPosition
       }
@@ -455,7 +455,7 @@ function transformFragment(
       const childPosition = copyPosition(childNode)
       let childElement: ESTree.Expression
       if (textContent) {
-        elements.push(createLiteral(decodeHTML(textContent), textPosition!))
+        elements.push(createLiteral(decodeText(textContent), textPosition!))
         textContent = textPosition = undefined
       }
       if (childNode.type === 'JSXElement') {
@@ -506,7 +506,7 @@ function transformFragment(
     }
   }
   if (textContent) {
-    elements.push(createLiteral(decodeHTML(textContent), textPosition!))
+    elements.push(createLiteral(decodeText(textContent), textPosition!))
   }
   if (isInComponent) {
     currentContext.prevHasDynamicChildrenInComponent =
@@ -1216,12 +1216,12 @@ function transformChildren(
   for (let i = 0; i < children.length; ++i) {
     const childNode = children[i]
     if (childNode.type === 'JSXText') {
-      const value = trimWhitespace(childNode.value)
-      if (!value) continue
+      const text = childNode.value
+      if (isBlankLine(text)) continue
       if (textContent) {
-        textContent = `${textContent}${value}`
+        textContent = `${textContent}${text}`
       } else {
-        textContent = value
+        textContent = text
         textPosition = copyPosition(childNode)
         elementsPosition ??= textPosition
       }
@@ -1233,7 +1233,7 @@ function transformChildren(
       const childPosition = copyPosition(childNode)
       let expression: ESTree.Expression
       if (textContent) {
-        elements.push(createLiteral(decodeHTML(textContent), textPosition!))
+        elements.push(createLiteral(decodeText(textContent), textPosition!))
         textContent = textPosition = undefined
       }
       if (childNode.type === 'JSXElement') {
@@ -1295,7 +1295,7 @@ function transformChildren(
     }
   }
   if (textContent) {
-    elements.push(createLiteral(decodeHTML(textContent), textPosition!))
+    elements.push(createLiteral(decodeText(textContent), textPosition!))
   }
   if (elements.length) {
     stmts.push(
@@ -1797,11 +1797,14 @@ function getUniqueId(
   return `_${prefix}$${id}`
 }
 
-function trimWhitespace(text: string): string {
-  if (LINE_BREAK_REGEX.test(text)) {
-    text = text.replaceAll(EMPTY_LINE_REGEX, '')
-  }
-  return text && text.replaceAll(SPACE_REGEX, ' ')
+function isBlankLine(text: string): boolean {
+  return !NON_BLANK_LINE_REGEX.test(text)
+}
+
+function decodeText(text: string): string {
+  return decodeHTML(
+    text.replaceAll(EDGE_SPACE_REGEX, '').replaceAll(SPACE_REGEX, ' '),
+  )
 }
 
 function isValidIdentifier(name: string): boolean {
