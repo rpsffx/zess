@@ -65,7 +65,7 @@ type RightValue =
 
 const UPPERCASE_REGEX = /^[A-Z]/
 const NATIVE_EVENT_REGEX = /^on[a-z]+$/
-const EMPTY_LINE_REGEX = /(?:\r?\n|\r)\s*/g
+const EDGE_SPACE_REGEX = /^\s*[\r\n]|[\r\n]\s*$/g
 const SPACE_REGEX = /\s+/g
 const IDENTIFIER_REGEX = /^[a-z_$][\w$]*$/i
 const SVGTags = new Set([
@@ -913,14 +913,10 @@ function transformAttributes(
             attributePosition,
           )
         } else {
-          expression = createAssignmentExpression(
-            createMemberExpression(
-              id,
-              createIdentifier('className', attributeNamePosition),
-              false,
-              attributeNamePosition,
-            ),
-            value!,
+          shouldImportSetAttribute = true
+          expression = createCallExpression(
+            createIdentifier('_$setAttribute', attributeNamePosition),
+            [id, createLiteral('class', attributeNamePosition), value!],
             attributePosition,
           )
         }
@@ -1801,7 +1797,7 @@ function getUniqueId(
 }
 
 function trimWhitespace(text: string): string {
-  return text.replaceAll(EMPTY_LINE_REGEX, '').replaceAll(SPACE_REGEX, ' ')
+  return text.replaceAll(EDGE_SPACE_REGEX, '').replaceAll(SPACE_REGEX, ' ')
 }
 
 function isValidIdentifier(name: string): boolean {
