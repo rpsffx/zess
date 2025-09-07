@@ -102,15 +102,11 @@ export function setClassName(
   prevValue: ClassName,
 ): ClassName {
   if (value == null || typeof value === 'string') {
-    if (value) {
-      el.className = value
-    } else {
-      el.removeAttribute('class')
-    }
+    setAttribute(el, 'class', value)
     return value
   }
   if (typeof prevValue === 'string') {
-    el.className = prevValue = ''
+    el.setAttribute('class', (prevValue = ''))
   } else if (prevValue) {
     const prevKeys = Object.keys(prevValue)
     for (let i = 0; i < prevKeys.length; ++i) {
