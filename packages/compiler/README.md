@@ -119,7 +119,7 @@ const element = <div class="container">Hello World</div>
 ```javascript
 const element = (() => {
   const _el$ = _$createElement('div')
-  _el$.className = 'container'
+  _$setAttribute(_el$, 'class', 'container')
   _el$.append('Hello World')
   return _el$
 })()
@@ -295,7 +295,7 @@ const withClass = <div class={isActive ? 'active' : 'inactive'}>Status</div>
 ```javascript
 const withClass = (() => {
   const _el$ = _$createElement('div')
-  _el$.className = isActive ? 'active' : 'inactive'
+  _$setAttribute(_el$, 'class', isActive ? 'active' : 'inactive')
   _el$.append('Status')
   return _el$
 })()
