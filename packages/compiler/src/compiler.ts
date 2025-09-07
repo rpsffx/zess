@@ -65,7 +65,8 @@ type RightValue =
 
 const UPPERCASE_REGEX = /^[A-Z]/
 const NATIVE_EVENT_REGEX = /^on[a-z]+$/
-const EDGE_SPACE_REGEX = /^\s*[\r\n]|[\r\n]\s*$/g
+const LINE_BREAK_REGEX = /[\r\n]/
+const EMPTY_LINE_REGEX = /^\s+$|^\s*[\r\n]\s*|[\r\n]\s*$/g
 const SPACE_REGEX = /\s+/g
 const IDENTIFIER_REGEX = /^[a-z_$][\w$]*$/i
 const SVGTags = new Set([
@@ -1797,7 +1798,10 @@ function getUniqueId(
 }
 
 function trimWhitespace(text: string): string {
-  return text.replaceAll(EDGE_SPACE_REGEX, '').replaceAll(SPACE_REGEX, ' ')
+  if (LINE_BREAK_REGEX.test(text)) {
+    text = text.replaceAll(EMPTY_LINE_REGEX, '')
+  }
+  return text && text.replaceAll(SPACE_REGEX, ' ')
 }
 
 function isValidIdentifier(name: string): boolean {
