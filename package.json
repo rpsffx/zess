@@ -29,7 +29,7 @@
     "@vitest/coverage-istanbul": "^3.2.4",
     "@zess/vite-plugin": "workspace:*",
     "bumpp": "^9.11.1",
-    "eslint": "^9.34.0",
+    "eslint": "^9.35.0",
     "lint-staged": "^16.1.6",
     "playwright": "^1.55.0",
     "prettier": "^3.6.2",
