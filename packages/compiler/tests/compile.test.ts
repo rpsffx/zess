@@ -189,7 +189,7 @@ describe('compile', () => {
       '<div class="static" style={{ color: "red" }}>Text</div>',
     )
     match(result.code, '_$effect', true)
-    match(result.code, '_el$.className = "static"')
+    match(result.code, '_$setAttribute(_el$, "class", "static")')
     match(result.code, '_$style(_el$, { color: "red" })')
   })
   it('should handle this expression in program context', () => {
