@@ -14,6 +14,7 @@ import {
   useEffect,
   useMemo,
   useRenderEffect,
+  useSelector,
   useSignal,
   type Getter,
   type Owner,
@@ -114,6 +115,36 @@ describe('reactivity system', () => {
         expect(effect).toHaveBeenCalledWith(0)
         setVal(1)
         expect(effect).toHaveBeenCalledWith(1)
+      })
+    })
+  })
+  describe('selectors', () => {
+    it('useSelector - should create selector function that matches values', () => {
+      createRoot(() => {
+        const [state, setState] = useSignal(5)
+        const isEqual = useSelector(state)
+        expect(isEqual(5)).toBe(true)
+        expect(isEqual(3)).toBe(false)
+        expect(isEqual(7)).toBe(false)
+        setState(10)
+        expect(isEqual(10)).toBe(true)
+        expect(isEqual(5)).toBe(false)
+      })
+    })
+    it('useSelector - should work with custom equality function', () => {
+      createRoot(() => {
+        const [user, setUser] = useSignal({ id: 1, name: 'John' })
+        const matchesId = useSelector(user, (a, b) => a.id === b.id)
+        expect(matchesId({ id: 1, name: 'Alice' })).toBe(true)
+        expect(matchesId({ id: 2, name: 'Bob' })).toBe(false)
+        const matchesName = useSelector(user, (a, b) => a.name === b.name)
+        expect(matchesName({ id: 999, name: 'John' })).toBe(true)
+        expect(matchesName({ id: 1, name: 'Alice' })).toBe(false)
+        setUser({ id: 2, name: 'Jane' })
+        expect(matchesId({ id: 1, name: 'Alice' })).toBe(false)
+        expect(matchesId({ id: 2, name: 'Bob' })).toBe(true)
+        expect(matchesName({ id: 999, name: 'John' })).toBe(false)
+        expect(matchesName({ id: 2, name: 'Jane' })).toBe(true)
       })
     })
   })
