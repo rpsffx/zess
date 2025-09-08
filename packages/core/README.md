@@ -397,11 +397,9 @@ A component used with `<Switch>` to define conditional cases.
 **Example:**
 
 ```jsx
-function MatchExample() {
-  const [value] = useSignal('a')
-
+function MatchExample(props) {
   return (
-    <Match when={value() === 'a'}>
+    <Match when={props.value === 'a'}>
       <p>Value is A</p>
     </Match>
   )
@@ -855,6 +853,40 @@ function InputFocusComponent() {
   })
 
   return <input ref={setRef} />
+}
+```
+
+#### `useSelector<T, U = T>(source: Getter<T>, fn?: Equals<T, U>): (key: U) => boolean`
+
+Creates an optimized conditional selector that efficiently manages subscriptions by only notifying subscribers when their specific key starts or stops matching the source value. This optimization drastically improves update performance by minimizing the number of subscribers that need to be notified when the source value changes.
+
+**Parameters:**
+
+- `source`: A getter function that returns the source value to compare against keys
+- `fn`: Optional custom equality function that receives a key and the source value, returning whether they should be treated as equal. Defaults to strict equality (`===`)
+
+**Returns:** A function that takes a key and returns whether it matches the current source value
+
+**Example:**
+
+```jsx
+function SelectableItemList() {
+  const [selectedIndex, setSelectedIndex] = useSignal(0)
+  const items = useSignal([0, 1, 2])
+  const isActive = useSelector(selectedIndex)
+
+  return (
+    <For each={items()}>
+      {(index) => (
+        <div
+          class={{ active: isActive(index) }}
+          onClick={() => setSelectedIndex(index)}
+        >
+          Item {index + 1}
+        </div>
+      )}
+    </For>
+  )
 }
 ```
 
