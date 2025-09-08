@@ -31,5 +31,8 @@ export {
   useMemo,
   useRenderEffect,
   useSignal,
+  type Getter,
+  type Owner,
+  type Setter,
 } from './signal'
-export { useStore } from './store'
+export { useStore, type SetStoreFunction, type Store } from './store'

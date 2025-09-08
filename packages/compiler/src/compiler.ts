@@ -5,6 +5,8 @@ import { parse, type ESTree } from 'meriyah'
 import { SourceMapGenerator, type RawSourceMap } from 'source-map'
 import { visit } from './visit'
 
+export type { ESTree, RawSourceMap }
+
 type CompilerContext = {
   config: Required<CompilerOptions>
   ast: ESTree.Program

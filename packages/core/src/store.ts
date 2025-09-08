@@ -1,7 +1,12 @@
-import { batch, useMemo, useSignal, type Callback } from './signal'
+import { batch, useMemo, useSignal } from './signal'
 
-type Store<T> = T
-type SetStoreFunction<T> = (state: ObjectLike | Callback<T>) => void
+export type Store<T> = T
+export type SetStoreFunction<T> = (
+  state: DeepPartial<T> | ((prevState: T) => DeepPartial<T>),
+) => void
+type DeepPartial<T> = {
+  [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P]
+}
 type ObjectLike = Record<PropertyKey, any> | any[]
 
 export function useStore<T extends ObjectLike>(

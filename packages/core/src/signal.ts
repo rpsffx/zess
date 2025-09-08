@@ -24,7 +24,7 @@
  */
 export type Getter<T> = () => T
 export type Setter<T> = (v: T | Callback<T>) => T
-export type Callback<T> = (prevValue: T) => T
+type Callback<T> = (prevValue: T) => T
 type OnEffectFunction<T, U> = T extends Getter<infer V>[]
   ? (input: V[], prevInput: V[], prevValue?: U) => U
   : T extends Getter<infer V>
@@ -48,7 +48,7 @@ type Signal<T> = {
   observers?: Computation<any>[]
   observerIndices?: number[]
 }
-type Owner = {
+export type Owner = {
   owner?: Owner
   owned?: Computation<any>[]
   cleanups?: (() => void)[]
