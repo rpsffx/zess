@@ -30,7 +30,7 @@ type OnEffectFunction<T, U> = T extends Getter<infer V>[]
   : T extends Getter<infer V>
     ? (input: V, prevInput: V, prevValue?: U) => U
     : never
-type Equals<T> = (a: T, b: T) => boolean
+type Equals<T, U = T> = (a: U, b: T) => boolean
 type Memo<T> = Signal<T> & Computation<T>
 type Computation<T> = Owner & {
   value: T
@@ -147,6 +147,50 @@ export function useMemo<T>(
       }
     }
     return readSignal(computation)
+  }
+}
+
+export function useSelector<T, U = T>(
+  source: Getter<T>,
+  fn: Equals<T, U> = is,
+): (key: U) => boolean {
+  const subscribers = new Map<U, Set<Computation<any>>>()
+  const node = createComputation(
+    (prevValue?: T) => {
+      const value = source()
+      for (const [key, computations] of subscribers) {
+        if (fn(key, value) !== fn(key, prevValue!)) {
+          for (const computation of computations) {
+            computation.state = STALE
+            if (computation.pure) {
+              scheduledUpdates!.push(computation)
+            } else {
+              scheduledEffects!.push(computation)
+            }
+          }
+        }
+      }
+      return value
+    },
+    undefined,
+    true,
+  ) as Memo<any>
+  updateComputation(node)
+  return (key: U) => {
+    const effect = currentEffect
+    if (effect) {
+      let effects = subscribers.get(key)
+      if (!effects) {
+        effects = new Set()
+        subscribers.set(key, effects)
+      }
+      effects.add(effect)
+      onCleanup(() => {
+        effects.delete(effect)
+        if (!effects.size) subscribers.delete(key)
+      })
+    }
+    return fn(key, node.value)
   }
 }
 

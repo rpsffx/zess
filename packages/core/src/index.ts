@@ -30,6 +30,7 @@ export {
   useEffect,
   useMemo,
   useRenderEffect,
+  useSelector,
   useSignal,
   type Getter,
   type Owner,
