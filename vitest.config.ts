@@ -7,7 +7,7 @@ const config: ViteUserConfig = defineConfig({
     pool: 'threads',
     coverage: {
       provider: 'istanbul',
-      include: ['packages/*/src/*.{ts,tsx}'],
+      include: ['packages/!(cli)/src/*.{ts,tsx}'],
       reporter: ['text', 'json', 'html'],
     },
     projects: [
