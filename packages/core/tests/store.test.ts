@@ -7,7 +7,7 @@ import {
   useEffect,
   useRenderEffect,
 } from '../src/signal'
-import { useStore } from '../src/store'
+import { useStore, type SetStoreFunction } from '../src/store'
 
 describe('reactive system integration tests', () => {
   it('should track basic properties', () => {
@@ -130,7 +130,7 @@ describe('reactive system integration tests', () => {
   it('should manage multi-level scopes', () => {
     const outerSpy = vi.fn()
     const innerSpy = vi.fn()
-    let setStore: ReturnType<typeof useStore>[1]
+    let setStore: SetStoreFunction<{ value: number }>
     let disposer: () => void
     createRoot((dispose) => {
       const [state, setState] = useStore({ value: 1 })

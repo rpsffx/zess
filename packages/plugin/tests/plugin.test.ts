@@ -3,7 +3,7 @@ import { resolve } from 'node:path'
 import { createServer, type ViteDevServer } from 'vite'
 import { describe, expect, it } from 'vitest'
 import zess from '../src/plugin'
-import type { compile } from '@zess/compiler'
+import type { RawSourceMap } from '@zess/compiler'
 
 function createTestServer(): Promise<ViteDevServer> {
   return createServer({
@@ -28,7 +28,7 @@ describe('zess', () => {
   it('should generate correct sourcemap', async () => {
     const server = await createTestServer()
     const result = await server.transformRequest('./main.tsx')
-    const sourcemap = result!.map as ReturnType<typeof compile>['map']
+    const sourcemap = result!.map as RawSourceMap
     expect(sourcemap.sources).toContain('main.tsx')
     expect(sourcemap.sourcesContent!.join('')).toContain('useSignal')
   })

@@ -16,6 +16,7 @@ import {
   useRenderEffect,
   useSignal,
   type Getter,
+  type Owner,
 } from '../src/signal'
 
 describe('reactivity system', () => {
@@ -194,7 +195,7 @@ describe('reactivity system', () => {
   })
   describe('context management', () => {
     it('createRoot - should handle owner inheritance', () => {
-      let innerOwner: ReturnType<typeof getOwner>
+      let innerOwner: Owner | undefined
       const outerOwner = createRoot(() => {
         const owner = getOwner()
         createRoot((dispose) => {
@@ -206,7 +207,7 @@ describe('reactivity system', () => {
       expect(innerOwner!.owner).toBe(outerOwner)
     })
     it('runWithOwner - should use specified owner', () => {
-      let captured: ReturnType<typeof getOwner>
+      let captured: Owner | undefined
       const owner = createRoot(() => getOwner())
       runWithOwner(owner!, () => {
         captured = getOwner()
@@ -214,7 +215,7 @@ describe('reactivity system', () => {
       expect(captured).toBe(owner)
     })
     it('should maintain deep owner relationships', () => {
-      const owners: ReturnType<typeof getOwner>[] = []
+      const owners: (Owner | undefined)[] = []
       createRoot(() => {
         const outerOwner = getOwner()
         owners.push(outerOwner)

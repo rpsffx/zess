@@ -7,6 +7,8 @@ import {
   useRenderEffect,
   useStore,
   type Component,
+  type Owner,
+  type SetStoreFunction,
 } from '@zess/core'
 
 type RouterProps = {
@@ -26,7 +28,7 @@ type LinkProps = NavigateOptions & {
   className?: JSX.ClassList | string | null
   children?: JSX.Element
 }
-type RouteOwner = ReturnType<typeof getOwner> & {
+type RouteOwner = Owner & {
   routeContext?: RouteContext
   routerContext?: RouterContext
 }
@@ -53,7 +55,7 @@ type RouteEventListener = (path: string) => void
 type RouteComponent = Component<{ children?: JSX.Element }>
 type SearchParams = Record<string, string | string[]>
 
-let searchParamsStore: ReturnType<typeof useStore<SearchParams>>
+let searchParamsStore: [SearchParams, SetStoreFunction<SearchParams>]
 const hashchangeListeners = new Set<RouteEventListener>()
 const popstateListeners = new Set<RouteEventListener>()
 
