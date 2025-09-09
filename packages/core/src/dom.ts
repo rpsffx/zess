@@ -14,6 +14,7 @@ const SVG = 1
 const MATH_ML = 2
 const XLINK = 3
 const XML = 4
+const SEPARATOR_REGEX = /\s+/
 const PLACEHOLDER = Symbol('placeholder')
 const NAMESPACE_URI = {
   [SVG]: 'http://www.w3.org/2000/svg',
@@ -112,7 +113,7 @@ export function setClassName(
     for (let i = 0; i < prevKeys.length; ++i) {
       const key = prevKeys[i]
       if (!value[key]) {
-        el.classList.remove(key)
+        el.classList.remove(...key.trim().split(SEPARATOR_REGEX))
         delete prevValue[key]
       }
     }
@@ -122,7 +123,7 @@ export function setClassName(
   for (let i = 0; i < keys.length; ++i) {
     const key = keys[i]
     if (value[key] && !(prevValue as JSX.ClassList)[key]) {
-      el.classList.add(key)
+      el.classList.add(...key.trim().split(SEPARATOR_REGEX))
       ;(prevValue as JSX.ClassList)[key] = true
     }
   }
