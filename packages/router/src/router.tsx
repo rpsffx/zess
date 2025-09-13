@@ -25,7 +25,7 @@ type RouteProps = {
 type LinkProps = NavigateOptions & {
   to: string
   style?: JSX.CSSProperties | string | null
-  className?: JSX.ClassList | string | null
+  class?: JSX.ClassList | string | null
   children?: JSX.Element
 }
 type RouteOwner = Owner & {
@@ -47,7 +47,7 @@ type RouterContext = {
   mode: RouteMode
 }
 type NavigateOptions = {
-  exact?: boolean
+  relative?: boolean
   replace?: boolean
 }
 type RouteMode = 'hash' | 'history'
@@ -105,12 +105,7 @@ export function Route(props: RouteProps): JSX.Element {
       )
     },
     get resolvedPath() {
-      return getFullPath(
-        props.path,
-        routeContext?.resolvedPath,
-        false,
-        !props.sensitive,
-      )
+      return getFullPath(props.path, routeContext?.resolvedPath)
     },
   })
   const childRoutes = useMemo(() => {
@@ -121,6 +116,7 @@ export function Route(props: RouteProps): JSX.Element {
   const routeNodes = useMemo(() => getRouteNodes(childRoutes()))
   useRenderEffect(() => {
     const isWildcard = props.path === '*'
+    const patternPath = context.patternPath
     const currentPath = routerContext.path
     for (const routeNode of routeNodes()) {
       if (routeNode.isMatched) {
@@ -128,7 +124,7 @@ export function Route(props: RouteProps): JSX.Element {
       }
     }
     setContext({
-      isMatched: isWildcard || matchPath(context.patternPath, currentPath),
+      isMatched: isWildcard || RegExp(`^${patternPath}$`).test(currentPath),
       match: null,
     })
   })
@@ -159,7 +155,7 @@ export function Link(props: LinkProps): JSX.Element {
   const isHashMode = isHashRouterMode()
   const routeContext = getRouteContext()
   const to = useMemo(() =>
-    getParsedPath(props.to, isHashMode, props.exact, routeContext),
+    getParsedPath(props.to, routeContext, isHashMode, props.relative),
   )
   const handleNavigate = (event: MouseEvent) => {
     event.preventDefault()
@@ -170,7 +166,7 @@ export function Link(props: LinkProps): JSX.Element {
       href={to()}
       onClick={handleNavigate}
       style={props.style}
-      class={props.className}
+      class={props.class}
     >
       {props.children}
     </a>
@@ -185,7 +181,7 @@ export function useNavigate(): (
   const routeContext = getRouteContext()
   return (href, options) => {
     navigate(
-      getParsedPath(href, isHashMode, options?.exact, routeContext),
+      getParsedPath(href, routeContext, isHashMode, options?.relative),
       isHashMode,
       options?.replace,
     )
@@ -257,26 +253,22 @@ function addRouteEvent(
 function getFullPath(
   path: string,
   basePath?: string,
-  normalizeWildcards?: boolean,
+  toRegexPattern?: boolean,
   ignoreCase?: boolean,
 ): string {
-  path = formatPath(path, true, normalizeWildcards, ignoreCase)
+  path = formatPath(path, toRegexPattern, ignoreCase, true)
   return basePath ? joinPaths(basePath, path) : path
-}
-
-function matchPath(path: string, url: string): boolean {
-  return RegExp(`^${path}$`).test(url)
 }
 
 function getParsedPath(
   path: string,
-  isHashMode: boolean,
-  exact?: boolean,
   routeContext?: RouteContext,
+  isHashMode?: boolean,
+  relative = true,
 ): string {
   let parsedPath = formatPath(path)
   const altPath = getCurrentPath(!isHashMode)
-  if (!exact && routeContext) {
+  if (routeContext && relative) {
     parsedPath = joinPaths(routeContext.resolvedPath, parsedPath)
   }
   if (isHashMode) {
@@ -407,28 +399,33 @@ function joinPaths(basePath: string, path: string): string {
 
 function formatPath(
   path: string,
-  stripSearch?: boolean,
-  normalizeWildcards?: boolean,
+  toRegexPattern?: boolean,
   ignoreCase?: boolean,
+  stripSearch?: boolean,
 ): string {
   let formattedPath = ''
   let hasSlash = false
   let hasWildcard = false
+  if (toRegexPattern) {
+    stripSearch = true
+  } else {
+    ignoreCase = false
+  }
   for (let i = 0; i < path.length; ++i) {
     const char = path[i]
     if (char === '/') {
       hasSlash = true
       continue
     }
-    if (normalizeWildcards) {
-      if (char === '*') {
+    if (char === '*') {
+      if (toRegexPattern) {
         hasWildcard = hasSlash = true
-        continue
       }
-      if (hasWildcard) {
-        hasWildcard = false
-        formattedPath += '/?.*'
-      }
+      continue
+    }
+    if (hasWildcard) {
+      hasWildcard = false
+      formattedPath += '/?.*'
     }
     if (char === '?') {
       if (!stripSearch) {
