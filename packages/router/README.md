@@ -73,10 +73,10 @@ import { Link } from '@zess/router'
 function Navigation() {
   return (
     <nav>
-      <Link to="/" className="nav-link">
+      <Link to="/" class="nav-link">
         Home
       </Link>
-      <Link to="/about" className="nav-link">
+      <Link to="/about" class="nav-link">
         About
       </Link>
     </nav>
@@ -112,7 +112,7 @@ import { Router, Route } from '@zess/router'
 
 function AppLayout(props) {
   return (
-    <div className="app">
+    <div class="app">
       <header>Zess Application</header>
       <main>{props.children}</main>
     </div>
@@ -121,9 +121,9 @@ function AppLayout(props) {
 
 function UserLayout(props) {
   return (
-    <div className="user-section">
-      <nav className="user-nav">User Navigation</nav>
-      <div className="user-content">{props.children}</div>
+    <div class="user-section">
+      <nav class="user-nav">User Navigation</nav>
+      <div class="user-content">{props.children}</div>
     </div>
   )
 }
@@ -269,10 +269,10 @@ Creates a navigable link to another route.
 **Parameters:**
 
 - `to`: The destination path, can include query strings
-- `exact`: Optional flag to navigate to the exact path without relative base
+- `relative`: Optional flag to navigate to the relative path. Defaults to `true`
 - `replace`: Optional flag to replace the current history entry instead of pushing a new one
 - `style`: Optional CSS styles
-- `className`: Optional CSS class name
+- `class`: Optional CSS class name
 - `children`: Optional content for the link
 
 **Example:**
@@ -281,8 +281,8 @@ Creates a navigable link to another route.
 // Basic link
 <Link to="/home">Home</Link>
 
-// Link with exact path
-<Link to="/about" exact>About (Exact)</Link>
+// Link with absolute path
+<Link to="/about" relative={false}>About (Exact)</Link>
 
 // Link with replace
 <Link to="/login" replace>Login</Link>
@@ -291,7 +291,7 @@ Creates a navigable link to another route.
 <Link to="/contact" style={{ color: 'blue' }}>Contact</Link>
 
 // Link with className
-<Link to="/profile" className="user-link">Profile</Link>
+<Link to="/profile" class="user-link">Profile</Link>
 
 // Link with query parameters
 <Link to="/products?category=electronics&sort=price">Products (Electronics)</Link>
@@ -307,8 +307,8 @@ Hook that returns a function to programmatically navigate between routes.
 
 - `href`: The destination path, can include query strings
 - `options`: Optional configuration
-  - `exact`: If true, navigates to the exact path without relative base
-  - `replace`: If true, replaces the current history entry
+  - `relative`: If `false`, navigates to the absolute path without relative base. Defaults to `true`
+  - `replace`: If `true`, replaces the current history entry
 
 **Example:**
 
@@ -319,7 +319,7 @@ function NavigationComponent() {
   return (
     <>
       <button onClick={() => navigate('/')}>Home</button>
-      <button onClick={() => navigate('/products', { exact: true })}>
+      <button onClick={() => navigate('/products', { relative: false })}>
         Products
       </button>
       <button onClick={() => navigate('/login', { replace: true })}>
