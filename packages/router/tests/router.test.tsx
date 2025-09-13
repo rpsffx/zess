@@ -71,7 +71,7 @@ describe('Router', () => {
       expect(location.pathname).toBe('/test')
       expect(container.textContent).toBe('Test')
     })
-    it('should navigate to exact path without basePath when using exact prop', () => {
+    it('should navigate to absolute path without basePath when using relative prop', () => {
       dispose = render(
         () => (
           <Router
@@ -87,7 +87,7 @@ describe('Router', () => {
               component={() => (
                 <>
                   Home
-                  <Link to="/about" exact />
+                  <Link to="/about" relative={false} />
                 </>
               )}
             />
@@ -143,13 +143,13 @@ describe('Router', () => {
         (container.firstElementChild as HTMLAnchorElement).style.color,
       ).toBe('red')
     })
-    it('should apply className to link when using className prop', () => {
+    it('should apply className to link when using class prop', () => {
       dispose = render(
         () => (
           <Router
             root={(props) => (
               <>
-                <Link to="/test" className="custom-class" />
+                <Link to="/test" class="custom-class" />
                 {props.children}
               </>
             )}
@@ -396,7 +396,7 @@ describe('Router', () => {
       expect(location.hash).toBe('#/test')
       expect(container.textContent).toBe('Test')
     })
-    it('should navigate to exact path when exact option is true', () => {
+    it('should navigate to absolute path when relative option is false', () => {
       let navigate: ReturnType<typeof useNavigate>
       dispose = render(
         () => (
@@ -428,7 +428,7 @@ describe('Router', () => {
       ;(container.firstElementChild as HTMLAnchorElement).click()
       expect(location.hash).toBe('#/parent/child')
       expect(container.textContent).toBe('ParentChild')
-      navigate!('/sibling', { exact: true })
+      navigate!('/sibling', { relative: false })
       expect(location.hash).toBe('#/sibling')
       expect(container.textContent).toBe('Sibling')
     })
