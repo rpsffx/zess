@@ -71,7 +71,7 @@ describe('Router', () => {
       expect(location.pathname).toBe('/test')
       expect(container.textContent).toBe('Test')
     })
-    it('should navigate to absolute path without basePath when using relative prop', () => {
+    it('should navigate to absolute path without basePath when relative prop is true', () => {
       dispose = render(
         () => (
           <Router
@@ -162,6 +162,58 @@ describe('Router', () => {
           'custom-class',
         ),
       ).toBe(true)
+    })
+    it('should apply activeClass when link is active', () => {
+      dispose = render(
+        () => (
+          <Router
+            mode="hash"
+            root={(props) => (
+              <>
+                <Link to="/test" activeClass="active-link" />
+                {props.children}
+              </>
+            )}
+          >
+            <Route path="/test" component={() => <div>Test</div>} />
+          </Router>
+        ),
+        container,
+      )
+      const link = container.firstElementChild as HTMLAnchorElement
+      expect(link.classList.contains('active-link')).toBe(false)
+      link.click()
+      expect(link.classList.contains('active-link')).toBe(true)
+    })
+    it('should apply activeClass only on exact path match when end prop is true', () => {
+      dispose = render(
+        () => (
+          <Router
+            mode="hash"
+            root={(props) => (
+              <>
+                <Link to="/parent" activeClass="active" />
+                <Link to="/parent" end activeClass="active-end" />
+                <Link to="/parent/child" activeClass="active-child" />
+                {props.children}
+              </>
+            )}
+          >
+            <Route path="/parent" component={() => <div>Parent</div>} />
+            <Route path="/parent/child" component={() => <div>Child</div>} />
+          </Router>
+        ),
+        container,
+      )
+      const { children } = container
+      ;(children[0] as HTMLAnchorElement).click()
+      expect(children[0].classList.contains('active')).toBe(true)
+      expect(children[1].classList.contains('active-end')).toBe(true)
+      expect(children[2].classList.contains('active-child')).toBe(false)
+      ;(children[2] as HTMLAnchorElement).click()
+      expect(children[0].classList.contains('active')).toBe(true)
+      expect(children[1].classList.contains('active-end')).toBe(false)
+      expect(children[2].classList.contains('active-child')).toBe(true)
     })
   })
   describe('Route Component', () => {
