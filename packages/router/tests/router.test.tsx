@@ -71,7 +71,7 @@ describe('Router', () => {
       expect(location.pathname).toBe('/test')
       expect(container.textContent).toBe('Test')
     })
-    it('should navigate to absolute path without basePath when relative prop is true', () => {
+    it('should navigate to absolute path without basePath when relative prop is false', () => {
       dispose = render(
         () => (
           <Router
@@ -124,6 +124,32 @@ describe('Router', () => {
       history.back()
       await waitFor('hashchange')
       expect(container.textContent).toBe('')
+    })
+    it('should not scroll to top when using noScroll prop', () => {
+      container.style.height = '2000px'
+      container.style.overflow = 'auto'
+      dispose = render(
+        () => (
+          <Router
+            root={(props) => (
+              <>
+                <Link to="/test" noScroll />
+                {props.children}
+              </>
+            )}
+          >
+            <Route path="/test" component={() => <div>Test</div>} />
+          </Router>
+        ),
+        container,
+      )
+      expect(window.scrollY).toBe(0)
+      window.scrollTo(0, 1000)
+      expect(window.scrollY).toBe(1000)
+      ;(container.firstElementChild as HTMLAnchorElement).click()
+      expect(window.scrollY).toBe(1000)
+      expect(container.textContent).toBe('Test')
+      container.style.height = container.style.overflow = ''
     })
     it('should apply style to link when using style prop', () => {
       dispose = render(
@@ -510,6 +536,34 @@ describe('Router', () => {
       await waitFor('hashchange')
       expect(location.hash).toBe('#/')
       expect(container.textContent).toBe('')
+    })
+    it('should not scroll to top when noScroll option is true', () => {
+      let navigate: ReturnType<typeof useNavigate>
+      container.style.height = '2000px'
+      container.style.overflow = 'auto'
+      dispose = render(
+        () => (
+          <Router
+            root={(props) => {
+              navigate = useNavigate()
+              return props.children
+            }}
+          >
+            <Route path="/page1" component={() => <div>Page 1</div>} />
+            <Route path="/page2" component={() => <div>Page 2</div>} />
+          </Router>
+        ),
+        container,
+      )
+      window.scrollTo(0, 1000)
+      navigate!('/page1')
+      expect(container.textContent).toBe('Page 1')
+      expect(window.scrollY).toBe(0)
+      window.scrollTo(0, 1000)
+      navigate!('/page2', { noScroll: true })
+      expect(container.textContent).toBe('Page 2')
+      expect(window.scrollY).toBe(1000)
+      container.style.height = container.style.overflow = ''
     })
   })
   describe('useSearchParams hook', () => {
