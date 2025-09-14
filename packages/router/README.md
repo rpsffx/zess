@@ -273,6 +273,8 @@ Creates a navigable link to another route.
 - `replace`: Optional flag to replace the current history entry instead of pushing a new one
 - `style`: Optional CSS styles
 - `class`: Optional CSS class name
+- `activeClass`: Optional CSS class name to apply when the link is active
+- `end`: Optional flag to match the path exactly. When set to `true`, the link will only be active if the current path matches exactly
 - `children`: Optional content for the link
 
 **Example:**
@@ -292,6 +294,12 @@ Creates a navigable link to another route.
 
 // Link with className
 <Link to="/profile" class="user-link">Profile</Link>
+
+// Link with activeClass
+<Link to="/dashboard" activeClass="active-nav">Dashboard</Link>
+
+// Link with end prop
+<Link to="/settings" end>Settings (Exact Match)</Link>
 
 // Link with query parameters
 <Link to="/products?category=electronics&sort=price">Products (Electronics)</Link>
