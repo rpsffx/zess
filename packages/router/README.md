@@ -271,6 +271,7 @@ Creates a navigable link to another route.
 - `to`: The destination path, can include query strings
 - `relative`: Optional flag to navigate to the relative path. Defaults to `true`
 - `replace`: Optional flag to replace the current history entry instead of pushing a new one
+- `noScroll`: Optional flag to prevent scrolling to top when navigating
 - `style`: Optional CSS styles
 - `class`: Optional CSS class name
 - `activeClass`: Optional CSS class name to apply when the link is active
@@ -288,6 +289,9 @@ Creates a navigable link to another route.
 
 // Link with replace
 <Link to="/login" replace>Login</Link>
+
+// Link with noScroll
+<Link to="/details" noScroll>View Details (No Scroll)</Link>
 
 // Link with styles
 <Link to="/contact" style={{ color: 'blue' }}>Contact</Link>
@@ -317,6 +321,7 @@ Hook that returns a function to programmatically navigate between routes.
 - `options`: Optional configuration
   - `relative`: If `false`, navigates to the absolute path without relative base. Defaults to `true`
   - `replace`: If `true`, replaces the current history entry
+  - `noScroll`: If `true`, prevents scrolling to top when navigating
 
 **Example:**
 
@@ -332,6 +337,9 @@ function NavigationComponent() {
       </button>
       <button onClick={() => navigate('/login', { replace: true })}>
         Login
+      </button>
+      <button onClick={() => navigate('/details', { noScroll: true })}>
+        View Details (No Scroll)
       </button>
       <button onClick={() => navigate('/search?q=react&page=1')}>
         Search React (Page 1)
