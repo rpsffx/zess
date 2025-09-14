@@ -24,8 +24,10 @@ type RouteProps = {
 }
 type LinkProps = NavigateOptions & {
   to: string
+  end?: boolean
   style?: JSX.CSSProperties | string | null
   class?: JSX.ClassList | string | null
+  activeClass?: string | null
   children?: JSX.Element
 }
 type RouteOwner = Owner & {
@@ -124,7 +126,7 @@ export function Route(props: RouteProps): JSX.Element {
       }
     }
     setContext({
-      isMatched: isWildcard || RegExp(`^${patternPath}$`).test(currentPath),
+      isMatched: isWildcard || matchPath(patternPath, currentPath, true),
       match: null,
     })
   })
@@ -152,11 +154,26 @@ export function Route(props: RouteProps): JSX.Element {
 }
 
 export function Link(props: LinkProps): JSX.Element {
-  const isHashMode = isHashRouterMode()
   const routeContext = getRouteContext()
+  const routerContext = getRouterContext()
+  const isHashMode = !routerContext || routerContext.mode === 'hash'
   const to = useMemo(() =>
     getParsedPath(props.to, routeContext, isHashMode, props.relative),
   )
+  const isActive = useMemo(() => {
+    if (!routerContext) return false
+    return matchPath(getFullPath(to()), routerContext.path, props.end, true)
+  })
+  const classList = useMemo(() => {
+    const isActiveLink = isActive()
+    const baseClass = props.class
+    const activeClass = props.activeClass
+    if (!activeClass) return baseClass
+    if (typeof baseClass === 'string') {
+      return isActiveLink ? `${baseClass} ${activeClass}` : baseClass
+    }
+    return { ...baseClass, [activeClass]: isActiveLink }
+  })
   const handleNavigate = (event: MouseEvent) => {
     event.preventDefault()
     navigate(to(), isHashMode, props.replace)
@@ -166,7 +183,7 @@ export function Link(props: LinkProps): JSX.Element {
       href={to()}
       onClick={handleNavigate}
       style={props.style}
-      class={props.class}
+      class={classList()}
     >
       {props.children}
     </a>
@@ -177,8 +194,9 @@ export function useNavigate(): (
   href: string,
   options?: NavigateOptions,
 ) => void {
-  const isHashMode = isHashRouterMode()
   const routeContext = getRouteContext()
+  const routerContext = getRouterContext()
+  const isHashMode = !routerContext || routerContext.mode === 'hash'
   return (href, options) => {
     navigate(
       getParsedPath(href, routeContext, isHashMode, options?.relative),
@@ -217,11 +235,6 @@ function getContext<T extends 'routeContext' | 'routerContext'>(
   }
 }
 
-function isHashRouterMode(): boolean {
-  const routerContext = getRouterContext()
-  return !routerContext || routerContext.mode === 'hash'
-}
-
 function navigate(href: string, isHashMode: boolean, replace?: boolean): void {
   history[replace ? 'replaceState' : 'pushState'](null, '', href)
   handleRouteEvent(isHashMode)
@@ -258,6 +271,15 @@ function getFullPath(
 ): string {
   path = formatPath(path, toRegexPattern, ignoreCase, true)
   return basePath ? joinPaths(basePath, path) : path
+}
+
+function matchPath(
+  path: string,
+  href: string,
+  end?: boolean,
+  ignoreCase?: boolean,
+): boolean {
+  return RegExp(`^${path}${end ? '$' : ''}`, ignoreCase ? 'i' : '').test(href)
 }
 
 function getParsedPath(
@@ -413,6 +435,7 @@ function formatPath(
   }
   for (let i = 0; i < path.length; ++i) {
     const char = path[i]
+    if (char === '#') continue
     if (char === '/') {
       hasSlash = true
       continue
