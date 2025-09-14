@@ -51,6 +51,7 @@ type RouterContext = {
 type NavigateOptions = {
   relative?: boolean
   replace?: boolean
+  noScroll?: boolean
 }
 type RouteMode = 'hash' | 'history'
 type RouteEventListener = (path: string) => void
@@ -176,7 +177,7 @@ export function Link(props: LinkProps): JSX.Element {
   })
   const handleNavigate = (event: MouseEvent) => {
     event.preventDefault()
-    navigate(to(), isHashMode, props.replace)
+    navigate(to(), isHashMode, props.replace, props.noScroll)
   }
   return (
     <a
@@ -202,6 +203,7 @@ export function useNavigate(): (
       getParsedPath(href, routeContext, isHashMode, options?.relative),
       isHashMode,
       options?.replace,
+      options?.noScroll,
     )
   }
 }
@@ -235,9 +237,15 @@ function getContext<T extends 'routeContext' | 'routerContext'>(
   }
 }
 
-function navigate(href: string, isHashMode: boolean, replace?: boolean): void {
+function navigate(
+  href: string,
+  isHashMode: boolean,
+  replace?: boolean,
+  noScroll?: boolean,
+): void {
   history[replace ? 'replaceState' : 'pushState'](null, '', href)
   handleRouteEvent(isHashMode)
+  if (!noScroll) window.scrollTo(0, 0)
 }
 
 function getCurrentPath(isHashMode: boolean): string {
