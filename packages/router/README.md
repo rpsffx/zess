@@ -1,6 +1,6 @@
 <div align="center">
   <picture>
-    <img src="https://pic1.imgdb.cn/item/68b4736558cb8da5c867a867.png" alt="Zess Logo" width="300" style="height: auto;">
+    <img src="https://pic1.imgdb.cn/item/68c79152c5157e1a8803d096.svg" alt="Zess Logo" width="300" style="height: auto;">
   </picture>
 </div>
 
