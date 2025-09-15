@@ -1,6 +1,6 @@
 {
   "name": "zess",
-  "version": "0.10.0",
+  "version": "1.0.0",
   "private": true,
   "packageManager": "pnpm@10.16.1",
   "description": "Zess ⚡ A JavaScript library that uses a compiler to build user interfaces, fast and efficient.",
