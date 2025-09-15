@@ -1,7 +1,7 @@
 {
   "name": "@zess/cli",
-  "version": "0.10.0",
-  "packageManager": "pnpm@10.15.0",
+  "version": "1.0.0",
+  "packageManager": "pnpm@10.16.1",
   "description": "Zess CLI tool 🔨 For easily creating Vite-powered Zess project.",
   "type": "module",
   "keywords": [
@@ -23,8 +23,14 @@
   "files": [
     "index.ts"
   ],
+  "bin": {
+    "create-zess": "index.ts"
+  },
   "publishConfig": {
     "access": "public"
+  },
+  "devDependencies": {
+    "tsx": "^4.20.5"
   },
   "engines": {
     "node": ">=18.12.0"

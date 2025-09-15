@@ -1,0 +1,31 @@
+{
+  "name": "zess-app",
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "vitest",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --cache --write ."
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.1.13",
+    "@zess/core": "workspace:*",
+    "@zess/router": "workspace:*",
+    "tailwindcss": "^4.1.13"
+  },
+  "devDependencies": {
+    "@sxzz/eslint-config": "^7.1.4",
+    "@sxzz/prettier-config": "^2.2.4",
+    "@zess/vite-plugin": "workspace:*",
+    "eslint": "^9.35.0",
+    "jsdom": "^27.0.0",
+    "prettier": "^3.6.2",
+    "typescript": "^5.9.2",
+    "vite": "^6.3.6",
+    "vitest": "^3.2.4"
+  }
+}
