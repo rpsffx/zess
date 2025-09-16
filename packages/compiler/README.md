@@ -10,10 +10,10 @@
 
 Zess JSX compiler 💥 Delivers efficient code conversion for super - responsive web experiences.
 
-## Features
+## ✨ Features
 
-- **Efficient Compilation**: Transforms JSX syntax into optimized JavaScript code
-- **Complete JSX Support**:
+- **⚡ Efficient Compilation**: Transforms JSX syntax into optimized JavaScript code
+- **🧩 Complete JSX Support**:
   - HTML elements and text content
   - SVG and MathML namespaces
   - Custom components and component nesting
@@ -26,12 +26,12 @@ Zess JSX compiler 💥 Delivers efficient code conversion for super - responsive
   - Dynamic class and style attributes
   - Ref handling
   - Support for special characters in attribute names
-- **High Performance**: Uses [Meriyah](https://github.com/meriyah/meriyah) for parsing, ensuring extremely fast processing
-- **Smart Code Optimization**: Static content optimization and runtime function importing on demand
-- **Source Map Support**: For easy debugging of compiled code
-- **Type Safety**: Complete TypeScript type definitions
+- **⚡ High Performance**: Uses [Meriyah](https://github.com/meriyah/meriyah) for parsing, ensuring extremely fast processing
+- **💡 Smart Code Optimization**: Static content optimization and runtime function importing on demand
+- **🗺️ Source Map Support**: For easy debugging of compiled code
+- **🔒 Type Safety**: Complete TypeScript type definitions
 
-## Installation
+## 📦 Installation
 
 ```bash
 # Using npm
@@ -44,7 +44,7 @@ yarn add @zess/compiler
 pnpm add @zess/compiler
 ```
 
-## Basic Usage
+## 🚀 Basic Usage
 
 ```javascript
 import { compile } from '@zess/compiler'
@@ -56,7 +56,7 @@ console.log(result.code) // Compiled JavaScript code
 console.log(result.map) // Generated source map
 ```
 
-## Advanced Usage
+## 🔧 Advanced Usage
 
 ### Custom Runtime Import Path
 
@@ -84,7 +84,7 @@ const result = compile('<div>With Source Maps</div>', {
 const sourceMapString = JSON.stringify(result.map)
 ```
 
-## API Reference
+## 📚 API Reference
 
 ### `compile(code: string, options?: CompilerOptions): CompilerResult`
 
@@ -104,7 +104,7 @@ An object with the following properties:
 - `code` (string): The compiled JavaScript code
 - `map` (RawSourceMap): The generated source map
 
-## Feature Examples
+## 💡 Feature Examples
 
 ### 1. Basic HTML Elements
 
@@ -421,13 +421,13 @@ const withRefs = [
 ]
 ```
 
-## Compatibility
+## 🔄 Compatibility
 
 The Zess JSX compiler is compatible with:
 
 - Node.js >=18.12.0
 - Modern browsers (Chrome, Firefox, Safari, Edge)
 
-## License
+## 📝 License
 
 [MIT](https://github.com/rpsffx/zess/blob/main/LICENSE)

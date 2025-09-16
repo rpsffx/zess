@@ -10,18 +10,18 @@
 
 Zess core module ⚙️ Provides powerful runtime functionality for high - performance web applications.
 
-## Features
+## ✨ Features
 
-- **Efficient Reactivity**: Optimized signals implementation with automatic dependency tracking
-- **Component Rendering**: Lightweight component system with JSX support
-- **Performance Optimization**: Memoization, batching updates, and fine-grained reactivity
-- **Lifecycle Management**: Complete lifecycle hooks for component initialization and cleanup
-- **Reactive Utilities**: Helpers for working with arrays, objects, and reactive values
-- **Store API**: Reactive state management for complex data structures with nested object support
-- **Error Boundaries**: Graceful error handling in component trees
-- **Type Safety**: Complete TypeScript type definitions
+- **⚡ Efficient Reactivity**: Optimized signals implementation with automatic dependency tracking
+- **🧩 Component Rendering**: Lightweight component system with JSX support
+- **💡 Performance Optimization**: Memoization, batching updates, and fine-grained reactivity
+- **🔄 Lifecycle Management**: Complete lifecycle hooks for component initialization and cleanup
+- **🛠️ Reactive Utilities**: Helpers for working with arrays, objects, and reactive values
+- **🗄️ Store API**: Reactive state management for complex data structures with nested object support
+- **🛡️ Error Boundaries**: Graceful error handling in component trees
+- **🔒 Type Safety**: Complete TypeScript type definitions
 
-## Installation
+## 📦 Installation
 
 ```bash
 # Using npm
@@ -34,7 +34,7 @@ yarn add @zess/core
 pnpm add @zess/core
 ```
 
-## Basic Usage
+## 🚀 Basic Usage
 
 ### Creating a Reactive Signal
 
@@ -92,7 +92,7 @@ function FormattedCounter() {
 }
 ```
 
-## Advanced Usage
+## 🔧 Advanced Usage
 
 ### Using Conditional Rendering
 
@@ -172,7 +172,7 @@ function UserProfile() {
 }
 ```
 
-## API Reference
+## 📚 API Reference
 
 ### Basic Reactivity
 
@@ -932,13 +932,13 @@ setUser((current) => ({
 console.log(user.address.city) // 'New York'
 ```
 
-## Compatibility
+## 🔄 Compatibility
 
 The Zess core runtime is compatible with:
 
 - Node.js >=18.12.0
 - Modern browsers (Chrome, Firefox, Safari, Edge)
 
-## License
+## 📝 License
 
 [MIT](https://github.com/rpsffx/zess/blob/main/LICENSE)

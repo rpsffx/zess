@@ -10,18 +10,18 @@
 
 Zess router 📍 Client-side navigation, dynamic & nested routing for web apps.
 
-## Features
+## ✨ Features
 
-- **Simple and Lightweight**: Easy-to-use API with minimal configuration required
-- **Performance Optimized**: Caches each route component for excellent rendering performance
-- **Multiple Modes**: Supports both hash mode and history mode for different deployment environments
-- **Nested Routes**: Create complex route hierarchies with nested components
-- **Dynamic Navigation**: Programmatically navigate between routes using hooks
-- **Search Params Handling**: Built-in support for managing query parameters
-- **Type Safety**: Complete TypeScript type definitions
-- **Seamless Integration**: Works perfectly with @zess/core reactive system
+- **🎯 Simple and Lightweight**: Easy-to-use API with minimal configuration required
+- **⚡ Performance Optimized**: Caches each route component for excellent rendering performance
+- **🔄 Multiple Modes**: Supports both hash mode and history mode for different deployment environments
+- **🧩 Nested Routes**: Create complex route hierarchies with nested components
+- **🚀 Dynamic Navigation**: Programmatically navigate between routes using hooks
+- **🔍 Search Params Handling**: Built-in support for managing query parameters
+- **🔒 Type Safety**: Complete TypeScript type definitions
+- **🔄 Seamless Integration**: Works perfectly with @zess/core reactive system
 
-## Installation
+## 📦 Installation
 
 ```bash
 # Using npm
@@ -34,7 +34,7 @@ yarn add @zess/router
 pnpm add @zess/router
 ```
 
-## Basic Usage
+## 🚀 Basic Usage
 
 ### Setting Up the Router
 
@@ -103,7 +103,7 @@ function NavigationButtons() {
 }
 ```
 
-## Advanced Usage
+## 🔧 Advanced Usage
 
 ### Nested Routes
 
@@ -209,7 +209,7 @@ render(
 )
 ```
 
-## API Reference
+## 📚 API Reference
 
 ### Components
 
@@ -390,13 +390,13 @@ function SearchPage() {
 }
 ```
 
-## Compatibility
+## 🔄 Compatibility
 
 The Zess router is compatible with:
 
 - Node.js >=18.12.0
 - Modern browsers (Chrome, Firefox, Safari, Edge)
 
-## License
+## 📝 License
 
 [MIT](https://github.com/rpsffx/zess/blob/main/LICENSE)

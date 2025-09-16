@@ -10,15 +10,15 @@
 
 Vite plugin for Zess 🧩 JSX file parser and transformer for building modern web applications.
 
-## Features
+## ✨ Features
 
-- **Efficient JSX Compilation**: Automatically transforms JSX syntax into optimized JavaScript code
-- **Zero-Configuration**: Ready to use out of the box with no complex setup
-- **Smart Dependency Optimization**: Automatically prebuilds core dependencies for improved performance
-- **Full TypeScript Support**: Includes type definitions for type safety
-- **Seamless Integration with Vite Ecosystem**: Works alongside other Vite plugins
+- **⚡ Efficient JSX Compilation**: Automatically transforms JSX syntax into optimized JavaScript code
+- **🎯 Zero-Configuration**: Ready to use out of the box with no complex setup
+- **💡 Smart Dependency Optimization**: Automatically prebuilds core dependencies for improved performance
+- **🔒 Full TypeScript Support**: Includes type definitions for type safety
+- **🔄 Seamless Integration with Vite Ecosystem**: Works alongside other Vite plugins
 
-## Installation
+## 📦 Installation
 
 ```bash
 # Using npm
@@ -31,7 +31,7 @@ yarn add -D @zess/plugin
 pnpm add -D @zess/plugin
 ```
 
-## Basic Usage
+## 🚀 Basic Usage
 
 Add the Zess plugin to your Vite configuration file:
 
@@ -61,7 +61,7 @@ function Counter() {
 }
 ```
 
-## Configuration Options
+## ⚙️ Configuration Options
 
 The Zess plugin supports the following configuration options:
 
@@ -89,7 +89,7 @@ export default defineConfig({
 - `exclude`: File patterns to exclude, defaults to `['{build,dist,public}/**']`
 - `modulePath`: Import path for runtime functions, defaults to `'@zess/core'`
 
-## Compatibility
+## 🔄 Compatibility
 
 The Zess plugin is compatible with:
 
@@ -97,6 +97,6 @@ The Zess plugin is compatible with:
 - Node.js >=18.12.0
 - Modern browsers (Chrome, Firefox, Safari, Edge)
 
-## License
+## 📝 License
 
 [MIT](https://github.com/rpsffx/zess/blob/main/LICENSE)
