@@ -1,11 +1,11 @@
 import { render, type Component } from '@zess/core'
 import { Link, Route, Router } from '@zess/router'
+import viteLogo from './assets/vite.svg'
 import ConditionalPage from './pages/ConditionalPage'
 import CounterPage from './pages/CounterPage'
 import HomePage from './pages/HomePage'
 import ListPage from './pages/ListPage'
-import viteLogo from './vite.svg'
-import './style.css'
+import './assets/style.css'
 import zessLogo from '/zess.svg'
 
 const AppLayout: Component<{ children?: JSX.Element }> = (props) => (
