@@ -34,6 +34,7 @@ const CounterPage: Component = () => {
         </p>
       </div>
       <div>
+        {/* Link back to home page */}
         <Link
           to="/"
           relative={false}

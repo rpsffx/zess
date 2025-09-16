@@ -43,6 +43,8 @@ const ConditionalPage: Component = () => {
       <div class="mb-8 space-y-4 max-w-md mx-auto">
         <div class="p-4 border border-gray-200 rounded bg-white">
           <h3 class="text-lg font-semibold mb-2">Using Show Component</h3>
+          {/* Show component renders content conditionally based on the 'when' prop */}
+          {/* Falls back to the fallback content when condition is false */}
           <Show
             when={count() > 5}
             fallback={
@@ -58,6 +60,8 @@ const ConditionalPage: Component = () => {
           <h3 class="text-lg font-semibold mb-2">
             Using {'<Switch>'} and {'<Match>'}
           </h3>
+          {/* Switch component acts like a switch statement for rendering */}
+          {/* Only the first matching Match component within Switch is rendered */}
           <Switch>
             <Match when={status() === 'success'}>
               <p class="text-green-600 font-medium">Status: Success</p>
@@ -72,6 +76,7 @@ const ConditionalPage: Component = () => {
         </div>
       </div>
       <div>
+        {/* Link back to home page */}
         <Link
           to="/"
           relative={false}

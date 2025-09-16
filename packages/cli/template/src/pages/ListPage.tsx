@@ -46,11 +46,13 @@ const ListPage: Component = () => {
         </div>
       </div>
       <div class="mb-8">
+        {/* Conditionally render the list or an empty state message */}
         <Show
           when={items().length > 0}
           fallback={<p class="text-gray-500 py-4">No items in the list yet.</p>}
         >
           <ul class="space-y-2 max-w-md mx-auto">
+            {/* Zess For component for efficiently rendering lists */}
             <For each={items()}>
               {(item, index) => (
                 <li class="flex items-center p-2 border-b border-gray-200 bg-white">
@@ -65,6 +67,7 @@ const ListPage: Component = () => {
         </Show>
       </div>
       <div>
+        {/* Link back to home page */}
         <Link
           to="/"
           relative={false}
