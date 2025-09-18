@@ -1,7 +1,7 @@
 {
   "name": "@zess/router",
   "version": "1.0.0",
-  "packageManager": "pnpm@10.16.1",
+  "packageManager": "pnpm@10.17.0",
   "description": "Zess router 📍 Client-side navigation, dynamic & nested routing for web apps",
   "type": "module",
   "keywords": [
@@ -28,8 +28,7 @@
   "exports": {
     "types": "./dist/router.d.ts",
     "zess": "./dist/router.jsx",
-    "import": "./dist/router.js",
-    "default": "./dist/router.js"
+    "import": "./dist/router.js"
   },
   "publishConfig": {
     "access": "public"

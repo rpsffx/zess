@@ -1,7 +1,7 @@
 {
   "name": "@zess/compiler",
   "version": "1.0.0",
-  "packageManager": "pnpm@10.16.1",
+  "packageManager": "pnpm@10.17.0",
   "description": "Zess JSX compiler 💥 Delivers efficient code conversion for super - responsive web experiences.",
   "type": "module",
   "keywords": [
@@ -30,8 +30,7 @@
   "exports": {
     "types": "./dist/compiler.d.ts",
     "require": "./dist/compiler.cjs",
-    "import": "./dist/compiler.js",
-    "default": "./dist/compiler.js"
+    "import": "./dist/compiler.js"
   },
   "publishConfig": {
     "access": "public"
