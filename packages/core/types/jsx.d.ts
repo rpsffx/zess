@@ -2152,3 +2152,5 @@ declare global {
         SVGElementTags {}
   }
 }
+
+export { JSX }

@@ -1,7 +1,7 @@
 {
   "name": "@zess/core",
   "version": "1.0.0",
-  "packageManager": "pnpm@10.16.1",
+  "packageManager": "pnpm@10.17.0",
   "description": "Zess core module ⚙️ Provides powerful runtime functionality for high - performance web applications.",
   "type": "module",
   "keywords": [
@@ -31,10 +31,13 @@
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
-    "types": "./dist/index.d.ts",
-    "require": "./dist/index.cjs",
-    "import": "./dist/index.js",
-    "default": "./dist/index.js"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.cjs",
+      "import": "./dist/index.js"
+    },
+    "./jsx-runtime": "./types/jsx.d.ts",
+    "./jsx-dev-runtime": "./types/jsx.d.ts"
   },
   "publishConfig": {
     "access": "public"
