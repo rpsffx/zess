@@ -2,7 +2,7 @@ import { sxzz, type Config } from '@sxzz/eslint-config'
 import { globalIgnores } from 'eslint/config'
 
 export default sxzz([
-  globalIgnores(['**/README.md']) as Config,
+  globalIgnores(['**/README.md', '**/template']) as Config,
   {
     rules: {
       eqeqeq: 'off',
