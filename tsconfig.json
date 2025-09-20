@@ -24,10 +24,5 @@
     "verbatimModuleSyntax": true,
     "skipLibCheck": true
   },
-  "include": [
-    "vitest.config.ts",
-    "packages/*/src",
-    "packages/*/tests",
-    "packages/*/types"
-  ]
+  "include": ["packages/*/src", "packages/*/tests", "packages/*/types"]
 }
