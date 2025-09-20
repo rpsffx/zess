@@ -5,7 +5,7 @@ export type SetStoreFunction<T> = (
   state: DeepPartial<T> | ((prevState: T) => DeepPartial<T>),
 ) => void
 type DeepPartial<T> = {
-  [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P]
+  [P in keyof T]?: T[P] extends ObjectLike ? DeepPartial<T[P]> : T[P]
 }
 type ObjectLike = Record<PropertyKey, any> | any[]
 
