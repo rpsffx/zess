@@ -24,7 +24,7 @@ const AppLayout = (props) => (
         {/* Counter page link */}
         <Link
           end
-          to="/counter"
+          to="counter"
           class="text-gray-700 hover:text-indigo-600 transition-all duration-200"
           activeClass="text-indigo-600 font-semibold"
         >
@@ -33,7 +33,7 @@ const AppLayout = (props) => (
         {/* List page link */}
         <Link
           end
-          to="/list"
+          to="list"
           class="text-gray-700 hover:text-indigo-600 transition-all duration-200"
           activeClass="text-indigo-600 font-semibold"
         >
@@ -42,7 +42,7 @@ const AppLayout = (props) => (
         {/* Conditional page link */}
         <Link
           end
-          to="/conditional"
+          to="conditional"
           class="text-gray-700 hover:text-indigo-600 transition-all duration-200"
           activeClass="text-indigo-600 font-semibold"
         >
@@ -68,7 +68,7 @@ const AppLayout = (props) => (
 )
 
 const ZessApp = () => (
-  <Router root={AppLayout}>
+  <Router root={AppLayout} mode="history">
     {/* Route for Home page */}
     <Route path="/" component={HomePage} />
     {/* Route for Counter page */}

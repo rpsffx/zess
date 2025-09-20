@@ -8,7 +8,7 @@ const HomePage: Component = () => (
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {/* Counter example card - links to counter page */}
         <Link
-          to="/counter"
+          to="counter"
           class="block p-4 border border-gray-200 rounded hover:border-indigo-500 transition-all bg-white"
         >
           <h3 class="text-lg font-medium mb-2">Counter Example</h3>
@@ -18,7 +18,7 @@ const HomePage: Component = () => (
         </Link>
         {/* List example card - links to list page */}
         <Link
-          to="/list"
+          to="list"
           class="block p-4 border border-gray-200 rounded hover:border-purple-500 transition-all bg-white"
         >
           <h3 class="text-lg font-medium mb-2">List Example</h3>
@@ -28,7 +28,7 @@ const HomePage: Component = () => (
         </Link>
         {/* Conditional rendering example card - links to conditional page */}
         <Link
-          to="/conditional"
+          to="conditional"
           class="block p-4 border border-gray-200 rounded hover:border-pink-500 transition-all bg-white"
         >
           <h3 class="text-lg font-medium mb-2">Conditional Rendering</h3>

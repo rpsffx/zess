@@ -2,12 +2,13 @@
   "compilerOptions": {
     "target": "ESNext",
     "jsx": "preserve",
-    "lib": ["ESNext", "DOM"],
+    "jsxImportSource": "@zess/core",
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
     "moduleDetection": "force",
     "module": "preserve",
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
-    "types": ["node", "vite/client", "vitest/jsdom"],
+    "types": ["vite/client", "vitest/jsdom"],
     "strict": true,
     "noUnusedLocals": true,
     "declaration": true,
@@ -17,5 +18,5 @@
     "verbatimModuleSyntax": true,
     "skipLibCheck": true
   },
-  "include": ["typescript/src", "test"]
+  "include": ["src", "tests"]
 }

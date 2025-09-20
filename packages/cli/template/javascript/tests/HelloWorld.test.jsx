@@ -1,4 +1,3 @@
-/* eslint-disable unused-imports/no-unused-vars */
 import { render } from '@zess/core'
 import { describe, expect, it } from 'vitest'
 
