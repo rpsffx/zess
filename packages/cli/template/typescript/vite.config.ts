@@ -4,7 +4,7 @@ import zess from '@zess/vite-plugin'
 import { defineConfig } from 'vite'
 
 export default defineConfig({
-  plugins: [zess(), tailwindcss()],
+  plugins: [tailwindcss(), zess()],
   test: {
     environment: 'jsdom',
     include: ['./tests/*.test.{ts,tsx}'],
