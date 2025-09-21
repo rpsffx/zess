@@ -177,7 +177,7 @@ function showInstructions(title: string, ...instructions: string[]): void {
 function init(): void {
   program
     .version(version)
-    .description(description)
+    .description(description.replace('\u{1F528}', '\u25C6'))
     .argument('<directory>', 'directory to create the project in')
     .action(async (directory: string) => {
       showWelcomeMessage()
