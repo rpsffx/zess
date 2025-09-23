@@ -9,12 +9,12 @@ import { fileURLToPath } from 'node:url'
 import { promisify } from 'node:util'
 import {
   cancel,
-  confirm,
   intro,
   isCancel,
   log,
   note,
   outro,
+  select,
   spinner,
   text,
 } from '@clack/prompts'
@@ -41,7 +41,7 @@ async function promptUser(): Promise<{
   useTypeScript: boolean
 }> {
   const projectName = await text({
-    message: 'What is your project name?',
+    message: 'Project name:',
     placeholder: name,
     defaultValue: name,
     validate(value) {
@@ -54,8 +54,12 @@ async function promptUser(): Promise<{
     cancel('Operation cancelled')
     return process.exit(0)
   }
-  const useTypeScript = await confirm({
-    message: 'Would you like to use TypeScript?',
+  const useTypeScript = await select({
+    message: 'Project language:',
+    options: [
+      { value: true, label: 'TypeScript' },
+      { value: false, label: 'JavaScript' },
+    ],
   })
   if (isCancel(useTypeScript)) {
     cancel('Operation cancelled')
