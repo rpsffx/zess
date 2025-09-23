@@ -310,39 +310,17 @@ function getParsedPath(
 }
 
 function getSearchParams(): SearchParams {
-  let { search } = location
-  if (!search) return {}
-  let key = ''
-  let value = ''
   const searchParams: SearchParams = {}
-  search = decodeURIComponent(search)
-  for (let i = 1; i < search.length; ++i) {
-    const char = search[i]
-    if (char === '=') {
-      key = value
-      value = ''
-      continue
-    }
-    if (char === '&') {
-      appendSearchParam(searchParams, key, value)
-      key = value = ''
-      continue
-    }
-    value += char
-  }
-  if (key || value) {
-    if (!key) {
-      key = value
-      value = ''
-    }
-    appendSearchParam(searchParams, key, value)
-  }
+  forEachSearchParam((key, value) =>
+    appendSearchParam(searchParams, key, value),
+  )
   return searchParams
 }
 
 function setSearchParams(params: Record<string, any>, replace?: boolean): void {
-  let search = ''
   const keys = Object.keys(params)
+  if (!keys.length) return
+  let search = ''
   const searchParams: SearchParams = {}
   for (let i = 0; i < keys.length; ++i) {
     const key = keys[i]
@@ -363,10 +341,46 @@ function setSearchParams(params: Record<string, any>, replace?: boolean): void {
       search += `${search ? '&' : ''}${key}=${value}`
     }
   }
+  forEachSearchParam((key, value) => {
+    if (!(key in searchParams)) {
+      let param = key
+      if (value) param += `=${value}`
+      search += `${search ? '&' : ''}${param}`
+    }
+  })
   if (search) search = `?${search}`
   const href = `${location.pathname}${search}${location.hash}`
   history[replace ? 'replaceState' : 'pushState'](null, '', href)
-  handleSearchParamsChange(searchParams)
+  searchParamsStore?.[1](searchParams)
+}
+
+function forEachSearchParam(fn: (key: string, value: string) => void): void {
+  let { search } = location
+  if (search.length <= 1) return
+  let key = ''
+  let value = ''
+  search = decodeURIComponent(search)
+  for (let i = 1; i < search.length; ++i) {
+    const char = search[i]
+    if (char === '=') {
+      key = value
+      value = ''
+      continue
+    }
+    if (char === '&') {
+      fn(key, value)
+      key = value = ''
+      continue
+    }
+    value += char
+  }
+  if (key || value) {
+    if (!key) {
+      key = value
+      value = ''
+    }
+    fn(key, value)
+  }
 }
 
 function appendSearchParam(
@@ -392,17 +406,11 @@ function handleRouteEvent(isHashMode: boolean): void {
   const currentPath = getCurrentPath(isHashMode)
   const listeners = getRouteEventListeners(isHashMode)
   for (const listener of listeners) listener(currentPath)
-  handleSearchParamsChange(getSearchParams())
-}
-
-function handleSearchParamsChange(searchParams: SearchParams): void {
   searchParamsStore?.[1]((prevSearchParams) => {
+    const searchParams = getSearchParams()
     const keys = Object.keys(prevSearchParams)
     for (let i = 0; i < keys.length; ++i) {
-      const key = keys[i]
-      if (!(key in searchParams)) {
-        searchParams[key] = undefined!
-      }
+      searchParams[keys[i]] ??= undefined!
     }
     return searchParams
   })
