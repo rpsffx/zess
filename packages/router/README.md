@@ -144,7 +144,6 @@ render(
   () => (
     <Router root={AppLayout}>
       <Route path="/" component={HomePage} />
-
       {/* Nested routes */}
       <Route path="/users" component={UserLayout}>
         <Route path="/" component={UserList} />
@@ -163,12 +162,10 @@ import { useSearchParams } from '@zess/router'
 
 function SearchComponent() {
   const [searchParams, setSearchParams] = useSearchParams()
-
   const handleSearch = (event) => {
     event.preventDefault()
     const formData = new FormData(event.target)
     const query = formData.get('query')
-
     setSearchParams({ query })
   }
 
@@ -178,7 +175,6 @@ function SearchComponent() {
         <input type="text" name="query" defaultValue={searchParams.query} />
         <button type="submit">Search</button>
       </form>
-
       {searchParams.query && <p>Searching for: {searchParams.query}</p>}
     </div>
   )
@@ -357,7 +353,7 @@ Hook that provides access to search parameters and a function to update them.
 
 - `searchParams`: A reactive object with current search parameters that auto-updates when `location.search` changes or when modified via `setSearchParams`
 - `setSearchParams`: A function to update search parameters
-  - `params`: New search parameters object. Setting a property value to `undefined` removes that property
+  - `params`: Search parameters to merge with existing ones. Setting a property value to `undefined`, `null` or an empty string removes that property
   - `replace`: Optional flag to replace the current history entry
 
 **Example:**
@@ -365,16 +361,11 @@ Hook that provides access to search parameters and a function to update them.
 ```jsx
 function SearchPage() {
   const [searchParams, setSearchParams] = useSearchParams()
-
   const handleFilterChange = (category) => {
-    setSearchParams({
-      ...searchParams,
-      category,
-    })
+    setSearchParams({ category })
   }
-
   const resetFilters = () => {
-    setSearchParams({})
+    setSearchParams({ category: undefined })
   }
 
   return (
