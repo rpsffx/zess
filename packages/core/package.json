@@ -39,6 +39,8 @@
     "./jsx-runtime": "./types/jsx.d.ts",
     "./jsx-dev-runtime": "./types/jsx.d.ts"
   },
+  "unpkg": "./dist/index.js",
+  "jsdelivr": "./dist/index.js",
   "publishConfig": {
     "access": "public"
   },

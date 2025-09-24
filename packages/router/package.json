@@ -30,6 +30,8 @@
     "zess": "./dist/router.jsx",
     "import": "./dist/router.js"
   },
+  "unpkg": "./dist/router.js",
+  "jsdelivr": "./dist/router.js",
   "publishConfig": {
     "access": "public"
   },
