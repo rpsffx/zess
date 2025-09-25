@@ -4,6 +4,7 @@ import {
   Link,
   Route,
   Router,
+  useBeforeLeave,
   useNavigate,
   useSearchParams,
 } from '../src/router'
@@ -613,6 +614,241 @@ describe('Router', () => {
       expect(effectSpy).toHaveBeenCalledWith('Tina', undefined)
       navigate('?name=Tina&gender=female')
       expect(searchParams.gender).toBe('female')
+    })
+  })
+  describe('useBeforeLeave hook', () => {
+    it('should prevent navigation when before leave listener calls preventDefault', () => {
+      let preventNavigation = false
+      let navigate: ReturnType<typeof useNavigate>
+      dispose = render(
+        () => (
+          <Router
+            root={(props) => {
+              navigate = useNavigate()
+              return props.children
+            }}
+          >
+            <Route
+              path="/home"
+              component={() => {
+                useBeforeLeave((event) => {
+                  if (preventNavigation) {
+                    event.preventDefault()
+                  }
+                })
+                return <div>Home Page</div>
+              }}
+            />
+            <Route path="/about" component={() => <div>About Page</div>} />
+          </Router>
+        ),
+        container,
+      )
+      navigate!('/home')
+      expect(container.textContent).toBe('Home Page')
+      preventNavigation = true
+      navigate!('/about')
+      expect(container.textContent).toBe('Home Page')
+      expect(location.hash).toBe('#/home')
+      preventNavigation = false
+      navigate!('/about')
+      expect(container.textContent).toBe('About Page')
+      expect(location.hash).toBe('#/about')
+    })
+    it('should allow retry navigation with force parameter', () => {
+      let navigate: ReturnType<typeof useNavigate>
+      let blockCount = 0
+      dispose = render(
+        () => (
+          <Router
+            root={(props) => {
+              navigate = useNavigate()
+              return props.children
+            }}
+          >
+            <Route
+              path="/page1"
+              component={() => {
+                useBeforeLeave((event) => {
+                  if (blockCount++ < 2) {
+                    event.preventDefault()
+                    event.retry(blockCount === 2)
+                  }
+                })
+                return <div>Page 1</div>
+              }}
+            />
+            <Route path="/page2" component={() => <div>Page 2</div>} />
+          </Router>
+        ),
+        container,
+      )
+      navigate!('/page1')
+      expect(container.textContent).toBe('Page 1')
+      navigate!('/page2')
+      expect(container.textContent).toBe('Page 2')
+      expect(location.hash).toBe('#/page2')
+      expect(blockCount).toBe(2)
+    })
+    it('should only trigger guards for matching routes', () => {
+      const guardSpy1 = vi.fn()
+      const guardSpy2 = vi.fn()
+      let navigate: ReturnType<typeof useNavigate>
+      dispose = render(
+        () => (
+          <Router
+            root={(props) => {
+              navigate = useNavigate()
+              return props.children
+            }}
+          >
+            <Route
+              path="/parent"
+              component={(props) => {
+                useBeforeLeave(guardSpy1)
+                return <div>Parent{props.children}</div>
+              }}
+            >
+              <Route
+                path="/child"
+                component={() => {
+                  useBeforeLeave(guardSpy2)
+                  return <div>Child</div>
+                }}
+              />
+            </Route>
+            <Route path="/other" component={() => <div>Other</div>} />
+          </Router>
+        ),
+        container,
+      )
+      navigate!('/parent/child')
+      expect(container.textContent).toBe('ParentChild')
+      navigate!('/other')
+      expect(guardSpy1).toHaveBeenCalledTimes(1)
+      expect(guardSpy2).toHaveBeenCalledTimes(1)
+      guardSpy1.mockClear()
+      guardSpy2.mockClear()
+      navigate!('/parent/child')
+      navigate!('/parent/other-child')
+      expect(guardSpy1).toHaveBeenCalledTimes(0)
+      expect(guardSpy2).toHaveBeenCalledTimes(1)
+    })
+    it('should pass correct event data to before leave listener', () => {
+      let capturedEvent
+      let navigate: ReturnType<typeof useNavigate>
+      dispose = render(
+        () => (
+          <Router
+            root={(props) => {
+              navigate = useNavigate()
+              return props.children
+            }}
+          >
+            <Route
+              path="/source"
+              component={() => {
+                useBeforeLeave((event) => {
+                  capturedEvent = {
+                    to: event.to,
+                    from: event.from,
+                    options: event.options,
+                    defaultPrevented: event.defaultPrevented,
+                  }
+                  event.preventDefault()
+                })
+                return <div>Source Page</div>
+              }}
+            />
+            <Route path="/target" component={() => <div>Target Page</div>} />
+          </Router>
+        ),
+        container,
+      )
+      navigate!('/source')
+      expect(container.textContent).toBe('Source Page')
+      navigate!('/target', { replace: true, noScroll: true })
+      expect(capturedEvent).toEqual({
+        to: '/target',
+        from: '/source',
+        options: { replace: true, noScroll: true },
+        defaultPrevented: false,
+      })
+      expect(container.textContent).toBe('Source Page')
+      expect(capturedEvent!.defaultPrevented).toBe(false)
+    })
+    it('should handle multiple before leave listeners', () => {
+      const listener1 = vi.fn()
+      const listener2 = vi.fn()
+      let navigate: ReturnType<typeof useNavigate>
+      dispose = render(
+        () => (
+          <Router
+            root={(props) => {
+              navigate = useNavigate()
+              return props.children
+            }}
+          >
+            <Route
+              path="/multi"
+              component={() => {
+                useBeforeLeave(listener1)
+                useBeforeLeave(listener2)
+                return <div>Multi Guard Page</div>
+              }}
+            />
+            <Route path="/next" component={() => <div>Next Page</div>} />
+          </Router>
+        ),
+        container,
+      )
+      navigate!('/multi')
+      expect(container.textContent).toBe('Multi Guard Page')
+      navigate!('/next')
+      expect(listener1).toHaveBeenCalledTimes(1)
+      expect(listener2).toHaveBeenCalledTimes(1)
+      const event1 = listener1.mock.calls[0][0]
+      const event2 = listener2.mock.calls[0][0]
+      expect(event1.to).toBe('/next')
+      expect(event2.to).toBe('/next')
+      expect(event1.from).toBe('/multi')
+      expect(event2.from).toBe('/multi')
+    })
+    it('should cleanup before leave listeners when component unmounts', () => {
+      const guardSpy = vi.fn()
+      let navigate: ReturnType<typeof useNavigate>
+      dispose = render(
+        () => (
+          <Router
+            root={(props) => {
+              navigate = useNavigate()
+              return props.children
+            }}
+          >
+            <Route
+              path="/guard"
+              component={() => {
+                useBeforeLeave(guardSpy)
+                return <div>Guarded Page</div>
+              }}
+            />
+            <Route path="/second" component={() => <div>Second Page</div>} />
+            <Route path="/third" component={() => <div>Third Page</div>} />
+          </Router>
+        ),
+        container,
+      )
+      navigate!('/guard')
+      expect(container.textContent).toContain('Guarded Page')
+      navigate!('/second')
+      expect(guardSpy).toHaveBeenCalledTimes(1)
+      expect(container.textContent).toContain('Second Page')
+      navigate!('/third')
+      expect(guardSpy).toHaveBeenCalledTimes(1)
+      expect(container.textContent).toContain('Third Page')
+      navigate!('/guard')
+      navigate!('/second')
+      expect(guardSpy).toHaveBeenCalledTimes(2)
     })
   })
 })
