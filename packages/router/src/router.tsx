@@ -48,6 +48,18 @@ type RouterContext = {
   path: string
   mode: RouteMode
 }
+type RouteGuard = {
+  listener: RouteGuardListener
+  routeContext: RouteContext
+}
+type RouteGuardEvent = {
+  to: string
+  from: string
+  options: NavigateOptions
+  defaultPrevented: boolean
+  preventDefault: () => void
+  retry: (force?: boolean) => void
+}
 type NavigateOptions = {
   relative?: boolean
   replace?: boolean
@@ -55,12 +67,15 @@ type NavigateOptions = {
 }
 type RouteMode = 'hash' | 'history'
 type RouteEventListener = (path: string) => void
+type RouteGuardListener = (event: RouteGuardEvent) => void
 type RouteComponent = Component<{ children?: JSX.Element }>
 type SearchParams = Record<string, string | string[]>
 
 let searchParamsStore: [SearchParams, SetStoreFunction<SearchParams>]
 const hashchangeListeners = new Set<RouteEventListener>()
 const popstateListeners = new Set<RouteEventListener>()
+const hashRouteGuards = new Set<RouteGuard>()
+const historyRouteGuards = new Set<RouteGuard>()
 
 export function Router(props: RouterProps): JSX.Element {
   if (getRouterContext()) return
@@ -177,7 +192,14 @@ export function Link(props: LinkProps): JSX.Element {
   })
   const handleNavigate = (event: MouseEvent) => {
     event.preventDefault()
-    navigate(to(), isHashMode, props.replace, props.noScroll)
+    navigate(
+      to(),
+      isHashMode,
+      props.relative,
+      props.replace,
+      props.noScroll,
+      routerContext?.path,
+    )
   }
   return (
     <a
@@ -202,8 +224,10 @@ export function useNavigate(): (
     navigate(
       getParsedPath(href, routeContext, isHashMode, options?.relative),
       isHashMode,
+      options?.relative,
       options?.replace,
       options?.noScroll,
+      routerContext?.path,
     )
   }
 }
@@ -211,6 +235,15 @@ export function useNavigate(): (
 export function useSearchParams(): [SearchParams, typeof setSearchParams] {
   searchParamsStore ??= useStore(getSearchParams())
   return [searchParamsStore[0], setSearchParams]
+}
+
+export function useBeforeLeave(listener: RouteGuardListener): void {
+  const routeContext = getRouteContext()
+  if (!routeContext) return
+  const routeGuards = getRouteGuards(getRouterContext()!.mode === 'hash')
+  const routeGuard: RouteGuard = { listener, routeContext }
+  routeGuards.add(routeGuard)
+  onCleanup(() => routeGuards.delete(routeGuard))
 }
 
 function getRouterContext(): RouterContext | undefined {
@@ -240,9 +273,45 @@ function getContext<T extends 'routeContext' | 'routerContext'>(
 function navigate(
   href: string,
   isHashMode: boolean,
+  relative?: boolean,
   replace?: boolean,
   noScroll?: boolean,
+  from = '/',
+  skipGuards?: boolean,
 ): void {
+  const routeGuards = getRouteGuards(isHashMode)
+  if (routeGuards.size && !skipGuards) {
+    let defaultPrevented = false
+    const options = { relative, replace, noScroll }
+    const event: RouteGuardEvent = {
+      to: getFullPath(href),
+      from,
+      options,
+      get defaultPrevented() {
+        return defaultPrevented
+      },
+      preventDefault() {
+        defaultPrevented = true
+      },
+      retry(force) {
+        navigate(
+          href,
+          isHashMode,
+          options.relative,
+          options.replace,
+          options.noScroll,
+          from,
+          force,
+        )
+      },
+    }
+    for (const { routeContext, listener } of routeGuards) {
+      if (!matchPath(routeContext.patternPath, event.to)) {
+        listener(event)
+      }
+    }
+    if (defaultPrevented) return
+  }
   history[replace ? 'replaceState' : 'pushState'](null, '', href)
   handleRouteEvent(isHashMode)
   if (!noScroll) window.scrollTo(0, 0)
@@ -418,6 +487,10 @@ function handleRouteEvent(isHashMode: boolean): void {
 
 function getRouteEventListeners(isHashMode: boolean): Set<RouteEventListener> {
   return isHashMode ? hashchangeListeners : popstateListeners
+}
+
+function getRouteGuards(isHashMode: boolean): Set<RouteGuard> {
+  return isHashMode ? hashRouteGuards : historyRouteGuards
 }
 
 function getRouteNodes(childRoute: JSX.Element): RouteNode[] {
