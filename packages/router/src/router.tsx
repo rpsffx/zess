@@ -281,17 +281,14 @@ function navigate(
 ): void {
   const routeGuards = getRouteGuards(isHashMode)
   if (routeGuards.size && !skipGuards) {
-    let defaultPrevented = false
     const options = { relative, replace, noScroll }
     const event: RouteGuardEvent = {
       to: getFullPath(href),
       from,
       options,
-      get defaultPrevented() {
-        return defaultPrevented
-      },
+      defaultPrevented: false,
       preventDefault() {
-        defaultPrevented = true
+        event.defaultPrevented = true
       },
       retry(force) {
         navigate(
@@ -310,7 +307,7 @@ function navigate(
         listener(event)
       }
     }
-    if (defaultPrevented) return
+    if (event.defaultPrevented) return
   }
   history[replace ? 'replaceState' : 'pushState'](null, '', href)
   handleRouteEvent(isHashMode)
