@@ -381,6 +381,46 @@ function SearchPage() {
 }
 ```
 
+#### `useBeforeLeave(listener: RouteGuardListener): void`
+
+Hook that registers a listener to be called before leaving the current route. This allows you to intercept navigation attempts and potentially prevent them, for example, to warn users about unsaved changes.
+
+**Parameters:**
+
+- `listener`: A function that will be called with a `RouteGuardEvent` object when navigation away from the current route is attempted
+  - `event`: The route guard event object containing:
+    - `to`: The destination path being navigated to
+    - `from`: The current path being navigated from
+    - `options`: Navigation options including `relative`, `replace`, and `noScroll`
+    - `defaultPrevented`: Boolean indicating if the navigation has been prevented
+    - `preventDefault`: Function to call to prevent the navigation
+    - `retry`: Function to retry the navigation later, with an optional `force` parameter to bypass guards
+
+**Example:**
+
+```jsx
+function FormEditor() {
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useSignal(false)
+  useBeforeLeave((event) => {
+    if (hasUnsavedChanges()) {
+      const confirmed = window.confirm(
+        'You have unsaved changes. Are you sure you want to leave?',
+      )
+      if (!confirmed) {
+        event.preventDefault()
+      }
+    }
+  })
+
+  return (
+    <div>
+      <input type="text" onChange={() => setHasUnsavedChanges(true)} />
+      <button onClick={() => setHasUnsavedChanges(false)}>Save</button>
+    </div>
+  )
+}
+```
+
 ## 🔄 Compatibility
 
 The Zess router is compatible with:
