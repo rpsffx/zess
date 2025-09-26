@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "packageManager": "pnpm@10.17.1",
-  "description": "Zess ⚡ A JavaScript library that uses a compiler to build user interfaces, fast and efficient.",
+  "description": "Zess ⚡ The compiler-driven JavaScript framework. Write less, build faster.",
   "type": "module",
   "license": "MIT",
   "author": "Columsys",
