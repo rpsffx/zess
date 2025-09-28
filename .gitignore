@@ -4,4 +4,3 @@ dist
 *.log
 .eslintcache
 coverage
-doc_build
