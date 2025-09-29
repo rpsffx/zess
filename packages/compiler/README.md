@@ -396,7 +396,7 @@ const withEvents = (() => {
 const withRefs = (
   <>
     <input ref={(el) => (this.inputRef = el)} />
-    <div ref={refObject}>Ref Object</div>
+    <div ref={myDiv}>Ref Element</div>
   </>
 )
 ```
@@ -413,9 +413,9 @@ const withRefs = [
   })(),
   (() => {
     const _el$2 = _$createElement('div')
-    const _ref$ = refObject
-    typeof _ref$ === 'function' ? _$use(_ref$, _el$2) : (refObject = _el$2)
-    _el$2.append('Ref Object')
+    const _ref$ = myDiv
+    typeof _ref$ === 'function' ? _$use(_ref$, _el$2) : (myDiv = _el$2)
+    _el$2.append('Ref Element')
     return _el$2
   })(),
 ]
