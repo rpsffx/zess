@@ -24,5 +24,11 @@
     "verbatimModuleSyntax": true,
     "skipLibCheck": true
   },
-  "include": ["packages/*/src", "packages/*/tests", "packages/*/types"]
+  "include": [
+    "eslint.config.ts",
+    "vitest.config.ts",
+    "packages/*/src",
+    "packages/*/tests",
+    "packages/*/types"
+  ]
 }
