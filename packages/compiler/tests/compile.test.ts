@@ -154,11 +154,11 @@ describe('compile', () => {
     match(result.code, '_$use(el => _self$.ref = el, _el$)')
   })
   it('should handle object ref', () => {
-    const result = compile('<div ref={refObject}></div>')
-    match(result.code, 'const _ref$ = refObject')
+    const result = compile('<div ref={myDiv}></div>')
+    match(result.code, 'const _ref$ = myDiv')
     match(
       result.code,
-      'typeof _ref$ === "function" ? _$use(_ref$, _el$) : refObject = _el$',
+      'typeof _ref$ === "function" ? _$use(_ref$, _el$) : myDiv = _el$',
     )
   })
   it('should handle ref with conditional expression', () => {
