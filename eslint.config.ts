@@ -1,7 +1,7 @@
 import { sxzz, type Config } from '@sxzz/eslint-config'
 import { globalIgnores } from 'eslint/config'
 
-export default sxzz([
+const configs: Config[] = sxzz([
   globalIgnores(['**/*.{md,mdx}', '**/template']) as Config,
   {
     rules: {
@@ -17,3 +17,5 @@ export default sxzz([
     },
   },
 ])
+
+export default configs
