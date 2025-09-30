@@ -216,7 +216,7 @@ The main router component that wraps all your routes and provides the routing co
 **Parameters:**
 
 - `mode`: Optional routing mode, either `'hash'` or `'history'`. Defaults to `'hash'`
-- `root`: Optional root component that wraps all route children
+- `root`: Optional component that wraps the rendered component for all routes
 - `children`: `<Route>` components to be rendered
 
 **Example:**
@@ -337,8 +337,8 @@ function NavigationComponent() {
       <button onClick={() => navigate('/details', { noScroll: true })}>
         View Details (No Scroll)
       </button>
-      <button onClick={() => navigate('/search?q=react&page=1')}>
-        Search React (Page 1)
+      <button onClick={() => navigate('/search?q=zess&page=1')}>
+        Search Zess (Page 1)
       </button>
     </>
   )

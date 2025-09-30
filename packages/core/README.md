@@ -928,7 +928,7 @@ setUser((current) => ({
   age: current.age + 1,
 }))
 
-// Nested properties are also reactive
+// Nested properties not reactive - access root to trigger updates
 console.log(user.address.city) // 'New York'
 ```
 
