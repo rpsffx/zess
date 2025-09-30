@@ -224,7 +224,7 @@ useEffect((prev) => {
   // The effect will run whenever count() is accessed and changes
   setPrevCount(prev)
   document.title = `Count: ${count()}`
-  return count() // This value will be passed as 'prev' to the next effect run
+  return count() // This value will be passed as prev to the next effect run
 })
 ```
 
