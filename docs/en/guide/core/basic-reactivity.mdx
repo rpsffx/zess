@@ -1,0 +1,96 @@
+# Basic Reactivity
+
+## useSignal
+
+Creates a reactive signal that holds a value and notifies dependents when the value changes.
+
+**Type:**
+
+```ts
+useSignal<T>(value?: T, equals?: Equals<T>): [Getter<T>, Setter<T>]
+```
+
+**Parameters:**
+
+- `value`: The initial value of the signal
+- `equals`: Optional custom equality comparator function to determine when the value has changed. Defaults to strict equality (`===`)
+
+**Returns:** An array containing a getter function and a setter function
+
+- `Getter<T>`: A function that returns the current value of the signal
+- `Setter<T>`: A function that accepts either a new value or a function that takes the previous value and returns a new value
+
+**Example:**
+
+```jsx
+const [count, setCount] = useSignal(0)
+console.log(count()) // 0
+setCount(1) // Updates the signal value with a direct value
+setCount((prev) => prev + 1) // Updates the signal value based on the previous value
+
+// With custom equality comparison
+const [user, setUser] = useSignal(
+  { id: 1, name: 'Alice' },
+  (a, b) => a.id === b.id, // Only consider ID for equality
+)
+```
+
+## useEffect
+
+Runs a function when dependencies change. Effects are batched and run after rendering, making them suitable for side effects that don't need to block the render cycle.
+
+**Type:**
+
+```ts
+useEffect<T>(fn: Callback<T>, value?: T): void
+```
+
+**Parameters:**
+
+- `fn`: A function to run when dependencies change. It receives the previous value returned by the effect and returns a new value to be used in the next run
+- `value`: Optional initial value to pass to the first effect run
+
+**Example:**
+
+```jsx
+const [count, setCount] = useSignal(0)
+const [prevCount, setPrevCount] = useSignal(null)
+
+useEffect((prev) => {
+  // The effect will run whenever count() is accessed and changes
+  setPrevCount(prev)
+  document.title = `Count: ${count()}`
+  return count() // This value will be passed as prev to the next effect run
+})
+```
+
+## useMemo
+
+Memoizes a value based on dependencies, only recalculating when dependencies change. Useful for expensive calculations that depend on reactive values.
+
+**Type:**
+
+```ts
+useMemo<T>(fn: Callback<T>, value?: T, equals?: Equals<T>): Getter<T>
+```
+
+**Parameters:**
+
+- `fn`: A function that computes the memoized value. It receives the previous memoized value as an argument
+- `value`: Optional initial value
+- `equals`: Optional custom equality comparator function to determine when the computed value has changed. Defaults to strict equality (`===`)
+
+**Returns:** A getter function that returns the memoized value
+
+**Example:**
+
+```jsx
+const [name, setName] = useSignal('John')
+const greeting = useMemo(() => {
+  console.log('Computing greeting')
+  return `Hello, ${name()}!`
+})
+
+console.log(greeting()) // 'Hello, John!' and logs 'Computing greeting'
+setName('Jane') // Triggers recalculation and logs 'Computing greeting' again
+```

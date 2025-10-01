@@ -1,0 +1,226 @@
+# Components
+
+## \<For>
+
+Renders a list of items efficiently, with keyed updates based on the identity of the items themselves. This makes it efficient for lists where items are added, removed, or reordered.
+
+**Type:**
+
+```ts
+For<T extends readonly any[], U extends JSX.Element>(props: ForProps<T, U>): JSX.Element
+```
+
+**Parameters:**
+
+- `each`: An array of items to render or a falsy value
+- `children`: A function that returns the component for each item, receiving the item and a reactive index
+- `fallback`: Optional fallback content when the array is empty
+
+**Example:**
+
+```jsx
+function ListComponent() {
+  const [items, setItems] = useSignal([1, 2, 3])
+
+  return (
+    <For each={items()}>
+      {(item, index) => (
+        <div key={item}>
+          Item {index() + 1}: {item}
+        </div>
+      )}
+    </For>
+  )
+}
+```
+
+## \<Index>
+
+Renders a list with index-based tracking for efficient updates. Unlike `<For>`, it tracks items by their position in the array rather than their identity, which can be more efficient for lists that are frequently updated but not reordered.
+
+**Type:**
+
+```ts
+Index<T extends readonly any[], U extends JSX.Element>(props: IndexProps<T, U>): JSX.Element
+```
+
+**Parameters:**
+
+- `each`: An array of items to render or a falsy value
+- `children`: A function that returns the component for each item, receiving a reactive getter for the item and the static index
+- `fallback`: Optional fallback content when the array is empty
+
+**Example:**
+
+```jsx
+function IndexListComponent() {
+  const [items, setItems] = useSignal(['a', 'b', 'c'])
+
+  return (
+    <Index each={items()}>
+      {(item, index) => (
+        <div>
+          {index}: {item()}
+        </div>
+      )}
+    </Index>
+  )
+}
+```
+
+## \<Show>
+
+Conditionally renders content based on a boolean value. Provides efficient updates when the condition changes.
+
+**Type:**
+
+```ts
+Show<T>(props: ShowProps<T>): JSX.Element
+```
+
+**Parameters:**
+
+- `when`: A boolean value determining whether to show the content
+- `children`: The content to show when `when` is true. Can be a JSX element or a function that takes the resolved value of `when`
+- `fallback`: Optional content to show when `when` is false
+- `keyed`: Optional flag to associate the block with the value of `when`, useful when `when` is an object reference
+
+**Example:**
+
+```jsx
+function ConditionalComponent() {
+  const [isVisible, setIsVisible] = useSignal(true)
+  const [user, setUser] = useSignal({ name: 'John' })
+  const [theme, setTheme] = useSignal('light')
+
+  return (
+    <>
+      {/* Basic usage */}
+      <Show when={isVisible()} fallback={<p>Not visible</p>}>
+        <p>Visible content</p>
+      </Show>
+
+      {/* With function children */}
+      <Show when={user()}>
+        {(userData) => <p>Welcome, {userData().name}!</p>}
+      </Show>
+
+      {/* With keyed mode */}
+      <Show when={theme()} keyed>
+        {(currentTheme) => (
+          <div>{currentTheme === 'dark' ? 'Dark Theme' : 'Light Theme'}</div>
+        )}
+      </Show>
+    </>
+  )
+}
+```
+
+## \<Switch>
+
+Renders the first matching case component. Similar to a switch statement, but for JSX content.
+
+**Type:**
+
+```ts
+Switch(props: SwitchProps): JSX.Element
+```
+
+**Parameters:**
+
+- `fallback`: Optional content to show when no cases match
+- `children`: A list of `<Match>` components
+
+**Example:**
+
+```jsx
+function SwitchComponent() {
+  const [value, setValue] = useSignal('b')
+
+  return (
+    <Switch fallback={<p>Value is something else</p>}>
+      <Match when={value() === 'a'}>
+        <p>Value is A</p>
+      </Match>
+      <Match when={value() === 'b'}>
+        <p>Value is B</p>
+      </Match>
+      <Match when={value() === 'c'}>
+        <p>Value is C</p>
+      </Match>
+    </Switch>
+  )
+}
+```
+
+## \<Match>
+
+A component used with `<Switch>` to define conditional cases.
+
+**Type:**
+
+```ts
+Match<T>(props: MatchProps<T>): JSX.Element
+```
+
+**Parameters:**
+
+- `when`: A boolean condition determining if this case should be rendered
+- `keyed`: Optional flag to enable keyed mode
+- `children`: The content to render if the condition is true. Can be a JSX element or a function
+
+**Example:**
+
+```jsx
+function MatchExample(props) {
+  return (
+    <Match when={props.value === 'a'}>
+      <p>Value is A</p>
+    </Match>
+  )
+}
+```
+
+## \<ErrorBoundary>
+
+Catches errors in child components and renders a fallback UI. Prevents errors from propagating up the component tree.
+
+**Type:**
+
+```ts
+ErrorBoundary(props: ErrorBoundaryProps): JSX.Element
+```
+
+**Parameters:**
+
+- `fallback`: A function that returns the fallback UI when an error occurs. It receives the error and a reset function
+- `children`: The child components to wrap
+
+**Example:**
+
+```jsx
+function ErrorProneComponent() {
+  const [triggerError, setTriggerError] = useSignal(false)
+
+  if (triggerError()) {
+    throw new Error('Something went wrong!')
+  }
+
+  return <button onClick={() => setTriggerError(true)}>Trigger Error</button>
+}
+
+function ErrorBoundaryExample() {
+  return (
+    <ErrorBoundary
+      fallback={(error, reset) => (
+        <div>
+          <p>Error: {error.message}</p>
+          <button onClick={reset}>Reset</button>
+        </div>
+      )}
+    >
+      <ErrorProneComponent />
+    </ErrorBoundary>
+  )
+}
+```

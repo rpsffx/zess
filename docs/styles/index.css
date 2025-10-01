@@ -1,0 +1,12 @@
+@import './introduction.css';
+@import './api.css';
+@import './home.css';
+
+:root {
+  --rp-c-brand: #00cccc;
+  --rp-c-brand-dark: #009999;
+  --rp-c-brand-darker: #006666;
+  --rp-c-brand-light: #33dddd;
+  --rp-c-brand-lighter: #66eeee;
+  --rp-c-brand-tint: rgba(0, 204, 204, 0.15);
+}

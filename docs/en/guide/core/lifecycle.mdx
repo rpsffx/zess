@@ -1,0 +1,83 @@
+# Lifecycle
+
+## onMount
+
+Registers a function to run when the component mounts. Useful for setting up subscriptions or initializing non-reactive state.
+
+**Type:**
+
+```ts
+onMount(fn: () => void): void
+```
+
+**Parameters:**
+
+- `fn`: The function to run on mount
+
+**Example:**
+
+```jsx
+onMount(() => {
+  console.log('Component mounted')
+  // Set up subscriptions or perform initializations
+})
+```
+
+## onCleanup
+
+Registers a cleanup function to run when the component unmounts or the effect reruns. Used to clean up resources like event listeners, timers, or subscriptions.
+
+**Type:**
+
+```ts
+onCleanup(fn: () => void): void
+```
+
+**Parameters:**
+
+- `fn`: The cleanup function to run
+
+**Example:**
+
+```jsx
+useEffect(() => {
+  // Get event name from signal using getter function
+  const eventToListen = currentEvent()
+
+  // Define event handler function
+  const handleEvent = (event) => {
+    console.log(`Event triggered: ${eventToListen}`, event)
+  }
+
+  // Add event listener to window object
+  window.addEventListener(eventToListen, handleEvent)
+
+  // Clean up event listener when effect reruns or component unmounts
+  onCleanup(() => {
+    window.removeEventListener(eventToListen, handleEvent)
+  })
+})
+```
+
+## onError
+
+Registers an error handler for the nearest Owner scope. Handles errors that occur during rendering or in effects within the current owner context. If an error is rethrown in the callback, it will propagate to the parent owner's error handler.
+
+**Type:**
+
+```ts
+onError(fn: (error: unknown) => void): void
+```
+
+**Parameters:**
+
+- `fn`: A function to handle errors
+
+**Example:**
+
+```jsx
+onError((error) => {
+  console.error('Caught an error:', error)
+  // Handle error gracefully
+})
+```

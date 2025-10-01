@@ -1,0 +1,321 @@
+---
+pageType: 'custom'
+title: API 概览
+---
+
+import { Overview } from 'rspress/theme'
+
+<Overview
+  groups={[
+    {
+      name: '核心功能',
+      items: [
+        {
+          text: '响应性基础',
+          link: 'zh/guide/core/basic-reactivity',
+          headers: [
+            {
+              id: 'usesignal',
+              text: 'useSignal',
+              depth: 2,
+              charIndex: 9,
+            },
+            {
+              id: 'useeffect',
+              text: 'useEffect',
+              depth: 2,
+              charIndex: 602,
+            },
+            {
+              id: 'usememo',
+              text: 'useMemo',
+              depth: 2,
+              charIndex: 1103,
+            },
+          ],
+        },
+        {
+          text: '生命周期',
+          link: 'zh/guide/core/lifecycle',
+          headers: [
+            {
+              id: 'onmount',
+              text: 'onMount',
+              depth: 2,
+              charIndex: 8,
+            },
+            {
+              id: 'oncleanup',
+              text: 'onCleanup',
+              depth: 2,
+              charIndex: 215,
+            },
+            {
+              id: 'onerror',
+              text: 'onError',
+              depth: 2,
+              charIndex: 758,
+            },
+          ],
+        },
+        {
+          text: '内置组件',
+          link: 'zh/guide/core/components',
+          headers: [
+            {
+              id: 'for',
+              text: '<For>',
+              depth: 2,
+              charIndex: 8,
+            },
+            {
+              id: 'index',
+              text: '<Index>',
+              depth: 2,
+              charIndex: 542,
+            },
+            {
+              id: 'show',
+              text: '<Show>',
+              depth: 2,
+              charIndex: 1114,
+            },
+            {
+              id: 'switch',
+              text: '<Switch>',
+              depth: 2,
+              charIndex: 2070,
+            },
+            {
+              id: 'match',
+              text: '<Match>',
+              depth: 2,
+              charIndex: 2631,
+            },
+            {
+              id: 'errorboundary',
+              text: '<ErrorBoundary>',
+              depth: 2,
+              charIndex: 2985,
+            },
+          ],
+        },
+        {
+          text: '响应性工具类',
+          link: 'zh/guide/core/reactive-utilities',
+          headers: [
+            {
+              id: 'untrack',
+              text: 'untrack',
+              depth: 2,
+              charIndex: 10,
+            },
+            {
+              id: 'batch',
+              text: 'batch',
+              depth: 2,
+              charIndex: 352,
+            },
+            {
+              id: 'on',
+              text: 'on',
+              depth: 2,
+              charIndex: 756,
+            },
+            {
+              id: 'createroot',
+              text: 'createRoot',
+              depth: 2,
+              charIndex: 1404,
+            },
+            {
+              id: 'getowner',
+              text: 'getOwner',
+              depth: 2,
+              charIndex: 1950,
+            },
+            {
+              id: 'runwithowner',
+              text: 'runWithOwner',
+              depth: 2,
+              charIndex: 2169,
+            },
+            {
+              id: 'maparray',
+              text: 'mapArray',
+              depth: 2,
+              charIndex: 2531,
+            },
+            {
+              id: 'indexarray',
+              text: 'indexArray',
+              depth: 2,
+              charIndex: 3115,
+            },
+            {
+              id: 'mergeprops',
+              text: 'mergeProps',
+              depth: 2,
+              charIndex: 3749,
+            },
+            {
+              id: 'splitprops',
+              text: 'splitProps',
+              depth: 2,
+              charIndex: 4375,
+            },
+            {
+              id: 'catcherror',
+              text: 'catchError',
+              depth: 2,
+              charIndex: 4950,
+            },
+          ],
+        },
+        {
+          text: 'Store 工具类',
+          link: 'zh/guide/core/store-utilities',
+          headers: [
+            {
+              id: 'usestore',
+              text: 'useStore',
+              depth: 2,
+              charIndex: 13,
+            },
+          ],
+        },
+        {
+          text: '次要 API',
+          link: 'zh/guide/core/secondary-primitives',
+          headers: [
+            {
+              id: 'usecomputed',
+              text: 'useComputed',
+              depth: 2,
+              charIndex: 10,
+            },
+            {
+              id: 'userendereffect',
+              text: 'useRenderEffect',
+              depth: 2,
+              charIndex: 349,
+            },
+            {
+              id: 'useselector',
+              text: 'useSelector',
+              depth: 2,
+              charIndex: 868,
+            },
+          ],
+        },
+        {
+          text: '渲染',
+          link: 'zh/guide/core/rendering',
+          headers: [
+            {
+              id: 'render',
+              text: 'render',
+              depth: 2,
+              charIndex: 6,
+            },
+          ],
+        },
+        {
+          text: '特殊 JSX 属性',
+          link: 'zh/guide/core/jsx-attributes',
+          headers: [
+            {
+              id: 'class',
+              text: 'class',
+              depth: 2,
+              charIndex: 13,
+            },
+            {
+              id: 'style',
+              text: 'style',
+              depth: 2,
+              charIndex: 462,
+            },
+            {
+              id: 'innerhtml',
+              text: 'innerHTML',
+              depth: 2,
+              charIndex: 960,
+            },
+            {
+              id: 'textcontent',
+              text: 'textContent',
+              depth: 2,
+              charIndex: 1241,
+            },
+            {
+              id: 'on___',
+              text: 'on___',
+              depth: 2,
+              charIndex: 1566,
+            },
+            {
+              id: 'ref',
+              text: 'ref',
+              depth: 2,
+              charIndex: 2091,
+            },
+          ],
+        },
+      ],
+    },
+    {
+      name: '路由系统',
+      items: [
+        {
+          text: '内置组件',
+          link: 'zh/guide/router/components',
+          headers: [
+            {
+              id: 'router',
+              text: '<Router>',
+              depth: 2,
+              charIndex: 8,
+            },
+            {
+              id: 'route',
+              text: '<Route>',
+              depth: 2,
+              charIndex: 392,
+            },
+            {
+              id: 'link',
+              text: '<Link>',
+              depth: 2,
+              charIndex: 990,
+            },
+          ],
+        },
+        {
+          text: '基础 API',
+          link: 'zh/guide/router/primitives',
+          headers: [
+            {
+              id: 'usenavigate',
+              text: 'useNavigate',
+              depth: 2,
+              charIndex: 10,
+            },
+            {
+              id: 'usesearchparams',
+              text: 'useSearchParams',
+              depth: 2,
+              charIndex: 897,
+            },
+            {
+              id: 'usebeforeleave',
+              text: 'useBeforeLeave',
+              depth: 2,
+              charIndex: 1869,
+            },
+          ],
+        },
+      ],
+    },
+  ]}
+/>

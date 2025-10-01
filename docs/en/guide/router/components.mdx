@@ -1,0 +1,115 @@
+# Components
+
+## \<Router>
+
+The main router component that wraps all your routes and provides the routing context.
+
+**Type:**
+
+```ts
+Router(props: RouterProps): JSX.Element
+```
+
+**Parameters:**
+
+- `mode`: Optional routing mode, either `'hash'` or `'history'`. Defaults to `'hash'`
+- `root`: Optional component that wraps the rendered component for all routes
+- `children`: `<Route>` components to be rendered
+
+**Example:**
+
+```jsx
+<Router mode="hash" root={RootLayout}>
+  <Route path="/" component={HomePage} />
+  <Route path="/about" component={AboutPage} />
+</Router>
+```
+
+## \<Route>
+
+Defines a route and its corresponding component.
+
+**Type:**
+
+```ts
+Route(props: RouteProps): JSX.Element
+```
+
+**Parameters:**
+
+- `path`: The path pattern for this route
+- `sensitive`: Optional flag to make the path matching case-sensitive. Defaults to `false`
+- `component`: Optional component to render when the route is matched
+- `children`: Optional nested `<Route>` components
+
+**Example:**
+
+```jsx
+// Basic route
+<Route path="/about" component={AboutPage} />
+
+// Case-sensitive route
+<Route path="/API" sensitive component={ApiPage} />
+
+// Route with nested routes
+<Route path="/dashboard" component={DashboardLayout}>
+  <Route path="/stats" component={StatsPage} />
+  <Route path="/settings" component={SettingsPage} />
+</Route>
+
+// Wildcard route (matches any path)
+<Route path="*" component={NotFoundPage} />
+```
+
+## \<Link>
+
+Creates a navigable link to another route.
+
+**Type:**
+
+```ts
+Link(props: LinkProps): JSX.Element
+```
+
+**Parameters:**
+
+- `to`: The destination path, can include query strings
+- `relative`: Optional flag to navigate to the relative path. Defaults to `true`
+- `replace`: Optional flag to replace the current history entry instead of pushing a new one
+- `noScroll`: Optional flag to prevent scrolling to top when navigating
+- `style`: Optional CSS styles
+- `class`: Optional CSS class name
+- `activeClass`: Optional CSS class name to apply when the link is active
+- `end`: Optional flag to match the path exactly. When set to `true`, the link will only be active if the current path matches exactly
+- `children`: Optional content for the link
+
+**Example:**
+
+```jsx
+// Basic link
+<Link to="/home">Home</Link>
+
+// Link with absolute path
+<Link to="/about" relative={false}>About (Exact)</Link>
+
+// Link with replace
+<Link to="/login" replace>Login</Link>
+
+// Link with noScroll
+<Link to="/details" noScroll>View Details (No Scroll)</Link>
+
+// Link with styles
+<Link to="/contact" style={{ color: 'blue' }}>Contact</Link>
+
+// Link with className
+<Link to="/profile" class="user-link">Profile</Link>
+
+// Link with activeClass
+<Link to="/dashboard" activeClass="active-nav">Dashboard</Link>
+
+// Link with end prop
+<Link to="/settings" end>Settings (Exact Match)</Link>
+
+// Link with query parameters
+<Link to="/products?category=electronics&sort=price">Products (Electronics)</Link>
+```

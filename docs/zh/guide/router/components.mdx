@@ -1,0 +1,115 @@
+# 内置组件
+
+## \<Router>
+
+主路由组件，用于包裹所有路由并提供路由上下文。
+
+**类型：**
+
+```ts
+Router(props: RouterProps): JSX.Element
+```
+
+**参数：**
+
+- `mode`: 可选的路由模式，`'hash'` 或 `'history'`。默认为 `'hash'`
+- `root`: 可选组件，用于包裹所有路由渲染的组件
+- `children`: 要渲染的 `<Route>` 组件
+
+**示例：**
+
+```jsx
+<Router mode="hash" root={RootLayout}>
+  <Route path="/" component={HomePage} />
+  <Route path="/about" component={AboutPage} />
+</Router>
+```
+
+## \<Route>
+
+定义路由及其对应的组件。
+
+**类型：**
+
+```ts
+Route(props: RouteProps): JSX.Element
+```
+
+**参数：**
+
+- `path`: 此路由的路径模式
+- `sensitive`: 可选标志，使路径匹配区分大小写。默认为 `false`
+- `component`: 路由匹配时要渲染的可选组件
+- `children`: 可选嵌套 `<Route>` 组件
+
+**示例：**
+
+```jsx
+// 基础路由
+<Route path="/about" component={AboutPage} />
+
+// 区分大小写的路由
+<Route path="/API" sensitive component={ApiPage} />
+
+// 带嵌套路由的路由
+<Route path="/dashboard" component={DashboardLayout}>
+  <Route path="/stats" component={StatsPage} />
+  <Route path="/settings" component={SettingsPage} />
+</Route>
+
+// 通配符路由（匹配任何路径）
+<Route path="*" component={NotFoundPage} />
+```
+
+## \<Link>
+
+创建指向其他路由的可导航链接。
+
+**类型：**
+
+```ts
+Link(props: LinkProps): JSX.Element
+```
+
+**参数：**
+
+- `to`: 目标路径，可包含查询字符串
+- `relative`: 可选标志，导航到相对路径。默认为 `true`
+- `replace`: 可选标志，替换当前历史记录而不是添加新记录
+- `noScroll`: 可选标志，阻止导航时滚动到顶部
+- `style`: 可选 CSS 样式
+- `class`: 可选 CSS 类名
+- `activeClass`: 链接激活时应用的可选 CSS 类名
+- `end`: 可选标志，精确匹配路径。设为 `true` 时，仅当当前路径完全匹配时链接才激活
+- `children`: 链接的可选内容
+
+**示例：**
+
+```jsx
+// 基础链接
+<Link to="/home">首页</Link>
+
+// 绝对路径链接
+<Link to="/about" relative={false}>关于（绝对路径）</Link>
+
+// 替换历史记录的链接
+<Link to="/login" replace>登录</Link>
+
+// 禁止滚动链接
+<Link to="/details" noScroll>查看详情（不滚动）</Link>
+
+// 带样式的链接
+<Link to="/contact" style={{ color: 'blue' }}>联系我们</Link>
+
+// 带类名的链接
+<Link to="/profile" class="user-link">个人资料</Link>
+
+// 带激活类名的链接
+<Link to="/dashboard" activeClass="active-nav">仪表板</Link>
+
+// 精确匹配链接
+<Link to="/settings" end>设置（精确匹配）</Link>
+
+// 带查询参数的链接
+<Link to="/products?category=electronics&sort=price">产品（电子类）</Link>
+```

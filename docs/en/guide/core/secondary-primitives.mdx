@@ -1,0 +1,98 @@
+# Secondary Primitives
+
+## useComputed
+
+Creates a computed value that derives its value from other signals and recalculates only when dependencies change. Similar to `useMemo` but designed to be used for side effects that depend on reactive values.
+
+**Type:**
+
+```ts
+useComputed<T>(fn: Callback<T>, value?: T): void
+```
+
+**Parameters:**
+
+- `fn`: A function that computes the derived value. It receives the previous computed value as an argument
+- `value`: Optional initial value
+
+**Example:**
+
+```jsx
+const [count, setCount] = useSignal(10)
+
+useComputed(() => {
+  console.log(`Computed double: ${count() * 2}`)
+})
+```
+
+## useRenderEffect
+
+Creates a render effect that runs immediately after rendering before the DOM is fully updated, useful for DOM manipulations that need to happen right after rendering. Like `useEffect`, render effects support batching of updates.
+
+**Type:**
+
+```ts
+useRenderEffect<T>(fn: Callback<T>, value?: T): void
+```
+
+**Parameters:**
+
+- `fn`: A function to run after rendering. It receives the previous value returned by the effect and returns a new value to be used in the next run
+- `value`: Optional initial value to pass to the first effect run
+
+**Example:**
+
+```jsx
+function InputFocusComponent() {
+  const [ref, setRef] = useSignal(null)
+
+  useRenderEffect(() => {
+    const element = ref()
+    if (element) {
+      element.focus() // This will happen synchronously after render
+    }
+  })
+
+  return <input ref={setRef} />
+}
+```
+
+## useSelector
+
+Creates an optimized conditional selector that efficiently manages subscriptions by only notifying subscribers when their specific key starts or stops matching the source value. This optimization drastically improves update performance by minimizing the number of subscribers that need to be notified when the source value changes.
+
+**Type:**
+
+```ts
+useSelector<T, U = T>(source: Getter<T>, fn?: Equals<T, U>): (key: U) => boolean
+```
+
+**Parameters:**
+
+- `source`: A getter function that returns the source value to compare against keys
+- `fn`: Optional custom equality function that receives a key and the source value, returning whether they should be treated as equal. Defaults to strict equality (`===`)
+
+**Returns:** A function that takes a key and returns whether it matches the current source value
+
+**Example:**
+
+```jsx
+function SelectableItemList() {
+  const [selectedIndex, setSelectedIndex] = useSignal(0)
+  const items = useSignal([0, 1, 2])
+  const isActive = useSelector(selectedIndex)
+
+  return (
+    <For each={items()}>
+      {(index) => (
+        <div
+          class={{ active: isActive(index) }}
+          onClick={() => setSelectedIndex(index)}
+        >
+          Item {index + 1}
+        </div>
+      )}
+    </For>
+  )
+}
+```

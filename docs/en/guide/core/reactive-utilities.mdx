@@ -1,0 +1,332 @@
+# Reactive Utilities
+
+## untrack
+
+Runs a function without tracking dependencies. This means that any signal accesses within the function won't create dependencies for the current tracking context.
+
+**Type:**
+
+```ts
+untrack<T>(fn: Getter<T>): T
+```
+
+**Parameters:**
+
+- `fn`: The function to run without tracking
+
+**Returns:** The return value of `fn`
+
+**Example:**
+
+```jsx
+const [count, setCount] = useSignal(0)
+
+useEffect(() => {
+  // This won't trigger a re-run when count changes
+  const value = untrack(() => count())
+  console.log('Count at effect start:', value)
+})
+```
+
+## batch
+
+Batches multiple state updates into a single re-render. This optimizes performance by ensuring that multiple changes to reactive values don't trigger multiple re-renders.
+
+**Type:**
+
+```ts
+batch<T>(fn: Getter<T>): T
+```
+
+**Parameters:**
+
+- `fn`: A function containing multiple state updates
+
+**Returns:** The return value of `fn`
+
+**Example:**
+
+```jsx
+const [count, setCount] = useSignal(0)
+const [message, setMessage] = useSignal('')
+
+function updateMultiple() {
+  batch(() => {
+    setCount(count() + 1)
+    setMessage(`Count is now ${count() + 1}`)
+    // Both updates are batched into a single re-render
+  })
+}
+```
+
+## on
+
+Creates a function that runs when specified dependencies change. Similar to `useEffect` but returns a function that can be used in other contexts.
+
+**Type:**
+
+```ts
+on<T extends Getter<any> | Getter<any>[], U>(deps: T, fn: OnEffectFunction<T, U>, defer?: boolean): Callback<U>
+```
+
+**Parameters:**
+
+- `deps`: A single getter or an array of getters that the effect depends on
+- `fn`: A function that runs when dependencies change. It receives the current values, previous values, and previous return value
+- `defer`: Optional flag to defer the first run until the next update cycle
+
+**Returns:** A function that can be used as a callback in other effects or computations
+
+**Example:**
+
+```jsx
+const [count, setCount] = useSignal(0)
+const [multiplier, setMultiplier] = useSignal(2)
+
+const effectFn = on(
+  [count, multiplier],
+  ([currentCount, currentMultiplier]) => {
+    console.log(`Result: ${currentCount * currentMultiplier}`)
+  },
+)
+
+// Use the effect function in another effect
+useEffect(effectFn)
+```
+
+## createRoot
+
+Creates a new untracked owner scope that doesn't automatically dispose. Useful for nested reactive scopes that shouldn't be disposed when their parent recomputes. Ensures all memory and computations are properly managed.
+
+**Type:**
+
+```ts
+createRoot<T>(fn: (dispose: () => void) => T, detachedOwner?: Owner): T
+```
+
+**Parameters:**
+
+- `fn`: The function to execute within the root context. It receives a dispose function as an argument
+- `detachedOwner`: Optional owner context to attach to
+
+**Returns:** The return value of `fn`
+
+**Example:**
+
+```jsx
+const root = createRoot((dispose) => {
+  const [count, setCount] = useSignal(0)
+
+  // Do something with the signal
+  setCount(10)
+  console.log(count()) // 10
+
+  // Return any values you want to access outside the root
+  return { count, setCount, dispose }
+})
+
+// Later, when you want to clean up the root
+root.dispose() // Cleans up the root and all its dependencies
+```
+
+## getOwner
+
+Gets the current owner context. The owner context is responsible for managing the lifecycle of computations and effects.
+
+**Type:**
+
+```ts
+getOwner(): Owner | undefined
+```
+
+**Returns:** The current owner or undefined if none
+
+**Example:**
+
+```jsx
+const owner = getOwner()
+if (owner) {
+  // Do something with the owner, like attaching effects or computations
+}
+```
+
+## runWithOwner
+
+Runs a function within a specific owner context. This allows you to create computations or effects that are managed by a specific owner.
+
+**Type:**
+
+```ts
+runWithOwner<T>(owner: Owner, fn: Getter<T>): T
+```
+
+**Parameters:**
+
+- `owner`: The owner context to use
+- `fn`: The function to run
+
+**Returns:** The return value of `fn`
+
+**Example:**
+
+```jsx
+const owner = getOwner()
+if (owner) {
+  runWithOwner(owner, () => {
+    // Code executed within the owner context
+    const [count] = useSignal(0)
+    // This signal will be managed by the specified owner
+  })
+}
+```
+
+## mapArray
+
+Maps an array to a new array with efficient updates by tracking each value's identity. This is the underlying function for the `<For>` component.
+
+**Type:**
+
+```ts
+mapArray<T, U>(list: Getter<readonly T[] | false | null | undefined>, mapFn: (v: T, i: Getter<number>) => U, fallback?: Getter<any>): Getter<U[]>
+```
+
+**Parameters:**
+
+- `list`: A getter function that returns the array to map or a falsy value
+- `mapFn`: A function that maps each item to a new value, receiving the item and a reactive index
+- `fallback`: Optional function that returns fallback content when the array is empty
+
+**Returns:** A getter function that returns the mapped array
+
+**Example:**
+
+```jsx
+const [numbers, setNumbers] = useSignal([1, 2, 3])
+const doubledNumbers = mapArray(
+  () => numbers(),
+  (num) => num * 2,
+  () => [0], // Fallback when array is empty
+)
+console.log(doubledNumbers()) // [2, 4, 6]
+```
+
+## indexArray
+
+Maps an array to a new array with efficient updates by tracking changes to array indices. This is the underlying function for the `<Index>` component.
+
+**Type:**
+
+```ts
+indexArray<T, U>(list: Getter<readonly T[] | false | null | undefined>, mapFn: (v: Getter<T>, i: number) => U, fallback?: Getter<any>): Getter<U[]>
+```
+
+**Parameters:**
+
+- `list`: A getter function that returns the array to map or a falsy value
+- `mapFn`: A function that maps each item to a new value, receiving a reactive getter for the item and the static index
+- `fallback`: Optional function that returns fallback content when the array is empty
+
+**Returns:** A getter function that returns the mapped array
+
+**Example:**
+
+```jsx
+const [items, setItems] = useSignal(['a', 'b', 'c'])
+const indexedItems = indexArray(
+  () => items(),
+  (item, index) => ({ value: item(), position: index }),
+)
+console.log(indexedItems()) // [{ value: 'a', position: 0 }, ...]
+```
+
+## mergeProps
+
+Merges multiple props objects into a single reactive object. Properties from later sources override earlier ones. Useful for setting default properties for components when callers don't provide them.
+
+**Type:**
+
+```ts
+mergeProps<T extends any[]>(...sources: T): MergeResult<T>
+```
+
+**Parameters:**
+
+- `sources`: Multiple props objects or functions that return props objects
+
+**Returns:** A merged object with reactive properties
+
+**Example:**
+
+```jsx
+const defaults = { color: 'blue', size: 'medium' }
+const userProps = { color: 'red', fontWeight: 'bold' }
+const merged = mergeProps(defaults, userProps)
+
+console.log(merged.color) // 'red'
+console.log(merged.size) // 'medium'
+console.log(merged.fontWeight) // 'bold'
+
+// Sources can also be functions
+const dynamicProps = mergeProps(defaults, () => ({
+  color: isDarkMode() ? 'white' : 'black',
+}))
+```
+
+## splitProps
+
+Splits a props object into multiple objects based on specified keys. Useful for separating props for different components or hooks.
+
+**Type:**
+
+```ts
+splitProps<T extends object, const U extends (keyof any)[][]>(props: T, ...keys: U): SplitResult<T, U>
+```
+
+**Parameters:**
+
+- `props`: The props object to split
+- `keys`: Arrays of keys to extract into separate objects
+
+**Returns:** An array of objects with the extracted props and remaining props
+
+**Example:**
+
+```jsx
+const props = { id: 1, name: 'John', age: 30, city: 'New York' }
+const [userInfo, location, rest] = splitProps(props, ['id', 'name'], ['city'])
+
+console.log(userInfo) // { id: 1, name: 'John' }
+console.log(location) // { city: 'New York' }
+console.log(rest) // { age: 30 }
+```
+
+## catchError
+
+Executes a function and catches any errors that occur, passing them to an error handler. Useful for isolating error handling within specific parts of your application.
+
+**Type:**
+
+```ts
+catchError<T>(fn: Getter<T>, handler: (error: unknown) => void): T
+```
+
+**Parameters:**
+
+- `fn`: The function to execute
+- `handler`: A function to handle any errors
+
+**Returns:** The return value of `fn` if no error occurs
+
+**Example:**
+
+```jsx
+const result = catchError(
+  () => {
+    if (Math.random() > 0.5) throw new Error('Random error')
+    return 'Success'
+  },
+  (error) => {
+    console.log('Caught error:', error.message)
+  },
+)
+```

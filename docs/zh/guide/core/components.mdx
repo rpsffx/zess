@@ -1,0 +1,226 @@
+# 内置组件
+
+## \<For>
+
+高效渲染项目列表，基于项目本身的标识进行键控更新。这使得它在项目被添加、移除或重新排序的列表中非常高效。
+
+**类型：**
+
+```ts
+For<T extends readonly any[], U extends JSX.Element>(props: ForProps<T, U>): JSX.Element
+```
+
+**参数：**
+
+- `each`: 要渲染的项目数组或假值
+- `children`: 为每个项目返回组件的函数，接收项目和一个响应式索引
+- `fallback`: 数组为空时的可选备用内容
+
+**示例：**
+
+```jsx
+function ListComponent() {
+  const [items, setItems] = useSignal([1, 2, 3])
+
+  return (
+    <For each={items()}>
+      {(item, index) => (
+        <div key={item}>
+          项目 {index() + 1}: {item}
+        </div>
+      )}
+    </For>
+  )
+}
+```
+
+## \<Index>
+
+使用基于索引的跟踪来渲染列表以实现高效更新。与 `<For>` 不同，它通过项目在数组中的位置而不是它们的标识来跟踪项目，这对于频繁更新但不重新排序的列表可能更高效。
+
+**类型：**
+
+```ts
+Index<T extends readonly any[], U extends JSX.Element>(props: IndexProps<T, U>): JSX.Element
+```
+
+**参数：**
+
+- `each`: 要渲染的项目数组或假值
+- `children`: 为每个项目返回组件的函数，接收项目的响应式获取器和静态索引
+- `fallback`: 数组为空时的可选备用内容
+
+**示例：**
+
+```jsx
+function IndexListComponent() {
+  const [items, setItems] = useSignal(['a', 'b', 'c'])
+
+  return (
+    <Index each={items()}>
+      {(item, index) => (
+        <div>
+          {index}: {item()}
+        </div>
+      )}
+    </Index>
+  )
+}
+```
+
+## \<Show>
+
+根据布尔值条件渲染内容。在条件变化时提供高效更新。
+
+**类型：**
+
+```ts
+Show<T>(props: ShowProps<T>): JSX.Element
+```
+
+**参数：**
+
+- `when`: 决定是否显示内容的布尔值
+- `children`: 当 `when` 为 true 时要显示的内容。可以是 JSX 元素或接收 `when` 解析值的函数
+- `fallback`: 当 `when` 为 false 时显示的可选内容
+- `keyed`: 可选标志，将块与 `when` 的值关联，当 `when` 是对象引用时很有用
+
+**示例：**
+
+```jsx
+function ConditionalComponent() {
+  const [isVisible, setIsVisible] = useSignal(true)
+  const [user, setUser] = useSignal({ name: 'John' })
+  const [theme, setTheme] = useSignal('light')
+
+  return (
+    <>
+      {/* 基本用法 */}
+      <Show when={isVisible()} fallback={<p>Not visible</p>}>
+        <p>Visible content</p>
+      </Show>
+
+      {/* 使用函数子元素 */}
+      <Show when={user()}>
+        {(userData) => <p>Welcome, {userData().name}!</p>}
+      </Show>
+
+      {/* 使用键控模式 */}
+      <Show when={theme()} keyed>
+        {(currentTheme) => (
+          <div>{currentTheme === 'dark' ? '深色主题' : '浅色主题'}</div>
+        )}
+      </Show>
+    </>
+  )
+}
+```
+
+## \<Switch>
+
+渲染第一个匹配的案例组件。类似于 switch 语句，但用于 JSX 内容。
+
+**类型：**
+
+```ts
+Switch(props: SwitchProps): JSX.Element
+```
+
+**参数：**
+
+- `fallback`: 没有案例匹配时显示的可选内容
+- `children`: `<Match>` 组件列表
+
+**示例：**
+
+```jsx
+function SwitchComponent() {
+  const [value, setValue] = useSignal('b')
+
+  return (
+    <Switch fallback={<p>值是其他内容</p>}>
+      <Match when={value() === 'a'}>
+        <p>值是 A</p>
+      </Match>
+      <Match when={value() === 'b'}>
+        <p>值是 B</p>
+      </Match>
+      <Match when={value() === 'c'}>
+        <p>值是 C</p>
+      </Match>
+    </Switch>
+  )
+}
+```
+
+## \<Match>
+
+与 `<Switch>` 一起使用的组件，用于定义条件案例。
+
+**类型：**
+
+```ts
+Match<T>(props: MatchProps<T>): JSX.Element
+```
+
+**参数：**
+
+- `when`: 决定是否应渲染此案例的布尔条件
+- `keyed`: 启用键控模式的可选标志
+- `children`: 如果条件为 true 时要渲染的内容。可以是 JSX 元素或函数
+
+**示例：**
+
+```jsx
+function MatchExample(props) {
+  return (
+    <Match when={props.value === 'a'}>
+      <p>值是 A</p>
+    </Match>
+  )
+}
+```
+
+## \<ErrorBoundary>
+
+捕获子组件中的错误并渲染备用 UI。防止错误向上传播到组件树。
+
+**类型：**
+
+```ts
+ErrorBoundary(props: ErrorBoundaryProps): JSX.Element
+```
+
+**参数：**
+
+- `fallback`: 发生错误时返回备用 UI 的函数。它接收错误和一个重置函数
+- `children`: 要包装的子组件
+
+**示例：**
+
+```jsx
+function ErrorProneComponent() {
+  const [triggerError, setTriggerError] = useSignal(false)
+
+  if (triggerError()) {
+    throw new Error('出错了!')
+  }
+
+  return <button onClick={() => setTriggerError(true)}>触发错误</button>
+}
+
+function ErrorBoundaryExample() {
+  return (
+    <ErrorBoundary
+      fallback={(error, reset) => (
+        <div>
+          <p>错误：{error.message}</p>
+          <button onClick={reset}>重置</button>
+        </div>
+      )}
+    >
+      <ErrorProneComponent />
+    </ErrorBoundary>
+  )
+}
+```

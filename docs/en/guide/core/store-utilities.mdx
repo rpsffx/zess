@@ -1,0 +1,47 @@
+# Store Utilities
+
+## useStore
+
+Creates a reactive store from an initial state object or array. Stores provide a way to work with nested reactive data structures more conveniently than using multiple individual signals.
+
+**Type:**
+
+```ts
+useStore<T extends ObjectLike>(state: T | Store<T>): [Store<T>, SetStoreFunction<T>]
+```
+
+**Parameters:**
+
+- `state`: The initial state object/array or an existing store
+
+**Returns:** An array containing the reactive store object and a setter function
+
+- `Store<T>`: The reactive store object with getters for each property
+- `SetStoreFunction<T>`: A function that updates the store, accepting either a new partial state object (merged with existing state) or a function that takes the current state and returns a new partial state. Properties set to `undefined` will be removed from the store
+
+**Example:**
+
+```jsx
+const [user, setUser] = useStore({
+  name: 'John Doe',
+  age: 30,
+  address: {
+    city: 'New York',
+    country: 'USA',
+  },
+})
+
+// Access properties directly
+console.log(user.name) // 'John Doe'
+
+// Update with a partial object
+setUser({ name: 'Jane Doe' })
+
+// Update with a function
+setUser((current) => ({
+  age: current.age + 1,
+}))
+
+// Nested properties not reactive - access root to trigger updates
+console.log(user.address.city) // 'New York'
+```

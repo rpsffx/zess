@@ -1,0 +1,134 @@
+# JSX Attributes
+
+## class
+
+The `class` attribute is used to set CSS class names for elements, with `className` serving as its alias. It supports both string values and boolean objects for dynamic class management. When using objects, keys represent individual class names (which can be multiple space-separated classes), while boolean values determine whether each class is applied. Importantly, `class` functions as a compile-time pseudo-attribute, meaning it doesn't work in spread operations like `<div {...props} />` where classes need to be explicitly specified.
+
+**Example:**
+
+```jsx
+// String format - static classes
+<div class="btn btn-primary">Click me</div>
+
+// Object format - dynamic classes with signals
+<div class={{
+  'btn': true,
+  'btn-primary': type() === 'primary',
+  'btn-disabled': isDisabled(),
+  'active': isActive()
+}}>
+  Dynamic Button
+</div>
+```
+
+## style
+
+The `style` attribute applies inline CSS styles using either strings or style objects. Unlike React, Zess utilizes the native `element.style.setProperty` method, requiring standard CSS property names in lowercase with hyphens (e.g., `background-color` instead of `backgroundColor`). This approach offers performance benefits and full support for CSS custom properties.
+
+**Example:**
+
+```jsx
+// String format - traditional style declaration
+<div style="color: blue; font-size: 16px">
+  Static styles
+</div>
+
+// Object format with signals and CSS variables
+<div style={{
+  'color': 'blue',
+  'font-size': fontSize() + 'px',
+  'background-color': getBgColor(),
+  'border': '1px solid var(--primary-color)'
+}}>
+  Dynamic styles
+</div>
+```
+
+## innerHTML
+
+The `innerHTML` attribute directly sets HTML content within elements, mirroring the native DOM property. This allows insertion of formatted content, but requires caution as it can expose applications to cross-site scripting (XSS) attacks if used with untrusted content.
+
+**Example:**
+
+```jsx
+// Dynamic HTML from signal
+<div innerHTML={sanitizedContent()}></div>
+
+// Static HTML content
+<div innerHTML="<span class='highlight'>Important</span>"></div>
+```
+
+## textContent
+
+The `textContent` attribute sets plain text content for elements, equivalent to the DOM property of the same name. It also accepts `innerText` as an alias. Unlike `innerHTML`, it treats content as plain text and doesn't parse HTML, making it safe from XSS vulnerabilities.
+
+**Example:**
+
+```jsx
+// Basic text from signal
+<div textContent={message()}></div>
+
+// Using innerText alias
+<div innerText={userName() + "'s Profile"}></div>
+
+// Plain text content
+<div textContent="Simple text display"></div>
+```
+
+## on\_\_\_
+
+Event handlers in Zess follow two distinct patterns based on naming convention. Lowercase names like `onclick` use native DOM 0-level event binding, attaching handlers directly to elements. Capitalized names like `onClick` employ event delegation, where events are handled at the document root level using bubbling (or capturing for non-bubbling events), significantly improving performance in dynamic applications. Events bind once and remain static, with `currentTarget` pointing to the bound element and `target` identifying the actual event source.
+
+**Example:**
+
+```jsx
+// Native DOM 0-level binding (lowercase)
+<button onclick={() => handleClick()}>
+  Native Event
+</button>
+
+// Delegated binding (capitalized)
+<button onClick={(e) => handleDelegatedClick(e)}>
+  Delegated Event
+</button>
+
+// Form events with signals
+<input
+  onInput={(e) => setValue(e.target.value)}
+  onChange={(e) => saveValue(e.target.value)}
+/>
+```
+
+## ref
+
+The `ref` attribute provides direct access to underlying DOM elements within JSX flow. It supports two usage patterns: variable assignment where the element is automatically assigned to the specified variable, and function callbacks that receive the element instance when it's mounted. When applied to custom components, the ref must be explicitly forwarded to a DOM element using `props.ref`.
+
+**Example:**
+
+```jsx
+// Variable assignment - element automatically assigned to myDiv
+let myDiv
+// Use onMount to access the DOM element after component renders
+onMount(() => console.log(myDiv))
+// The element will be assigned to myDiv when mounted
+<div ref={myDiv}>Content</div>
+
+// Function callback - called with element instance on mount
+<input
+  ref={(el) => el.focus()}
+  value={text()}
+/>
+
+// Component usage in another component
+function ParentComponent() {
+  let myComp
+  // Access component ref after mount
+  onMount(() => console.log(myComp))
+  return <MyComponent ref={myComp} />
+}
+
+// Inside MyComponent implementation - forward ref to DOM element
+function MyComponent(props) {
+  return <div ref={props.ref}>Component content</div>
+}
+```

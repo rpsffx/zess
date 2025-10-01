@@ -1,0 +1,131 @@
+# 基础 API
+
+## useNavigate
+
+返回一个用于在路由间进行编程式导航的函数的钩子。
+
+**类型：**
+
+```ts
+useNavigate(): (href: string, options?: NavigateOptions) => void
+```
+
+**参数：**
+
+- `href`: 目标路径，可包含查询字符串
+- `options`: 可选配置
+  - `relative`: 如果为 `false`，导航到绝对路径，忽略相对基准。默认为 `true`
+  - `replace`: 如果为 `true`，替换当前历史记录
+  - `noScroll`: 如果为 `true`，阻止导航时滚动到顶部
+
+**示例：**
+
+```jsx
+function NavigationComponent() {
+  const navigate = useNavigate()
+
+  return (
+    <>
+      <button onClick={() => navigate('/')}>首页</button>
+      <button onClick={() => navigate('/products', { relative: false })}>
+        产品
+      </button>
+      <button onClick={() => navigate('/login', { replace: true })}>
+        登录
+      </button>
+      <button onClick={() => navigate('/details', { noScroll: true })}>
+        查看详情（不滚动）
+      </button>
+      <button onClick={() => navigate('/search?q=zess&page=1')}>
+        搜索 Zess（第1页）
+      </button>
+    </>
+  )
+}
+```
+
+## useSearchParams
+
+提供对搜索参数访问权限以及更新这些参数的函数的钩子。
+
+**类型：**
+
+```ts
+useSearchParams(): [SearchParams, (params: Record<string, any>, replace?: boolean) => void]
+```
+
+**返回值：** 包含以下内容的数组
+
+- `searchParams`: 响应式对象，包含当前搜索参数，当 `location.search` 更改或通过 `setSearchParams` 修改时会自动更新
+- `setSearchParams`: 更新搜索参数的函数
+  - `params`: 要与现有参数合并的搜索参数。将属性值设置为 `undefined`、`null` 或空字符串会移除该属性
+  - `replace`: 可选标志，用于替换当前历史记录
+
+**示例：**
+
+```jsx
+function SearchPage() {
+  const [searchParams, setSearchParams] = useSearchParams()
+  const handleFilterChange = (category) => {
+    setSearchParams({ category })
+  }
+  const resetFilters = () => {
+    setSearchParams({ category: undefined })
+  }
+
+  return (
+    <div>
+      <p>当前筛选条件: {searchParams.category || '全部'}</p>
+      <button onClick={() => handleFilterChange('electronics')}>
+        电子产品
+      </button>
+      <button onClick={() => handleFilterChange('clothing')}>服装</button>
+      <button onClick={resetFilters}>重置</button>
+    </div>
+  )
+}
+```
+
+## useBeforeLeave
+
+注册一个在离开当前路由前调用的监听器的钩子。这允许您拦截导航尝试并可能阻止它们，例如，警告用户有关未保存的更改。
+
+**类型：**
+
+```ts
+useBeforeLeave(listener: RouteGuardListener): void
+```
+
+**参数：**
+
+- `listener`: 当尝试从当前路由导航离开时调用的函数，接收 `RouteGuardEvent` 对象
+  - `event`: 路由守卫事件对象，包含：
+    - `to`: 要导航到的目标路径
+    - `from`: 正在导航离开的当前路径
+    - `options`: 导航选项，包括 `relative`、`replace` 和 `noScroll`
+    - `defaultPrevented`: 布尔值，指示导航是否已被阻止
+    - `preventDefault`: 阻止导航的函数
+    - `retry`: 稍后重试导航的函数，带有可选的 `force` 参数以绕过守卫
+
+**示例：**
+
+```jsx
+function FormEditor() {
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useSignal(false)
+  useBeforeLeave((event) => {
+    if (hasUnsavedChanges()) {
+      const confirmed = window.confirm('您有未保存的更改。确定要离开吗？')
+      if (!confirmed) {
+        event.preventDefault()
+      }
+    }
+  })
+
+  return (
+    <div>
+      <input type="text" onChange={() => setHasUnsavedChanges(true)} />
+      <button onClick={() => setHasUnsavedChanges(false)}>保存</button>
+    </div>
+  )
+}
+```

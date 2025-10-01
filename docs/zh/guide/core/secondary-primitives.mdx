@@ -1,0 +1,98 @@
+# 次要 API
+
+## useComputed
+
+创建一个计算值，该值从其他信号派生其值，并且仅在依赖项更改时重新计算。类似于 `useMemo`，但设计用于依赖于响应式值的副作用操作。
+
+**类型：**
+
+```ts
+useComputed<T>(fn: Callback<T>, value?: T): void
+```
+
+**参数：**
+
+- `fn`: 计算派生值的函数。它接收先前的计算值作为参数
+- `value`: 可选的初始值
+
+**示例：**
+
+```jsx
+const [count, setCount] = useSignal(10)
+
+useComputed(() => {
+  console.log(`计算的双倍值: ${count() * 2}`)
+})
+```
+
+## useRenderEffect
+
+创建一个渲染副作用，该副作用会在渲染后、DOM 完全更新之前立即运行，适用于需要在渲染后立即进行的 DOM 操作。与 `useEffect` 类似，渲染副作用支持更新的批处理。
+
+**类型：**
+
+```ts
+useRenderEffect<T>(fn: Callback<T>, value?: T): void
+```
+
+**参数：**
+
+- `fn`: 渲染后运行的函数。它接收副作用上一次返回的值，并返回一个新值用于下一次运行
+- `value`: 可选的初始值，将在第一次副作用运行时传入
+
+**示例：**
+
+```jsx
+function InputFocusComponent() {
+  const [ref, setRef] = useSignal(null)
+
+  useRenderEffect(() => {
+    const element = ref()
+    if (element) {
+      element.focus() // 这将在渲染后同步发生
+    }
+  })
+
+  return <input ref={setRef} />
+}
+```
+
+## useSelector
+
+创建一个优化的条件选择器，通过仅当特定键开始或停止匹配源值时才通知订阅者来高效管理订阅。这种优化通过最小化源值更改时需要通知的订阅者数量，显著提高了更新性能。
+
+**类型：**
+
+```ts
+useSelector<T, U = T>(source: Getter<T>, fn?: Equals<T, U>): (key: U) => boolean
+```
+
+**参数：**
+
+- `source`: 返回要与键进行比较的源值的 getter 函数
+- `fn`: 可选的自定义相等性函数，接收一个键和源值，返回它们是否应被视为相等。默认为严格相等 (`===`)
+
+**返回值：** 一个接收键并返回其是否与当前源值匹配的函数
+
+**示例：**
+
+```jsx
+function SelectableItemList() {
+  const [selectedIndex, setSelectedIndex] = useSignal(0)
+  const items = useSignal([0, 1, 2])
+  const isActive = useSelector(selectedIndex)
+
+  return (
+    <For each={items()}>
+      {(index) => (
+        <div
+          class={{ active: isActive(index) }}
+          onClick={() => setSelectedIndex(index)}
+        >
+          项目 {index + 1}
+        </div>
+      )}
+    </For>
+  )
+}
+```

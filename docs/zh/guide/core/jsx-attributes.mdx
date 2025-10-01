@@ -1,0 +1,134 @@
+# 特殊 JSX 属性
+
+## class
+
+`class` 属性用于设置元素的 CSS 类名，`className` 是其别名。它支持字符串值和布尔对象两种格式，用于动态类管理。使用对象格式时，键代表各个类名（可以是多个空格分隔的类），布尔值决定是否应用每个类。需要注意的是，`class` 是一个编译时伪属性，这意味着它在展开操作中无法使用，如 `<div {...props} />`，此时类名需要显式指定。
+
+**示例：**
+
+```jsx
+// 字符串格式 - 静态类名
+<div class="btn btn-primary">Click me</div>
+
+// 对象格式 - 使用信号的动态类名
+<div class={{
+  'btn': true,
+  'btn-primary': type() === 'primary',
+  'btn-disabled': isDisabled(),
+  'active': isActive()
+}}>
+  Dynamic Button
+</div>
+```
+
+## style
+
+`style` 属性使用字符串或样式对象来应用内联 CSS 样式。与 React 不同，Zess 使用原生的 `element.style.setProperty` 方法，需要使用标准的带连字符的小写 CSS 属性名（例如 `background-color` 而不是 `backgroundColor`）。这种方法具有性能优势，并完全支持 CSS 自定义属性。
+
+**示例：**
+
+```jsx
+// 字符串格式 - 传统样式声明
+<div style="color: blue; font-size: 16px">
+  Static styles
+</div>
+
+// 对象格式 - 使用信号和 CSS 变量
+<div style={{
+  'color': 'blue',
+  'font-size': fontSize() + 'px',
+  'background-color': getBgColor(),
+  'border': '1px solid var(--primary-color)'
+}}>
+  Dynamic styles
+</div>
+```
+
+## innerHTML
+
+`innerHTML` 属性直接在元素内部设置 HTML 内容，与原生的 DOM 属性一致。这允许插入格式化的内容，但需要谨慎使用，因为如果用于不受信任的内容，可能会使应用程序面临跨站脚本（XSS）攻击的风险。
+
+**示例：**
+
+```jsx
+// 来自信号的动态 HTML
+<div innerHTML={sanitizedContent()}></div>
+
+// 静态 HTML 内容
+<div innerHTML="<span class='highlight'>Important</span>"></div>
+```
+
+## textContent
+
+`textContent` 属性为元素设置纯文本内容，等同于同名的 DOM 属性。它也接受 `innerText` 作为别名。与 `innerHTML` 不同，它将内容视为纯文本且不解析 HTML，从而避免 XSS 漏洞。
+
+**示例：**
+
+```jsx
+// 来自信号的基础文本
+<div textContent={message()}></div>
+
+// 使用 innerText 别名
+<div innerText={userName() + "'s Profile"}></div>
+
+// 纯文本内容
+<div textContent="Simple text display"></div>
+```
+
+## on\_\_\_
+
+Zess 中的事件处理器根据命名约定遵循两种不同的模式。小写名称如 `onclick` 使用原生 DOM 0 级事件绑定，直接将处理器附加到元素上。大写名称如 `onClick` 则采用事件委托，事件在文档根级别通过事件冒泡（或对不冒泡的事件使用事件捕获）进行处理，这在动态应用中显著提升了性能。事件绑定一次后保持静态，`currentTarget` 指向绑定元素，`target` 标识实际的事件源。
+
+**示例：**
+
+```jsx
+// 原生 DOM 0 级绑定（小写）
+<button onclick={() => handleClick()}>
+  Native Event
+</button>
+
+// 委托绑定（大写）
+<button onClick={(e) => handleDelegatedClick(e)}>
+  Delegated Event
+</button>
+
+// 带信号的表单事件
+<input
+  onInput={(e) => setValue(e.target.value)}
+  onChange={(e) => saveValue(e.target.value)}
+/>
+```
+
+## ref
+
+`ref` 属性在 JSX 流中提供对底层 DOM 元素的直接访问。它支持两种使用模式：变量赋值（元素自动赋值给指定变量）和函数回调（在元素挂载时接收元素实例）。当应用于自定义组件时，必须使用 `props.ref` 将 ref 显式转发到一个 DOM 元素。
+
+**示例：**
+
+```jsx
+// 变量赋值 - 元素自动赋值给 myDiv
+let myDiv
+// 使用 onMount 在组件渲染后访问 DOM 元素
+onMount(() => console.log(myDiv))
+// 元素挂载时将被赋值给 myDiv
+<div ref={myDiv}>Content</div>
+
+// 函数回调 - 在挂载时调用并传入元素实例
+<input
+  ref={(el) => el.focus()}
+  value={text()}
+/>
+
+// 在另一个组件中使用组件引用
+function ParentComponent() {
+  let myComp
+  // 在挂载后访问组件引用
+  onMount(() => console.log(myComp))
+  return <MyComponent ref={myComp} />
+}
+
+// 在 MyComponent 实现内部 - 将 ref 转发到 DOM 元素
+function MyComponent(props) {
+  return <div ref={props.ref}>Component content</div>
+}
+```

@@ -1,0 +1,96 @@
+# 响应性基础
+
+## useSignal
+
+创建一个响应式信号，用于存储值并在值改变时通知依赖项。
+
+**类型：**
+
+```ts
+useSignal<T>(value?: T, equals?: Equals<T>): [Getter<T>, Setter<T>]
+```
+
+**参数：**
+
+- `value`：信号的初始值
+- `equals`：可选的用于判断值何时发生改变的自定义相等性比较函数，默认为严格相等（`===`）
+
+**返回值：** 包含一个 getter 函数和一个 setter 函数的数组
+
+- `Getter<T>`：返回信号当前值的函数
+- `Setter<T>`：一个接受新值或接收前值返回新值的更新函数的函数
+
+**示例：**
+
+```jsx
+const [count, setCount] = useSignal(0)
+console.log(count()) // 0
+setCount(1) // 使用直接值更新信号值
+setCount((prev) => prev + 1) // 基于前一个值更新信号值
+
+// 使用自定义相等性比较
+const [user, setUser] = useSignal(
+  { id: 1, name: 'Alice' },
+  (a, b) => a.id === b.id, // 仅比较 ID 是否相等
+)
+```
+
+## useEffect
+
+在依赖项变更时运行一个函数。副作用函数会被批量处理并在渲染后运行，适用于不需要阻塞渲染周期的副作用操作。
+
+**类型：**
+
+```ts
+useEffect<T>(fn: Callback<T>, value?: T): void
+```
+
+**参数：**
+
+- `fn`：在依赖项变更时运行的函数。它接收上一次副作用函数返回的值，并返回一个将在下一次运行中使用的新值
+- `value`：可选的初始值，将在第一次副作用运行时传入
+
+**示例：**
+
+```jsx
+const [count, setCount] = useSignal(0)
+const [prevCount, setPrevCount] = useSignal(null)
+
+useEffect((prev) => {
+  // 当 count() 被访问且发生变化时，该副作用函数将运行
+  setPrevCount(prev)
+  document.title = `计数：${count()}`
+  return count() // 该值将作为 prev 传递给下一次副作用运行
+})
+```
+
+## useMemo
+
+基于依赖项记忆化一个值，仅在依赖项变更时重新计算。适用于依赖响应式值的昂贵计算。
+
+**类型：**
+
+```ts
+useMemo<T>(fn: Callback<T>, value?: T, equals?: Equals<T>): Getter<T>
+```
+
+**参数：**
+
+- `fn`：计算记忆化值的函数。它接收前一个记忆化的值作为参数
+- `value`：可选的初始值
+- `equals`：可选的用于判断计算值何时发生改变的自定义相等性比较函数，默认为严格相等（`===`）
+
+**返回值：** 返回记忆化值的 getter 函数
+
+**示例：**
+
+```jsx
+const [name, setName] = useSignal('John')
+const greeting = useMemo(() => {
+  console.log('正在计算问候语')
+  return `你好，${name()}!`
+})
+
+console.log(greeting()) // '你好，John！' 并打印 '正在计算问候语'
+setName('Jane') // 触发重新计算并再次打印 '正在计算问候语'
+```

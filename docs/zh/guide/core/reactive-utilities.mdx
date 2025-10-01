@@ -1,0 +1,332 @@
+# 响应性工具类
+
+## untrack
+
+在不跟踪依赖的情况下运行函数。这意味着函数内的任何信号访问都不会为当前跟踪上下文创建依赖。
+
+**类型：**
+
+```ts
+untrack<T>(fn: Getter<T>): T
+```
+
+**参数：**
+
+- `fn`: 要在不跟踪情况下运行的函数
+
+**返回值：** `fn` 的返回值
+
+**示例：**
+
+```jsx
+const [count, setCount] = useSignal(0)
+
+useEffect(() => {
+  // 当 count 变化时，这不会触发重新运行
+  const value = untrack(() => count())
+  console.log('效果开始时的计数:', value)
+})
+```
+
+## batch
+
+将多个状态更新批量处理为单个重新渲染。通过确保对响应式值的多次更改不会触发多次重新渲染来优化性能。
+
+**类型：**
+
+```ts
+batch<T>(fn: Getter<T>): T
+```
+
+**参数：**
+
+- `fn`: 包含多个状态更新的函数
+
+**返回值：** `fn` 的返回值
+
+**示例：**
+
+```jsx
+const [count, setCount] = useSignal(0)
+const [message, setMessage] = useSignal('')
+
+function updateMultiple() {
+  batch(() => {
+    setCount(count() + 1)
+    setMessage(`计数现在是 ${count() + 1}`)
+    // 两个更新都被批量处理为单个重新渲染
+  })
+}
+```
+
+## on
+
+创建一个在指定依赖项变化时运行的函数。类似于 useEffect，但返回一个可在其他上下文中使用的函数。
+
+**类型：**
+
+```ts
+on<T extends Getter<any> | Getter<any>[], U>(deps: T, fn: OnEffectFunction<T, U>, defer?: boolean): Callback<U>
+```
+
+**参数：**
+
+- `deps`: 单个 getter 或 getter 数组，表示副作用所依赖的内容
+- `fn`: 依赖项变化时运行的函数。它接收当前值、先前值和先前的返回值
+- `defer`: 可选标志，延迟首次运行直到下一个更新周期
+
+**返回值：** 可在其他副作用或计算中用作回调的函数
+
+**示例：**
+
+```jsx
+const [count, setCount] = useSignal(0)
+const [multiplier, setMultiplier] = useSignal(2)
+
+const effectFn = on(
+  [count, multiplier],
+  ([currentCount, currentMultiplier]) => {
+    console.log(`结果: ${currentCount * currentMultiplier}`)
+  },
+)
+
+// 在另一个副作用中使用效果函数
+useEffect(effectFn)
+```
+
+## createRoot
+
+创建一个新的不自动释放的未跟踪所有者作用域。适用于不应在其父级重新计算时释放的嵌套响应式作用域。确保所有内存和计算得到适当管理。
+
+**类型：**
+
+```ts
+createRoot<T>(fn: (dispose: () => void) => T, detachedOwner?: Owner): T
+```
+
+**参数：**
+
+- `fn`: 在根上下文中执行的函数。它接收一个 dispose 函数作为参数
+- `detachedOwner`: 要附加到的可选所有者上下文
+
+**返回值：** `fn` 的返回值
+
+**示例：**
+
+```jsx
+const root = createRoot((dispose) => {
+  const [count, setCount] = useSignal(0)
+
+  // 使用信号执行某些操作
+  setCount(10)
+  console.log(count()) // 10
+
+  // 返回您想在根外部访问的任何值
+  return { count, setCount, dispose }
+})
+
+// 稍后，当您想要清理根时
+root.dispose() // 清理根及其所有依赖项
+```
+
+## getOwner
+
+获取当前所有者上下文。所有者上下文负责管理计算和副作用的生命周期。
+
+**类型：**
+
+```ts
+getOwner(): Owner | undefined
+```
+
+**返回值：** 当前所有者，如果没有则为 undefined
+
+**示例：**
+
+```jsx
+const owner = getOwner()
+if (owner) {
+  // 使用所有者执行某些操作，如附加副作用或计算
+}
+```
+
+## runWithOwner
+
+在特定所有者上下文中运行函数。这允许您创建由特定所有者管理的计算或副作用。
+
+**类型：**
+
+```ts
+runWithOwner<T>(owner: Owner, fn: Getter<T>): T
+```
+
+**参数：**
+
+- `owner`: 要使用的所有者上下文
+- `fn`: 要运行的函数
+
+**返回值：** `fn` 的返回值
+
+**示例：**
+
+```jsx
+const owner = getOwner()
+if (owner) {
+  runWithOwner(owner, () => {
+    // 在所有者上下文中执行的代码
+    const [count] = useSignal(0)
+    // 此信号将由指定的所有者管理
+  })
+}
+```
+
+## mapArray
+
+通过跟踪每个值的标识，将数组映射到具有高效更新的新数组。这是 `<For>` 组件的底层函数。
+
+**类型：**
+
+```ts
+mapArray<T, U>(list: Getter<readonly T[] | false | null | undefined>, mapFn: (v: T, i: Getter<number>) => U, fallback?: Getter<any>): Getter<U[]>
+```
+
+**参数：**
+
+- `list`: 返回要映射的数组或假值的 getter 函数
+- `mapFn`: 将每个项目映射到新值的函数，接收项目和一个响应式索引
+- `fallback`: 数组为空时返回备用内容的可选函数
+
+**返回值：** 返回映射后数组的 getter 函数
+
+**示例：**
+
+```jsx
+const [numbers, setNumbers] = useSignal([1, 2, 3])
+const doubledNumbers = mapArray(
+  () => numbers(),
+  (num) => num * 2,
+  () => [0], // 数组为空时的备用值
+)
+console.log(doubledNumbers()) // [2, 4, 6]
+```
+
+## indexArray
+
+通过跟踪数组索引的更改，将数组映射到具有高效更新的新数组。这是 `<Index>` 组件的底层函数。
+
+**类型：**
+
+```ts
+indexArray<T, U>(list: Getter<readonly T[] | false | null | undefined>, mapFn: (v: Getter<T>, i: number) => U, fallback?: Getter<any>): Getter<U[]>
+```
+
+**参数：**
+
+- `list`: 返回要映射的数组或假值的 getter 函数
+- `mapFn`: 将每个项目映射到新值的函数，接收项目的响应式 getter 和静态索引
+- `fallback`: 数组为空时返回备用内容的可选函数
+
+**返回值：** 返回映射后数组的 getter 函数
+
+**示例：**
+
+```jsx
+const [items, setItems] = useSignal(['a', 'b', 'c'])
+const indexedItems = indexArray(
+  () => items(),
+  (item, index) => ({ value: item(), position: index }),
+)
+console.log(indexedItems()) // [{ value: 'a', position: 0 }, ...]
+```
+
+## mergeProps
+
+将多个 props 对象合并为单个响应式对象。后面源的属性会覆盖前面的属性。适用于在调用者未提供时为组件设置默认属性。
+
+**类型：**
+
+```ts
+mergeProps<T extends any[]>(...sources: T): MergeResult<T>
+```
+
+**参数：**
+
+- `sources`: 多个 props 对象或返回 props 对象的函数
+
+**返回值：** 具有响应式属性的合并对象
+
+**示例：**
+
+```jsx
+const defaults = { color: 'blue', size: 'medium' }
+const userProps = { color: 'red', fontWeight: 'bold' }
+const merged = mergeProps(defaults, userProps)
+
+console.log(merged.color) // 'red'
+console.log(merged.size) // 'medium'
+console.log(merged.fontWeight) // 'bold'
+
+// 源也可以是函数
+const dynamicProps = mergeProps(defaults, () => ({
+  color: isDarkMode() ? 'white' : 'black',
+}))
+```
+
+## splitProps
+
+根据指定的键将 props 对象拆分为多个对象。适用于为不同组件或钩子分离 props。
+
+**类型：**
+
+```ts
+splitProps<T extends object, const U extends (keyof any)[][]>(props: T, ...keys: U): SplitResult<T, U>
+```
+
+**参数：**
+
+- `props`: 要拆分的 props 对象
+- `keys`: 要提取到单独对象中的键数组
+
+**返回值：** 包含提取的 props 和剩余 props 的对象数组
+
+**示例：**
+
+```jsx
+const props = { id: 1, name: 'John', age: 30, city: 'New York' }
+const [userInfo, location, rest] = splitProps(props, ['id', 'name'], ['city'])
+
+console.log(userInfo) // { id: 1, name: 'John' }
+console.log(location) // { city: 'New York' }
+console.log(rest) // { age: 30 }
+```
+
+## catchError
+
+执行函数并捕获发生的任何错误，将它们传递给错误处理器。适用于在应用程序的特定部分内隔离错误处理。
+
+**类型：**
+
+```ts
+catchError<T>(fn: Getter<T>, handler: (error: unknown) => void): T
+```
+
+**参数：**
+
+- `fn`: 要执行的函数
+- `handler`: 处理任何错误的函数
+
+**返回值：** 如果没有错误发生，则返回 `fn` 的返回值
+
+**示例：**
+
+```jsx
+const result = catchError(
+  () => {
+    if (Math.random() > 0.5) throw new Error('随机错误')
+    return '成功'
+  },
+  (error) => {
+    console.log('捕获错误:', error.message)
+  },
+)
+```

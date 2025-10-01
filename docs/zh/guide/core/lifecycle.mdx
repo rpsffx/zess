@@ -1,0 +1,83 @@
+# 生命周期
+
+## onMount
+
+注册一个在组件挂载时运行的函数。适用于设置订阅或初始化非响应式状态。
+
+**类型：**
+
+```ts
+onMount(fn: () => void): void
+```
+
+**参数：**
+
+- `fn`: 在挂载时运行的函数
+
+**示例：**
+
+```jsx
+onMount(() => {
+  console.log('组件已挂载')
+  // 设置订阅或执行初始化操作
+})
+```
+
+## onCleanup
+
+注册一个清理函数，在组件卸载或副作用重新运行时执行。用于清理事件监听器、定时器或订阅等资源。
+
+**类型：**
+
+```ts
+onCleanup(fn: () => void): void
+```
+
+**参数：**
+
+- `fn`: 要运行的清理函数
+
+**示例：**
+
+```jsx
+useEffect(() => {
+  // 通过 getter 函数从信号获取事件名称
+  const eventToListen = currentEvent()
+
+  // 定义事件处理函数
+  const handleEvent = (event) => {
+    console.log(`事件触发: ${eventToListen}`, event)
+  }
+
+  // 向 window 对象添加事件监听器
+  window.addEventListener(eventToListen, handleEvent)
+
+  // 当副作用重新运行或组件卸载时清理事件监听器
+  onCleanup(() => {
+    window.removeEventListener(eventToListen, handleEvent)
+  })
+})
+```
+
+## onError
+
+为最近的 Owner 作用域注册错误处理器。处理当前所有者上下文中渲染期间或副作用内发生的错误。如果在回调中重新抛出错误，它将传播到父级所有者的错误处理器。
+
+**类型：**
+
+```ts
+onError(fn: (error: unknown) => void): void
+```
+
+**参数：**
+
+- `fn`: 处理错误的函数
+
+**示例：**
+
+```jsx
+onError((error) => {
+  console.error('捕获到错误:', error)
+  // 优雅地处理错误
+})
+```

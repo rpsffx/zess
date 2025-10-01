@@ -1,0 +1,9 @@
+:is(.overview-index) {
+  padding-top: 48px;
+}
+
+@media (max-width: 768px) {
+  :is(.overview-index) {
+    padding-top: 32px;
+  }
+}

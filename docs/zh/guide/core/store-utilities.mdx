@@ -1,0 +1,47 @@
+# Store 工具类
+
+## useStore
+
+从初始状态对象或数组创建响应式存储。与使用多个独立信号相比，存储提供了一种更便捷的方式来处理嵌套的响应式数据结构。
+
+**类型：**
+
+```ts
+useStore<T extends ObjectLike>(state: T | Store<T>): [Store<T>, SetStoreFunction<T>]
+```
+
+**参数：**
+
+- `state`: 初始状态对象/数组或现有的存储
+
+**返回值：** 包含响应式存储对象和设置函数的数组
+
+- `Store<T>`: 响应式存储对象，每个属性都有对应的获取器
+- `SetStoreFunction<T>`: 更新存储的函数，接受新的部分状态对象（与现有状态合并）或接收当前状态并返回新的部分状态的函数。设置为 `undefined` 的属性将从存储中移除
+
+**示例：**
+
+```jsx
+const [user, setUser] = useStore({
+  name: 'John Doe',
+  age: 30,
+  address: {
+    city: 'New York',
+    country: 'USA',
+  },
+})
+
+// 直接访问属性
+console.log(user.name) // 'John Doe'
+
+// 使用部分对象更新
+setUser({ name: 'Jane Doe' })
+
+// 使用函数更新
+setUser((current) => ({
+  age: current.age + 1,
+}))
+
+// 嵌套属性非响应式，需访问根属性触发更新
+console.log(user.address.city) // 'New York'
+```

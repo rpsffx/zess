@@ -1,0 +1,32 @@
+.images-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.images-container img {
+  width: 45%;
+  max-width: 200px;
+  height: auto;
+}
+
+.plus-sign {
+  margin: 0 10px;
+  font-size: 60px;
+  font-weight: bold;
+}
+
+@media (max-width: 768px) {
+  .images-container {
+    flex-direction: column;
+  }
+
+  .images-container img {
+    width: 100%;
+  }
+
+  .plus-sign {
+    margin: 0;
+  }
+}

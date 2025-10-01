@@ -1,0 +1,37 @@
+# 渲染
+
+## render
+
+将组件渲染到 DOM 元素中。创建响应式根并处理挂载和卸载。
+
+**类型：**
+
+```ts
+render(code: Getter<JSX.Element>, el: Element | Document): () => void
+```
+
+**参数：**
+
+- `code`: 返回要渲染的 JSX 元素的函数
+- `el`: 要渲染到的 DOM 元素或文档
+
+**返回值：** 清理已渲染组件的 dispose 函数
+
+**示例：**
+
+```jsx
+function App() {
+  const [count, setCount] = useSignal(0)
+  return (
+    <div>
+      <p>计数: {count()}</p>
+      <button onClick={() => setCount((prev) => prev + 1)}>增加</button>
+    </div>
+  )
+}
+
+const dispose = render(() => <App />, document.getElementById('app'))
+
+// 稍后，要卸载并清理
+// dispose()
+```

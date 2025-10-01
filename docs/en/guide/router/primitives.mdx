@@ -1,0 +1,133 @@
+# Primitives
+
+## useNavigate
+
+Hook that returns a function to programmatically navigate between routes.
+
+**Type:**
+
+```ts
+useNavigate(): (href: string, options?: NavigateOptions) => void
+```
+
+**Parameters:**
+
+- `href`: The destination path, can include query strings
+- `options`: Optional configuration
+  - `relative`: If `false`, navigates to the absolute path without relative base. Defaults to `true`
+  - `replace`: If `true`, replaces the current history entry
+  - `noScroll`: If `true`, prevents scrolling to top when navigating
+
+**Example:**
+
+```jsx
+function NavigationComponent() {
+  const navigate = useNavigate()
+
+  return (
+    <>
+      <button onClick={() => navigate('/')}>Home</button>
+      <button onClick={() => navigate('/products', { relative: false })}>
+        Products
+      </button>
+      <button onClick={() => navigate('/login', { replace: true })}>
+        Login
+      </button>
+      <button onClick={() => navigate('/details', { noScroll: true })}>
+        View Details (No Scroll)
+      </button>
+      <button onClick={() => navigate('/search?q=zess&page=1')}>
+        Search Zess (Page 1)
+      </button>
+    </>
+  )
+}
+```
+
+## useSearchParams
+
+Hook that provides access to search parameters and a function to update them.
+
+**Type:**
+
+```ts
+useSearchParams(): [SearchParams, (params: Record<string, any>, replace?: boolean) => void]
+```
+
+**Returns:** An array containing
+
+- `searchParams`: A reactive object with current search parameters that auto-updates when `location.search` changes or when modified via `setSearchParams`
+- `setSearchParams`: A function to update search parameters
+  - `params`: Search parameters to merge with existing ones. Setting a property value to `undefined`, `null` or an empty string removes that property
+  - `replace`: Optional flag to replace the current history entry
+
+**Example:**
+
+```jsx
+function SearchPage() {
+  const [searchParams, setSearchParams] = useSearchParams()
+  const handleFilterChange = (category) => {
+    setSearchParams({ category })
+  }
+  const resetFilters = () => {
+    setSearchParams({ category: undefined })
+  }
+
+  return (
+    <div>
+      <p>Current filters: {searchParams.category || 'All'}</p>
+      <button onClick={() => handleFilterChange('electronics')}>
+        Electronics
+      </button>
+      <button onClick={() => handleFilterChange('clothing')}>Clothing</button>
+      <button onClick={resetFilters}>Reset</button>
+    </div>
+  )
+}
+```
+
+## useBeforeLeave
+
+Hook that registers a listener to be called before leaving the current route. This allows you to intercept navigation attempts and potentially prevent them, for example, to warn users about unsaved changes.
+
+**Type:**
+
+```ts
+useBeforeLeave(listener: RouteGuardListener): void
+```
+
+**Parameters:**
+
+- `listener`: A function that will be called with a `RouteGuardEvent` object when navigation away from the current route is attempted
+  - `event`: The route guard event object containing:
+    - `to`: The destination path being navigated to
+    - `from`: The current path being navigated from
+    - `options`: Navigation options including `relative`, `replace`, and `noScroll`
+    - `defaultPrevented`: Boolean indicating if the navigation has been prevented
+    - `preventDefault`: Function to call to prevent the navigation
+    - `retry`: Function to retry the navigation later, with an optional `force` parameter to bypass guards
+
+**Example:**
+
+```jsx
+function FormEditor() {
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useSignal(false)
+  useBeforeLeave((event) => {
+    if (hasUnsavedChanges()) {
+      const confirmed = window.confirm(
+        'You have unsaved changes. Are you sure you want to leave?',
+      )
+      if (!confirmed) {
+        event.preventDefault()
+      }
+    }
+  })
+
+  return (
+    <div>
+      <input type="text" onChange={() => setHasUnsavedChanges(true)} />
+      <button onClick={() => setHasUnsavedChanges(false)}>Save</button>
+    </div>
+  )
+}
+```
