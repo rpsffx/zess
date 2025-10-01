@@ -23,7 +23,10 @@ Zess's performance advantages are primarily based on the following two technical
 
 - **JSX Compiler**. Zess's JSX compiler (`@zess/compiler`) does not adopt React's approach of recursively generating `createElement` calls. Instead, it compiles JSX directly into imperative native JavaScript code, reducing unnecessary runtime function calls (only retaining parts necessary for interaction with the Signal reactive system). In implementation, the compiler utilizes tools like `meriyah` and `astring` to enhance parsing and code generation efficiency, offering better compilation performance than traditional Babel. Simultaneously, integrated as a plugin within Vite, it can directly leverage Vite's TypeScript processing capabilities, reducing compilation overhead and integrating into its plugin ecosystem.
 
-<img src="https://pic1.imgdb.cn/item/68d807e4c5157e1a883d2f8b.png" />
+<img
+  src="https://pic1.imgdb.cn/item/68d807e4c5157e1a883d2f8b.png"
+  alt="Benchmark"
+/>
 
 - **Signal Reactive System**. Zess's Signal reactive system (`@zess/core`) employs a modern, fine-grained reactive approach. Through a dependency tracking mechanism, it directly locates and updates the specific parts of the interface affected by state changes, rather than re-rendering the entire component. This method minimizes unnecessary rendering operations, significantly improving application runtime efficiency, resulting in faster response times and a smoother user experience.
 

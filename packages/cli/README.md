@@ -1,7 +1,5 @@
 <div align="center">
-  <picture>
-    <img src="https://pic1.imgdb.cn/item/68c7c093c5157e1a8804fb52.svg" alt="Zess Logo">
-  </picture>
+  <img src="https://pic1.imgdb.cn/item/68c7c093c5157e1a8804fb52.svg" alt="Zess Logo">
 </div>
 
 # @zess/cli
