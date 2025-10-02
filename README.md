@@ -1,15 +1,14 @@
-<div style="display: flex; flex-direction: column; align-items: center;">
-  <img src="https://pic1.imgdb.cn/item/68c7c093c5157e1a8804fb52.svg" alt="Zess Logo">
-  <p style="font-size: 76px; font-weight: bold; line-height: 1.2;">Zess</p>
-  <p style="font-size: 18px; font-weight: 400;">
-    A compiler-driven JavaScript framework for building high-performance user interfaces.
-  </p>
-  <a href="https://rpsffx.github.io/zess/" target="_blank" alt="Zess Documentation" style="font-size: 18px; font-weight: 600; margin-bottom: 32px;">
-    Documentation
-  </a>
+<div align="center" style="display: block; text-align: center; margin: 0 auto;">
+  <img src="https://pic1.imgdb.cn/item/68c7c093c5157e1a8804fb52.svg" alt="Zess Logo" style="max-width: 100%; height: auto;">
 </div>
 
+# Zess
+
 [![GitHub package.json version](https://img.shields.io/github/package-json/v/rpsffx/zess?style=for-the-badge)](./package.json) [![GitHub License](https://img.shields.io/github/license/rpsffx/zess?style=for-the-badge)](./LICENSE)
+
+A compiler-driven JavaScript framework for building high-performance user interfaces.
+
+**[📚 Documentation](https://rpsffx.github.io/zess/)**
 
 ## 🔍 What is Zess?
 
