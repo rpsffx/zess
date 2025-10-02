@@ -1,5 +1,5 @@
-import { Match, Show, Switch, useMemo, useSignal } from '@zess/core'
-import { Link } from '@zess/router'
+import { Match, Show, Switch, useMemo, useSignal } from '@zessjs/core'
+import { Link } from '@zessjs/router'
 
 const ConditionalPage = () => {
   const [count, setCount] = useSignal(0)

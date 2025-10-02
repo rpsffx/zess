@@ -270,7 +270,7 @@ export function compile(
       sourcemap: options.sourcemap!,
       file: options.file ?? 'output.js',
       sourceRoot: options.sourceRoot ?? '',
-      modulePath: options.modulePath ?? '@zess/core',
+      modulePath: options.modulePath ?? '@zessjs/core',
     },
     ast,
     events: [],

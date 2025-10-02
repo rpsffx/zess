@@ -5,8 +5,8 @@ import {
   useMemo,
   useSignal,
   type Component,
-} from '@zess/core'
-import { Link } from '@zess/router'
+} from '@zessjs/core'
+import { Link } from '@zessjs/router'
 
 const ConditionalPage: Component = () => {
   const [count, setCount] = useSignal(0)

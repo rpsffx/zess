@@ -1,5 +1,5 @@
 import process from 'node:process'
-import { compile } from '@zess/compiler'
+import { compile } from '@zessjs/compiler'
 import { createFilter, type FilterPattern, type Plugin } from 'vite'
 
 export default function zess(
@@ -27,8 +27,8 @@ export default function zess(
           jsx: 'preserve',
         },
         force: true,
-        include: ['@zess/core'],
-        exclude: ['@zess/router'],
+        include: ['@zessjs/core'],
+        exclude: ['@zessjs/router'],
       },
     }),
     transform(code, id) {
@@ -37,7 +37,7 @@ export default function zess(
         file: id,
         sourceRoot: process.cwd(),
         sourcemap: this.getCombinedSourcemap(),
-        modulePath: options.modulePath ?? '@zess/core',
+        modulePath: options.modulePath ?? '@zessjs/core',
       })
     },
   }

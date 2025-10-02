@@ -9,7 +9,7 @@ import {
   type Component,
   type Owner,
   type SetStoreFunction,
-} from '@zess/core'
+} from '@zessjs/core'
 
 type RouterProps = {
   mode?: RouteMode

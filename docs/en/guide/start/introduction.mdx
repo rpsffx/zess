@@ -21,14 +21,14 @@ Furthermore, Zess includes a built-in, efficient Signal reactive system. When a 
 
 Zess's performance advantages are primarily based on the following two technical implementations:
 
-- **JSX Compiler**. Zess's JSX compiler (`@zess/compiler`) does not adopt React's approach of recursively generating `createElement` calls. Instead, it compiles JSX directly into imperative native JavaScript code, reducing unnecessary runtime function calls (only retaining parts necessary for interaction with the Signal reactive system). In implementation, the compiler utilizes tools like `meriyah` and `astring` to enhance parsing and code generation efficiency, offering better compilation performance than traditional Babel. Simultaneously, integrated as a plugin within Vite, it can directly leverage Vite's TypeScript processing capabilities, reducing compilation overhead and integrating into its plugin ecosystem.
+- **JSX Compiler**. Zess's JSX compiler (`@zessjs/compiler`) does not adopt React's approach of recursively generating `createElement` calls. Instead, it compiles JSX directly into imperative native JavaScript code, reducing unnecessary runtime function calls (only retaining parts necessary for interaction with the Signal reactive system). In implementation, the compiler utilizes tools like `meriyah` and `astring` to enhance parsing and code generation efficiency, offering better compilation performance than traditional Babel. Simultaneously, integrated as a plugin within Vite, it can directly leverage Vite's TypeScript processing capabilities, reducing compilation overhead and integrating into its plugin ecosystem.
 
 <img
   src="https://pic1.imgdb.cn/item/68d807e4c5157e1a883d2f8b.png"
   alt="Benchmark"
 />
 
-- **Signal Reactive System**. Zess's Signal reactive system (`@zess/core`) employs a modern, fine-grained reactive approach. Through a dependency tracking mechanism, it directly locates and updates the specific parts of the interface affected by state changes, rather than re-rendering the entire component. This method minimizes unnecessary rendering operations, significantly improving application runtime efficiency, resulting in faster response times and a smoother user experience.
+- **Signal Reactive System**. Zess's Signal reactive system (`@zessjs/core`) employs a modern, fine-grained reactive approach. Through a dependency tracking mechanism, it directly locates and updates the specific parts of the interface affected by state changes, rather than re-rendering the entire component. This method minimizes unnecessary rendering operations, significantly improving application runtime efficiency, resulting in faster response times and a smoother user experience.
 
 ### Comprehensive Type Safety
 
@@ -37,7 +37,7 @@ Zess provides out-of-the-box TypeScript support, deeply integrating TSX syntax t
 Through strict type constraints, Zess helps developers discover and fix most type-related errors during the coding phase, effectively reducing runtime exceptions and making applications more stable and robust. Additionally, comprehensive type documentation facilitates smoother team collaboration and significantly lowers maintenance costs.
 
 ```tsx title="Counter.tsx"
-import { render, useSignal, type Component } from '@zess/core'
+import { render, useSignal, type Component } from '@zessjs/core'
 
 const Counter: Component = () => {
   const [count, setCount] = useSignal(1)

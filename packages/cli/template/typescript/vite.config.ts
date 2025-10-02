@@ -1,6 +1,6 @@
 /// <reference types="vitest/config" />
 import tailwindcss from '@tailwindcss/vite'
-import zess from '@zess/vite-plugin'
+import zess from '@zessjs/vite-plugin'
 import { defineConfig } from 'vite'
 
 export default defineConfig({

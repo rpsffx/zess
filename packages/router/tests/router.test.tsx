@@ -1,4 +1,4 @@
-import { createRoot, render, useRenderEffect } from '@zess/core'
+import { createRoot, render, useRenderEffect } from '@zessjs/core'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import {
   Link,

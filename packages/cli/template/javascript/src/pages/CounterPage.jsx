@@ -1,5 +1,5 @@
-import { useMemo, useSignal } from '@zess/core'
-import { Link } from '@zess/router'
+import { useMemo, useSignal } from '@zessjs/core'
+import { Link } from '@zessjs/router'
 
 const CounterPage = () => {
   const [count, setCount] = useSignal(0)

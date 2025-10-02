@@ -1,5 +1,5 @@
-import { For, Show, useSignal } from '@zess/core'
-import { Link } from '@zess/router'
+import { For, Show, useSignal } from '@zessjs/core'
+import { Link } from '@zessjs/router'
 
 const ListPage = () => {
   const [items, setItems] = useSignal([

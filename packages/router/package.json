@@ -1,5 +1,5 @@
 {
-  "name": "@zess/router",
+  "name": "@zessjs/router",
   "version": "1.0.0",
   "packageManager": "pnpm@10.17.1",
   "description": "Zess router 📍 Client-side navigation, dynamic & nested routing for web apps",
@@ -40,11 +40,11 @@
     "dev": "tsdown --watch"
   },
   "peerDependencies": {
-    "@zess/core": "workspace:*"
+    "@zessjs/core": "workspace:*"
   },
   "devDependencies": {
-    "@zess/compiler": "workspace:*",
-    "@zess/core": "workspace:*"
+    "@zessjs/compiler": "workspace:*",
+    "@zessjs/core": "workspace:*"
   },
   "engines": {
     "node": ">=18.12.0"

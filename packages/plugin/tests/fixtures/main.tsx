@@ -1,4 +1,4 @@
-import { render, useSignal, type Component } from '@zess/core'
+import { render, useSignal, type Component } from '@zessjs/core'
 
 const Counter: Component = () => {
   const [count, setCount] = useSignal(1)

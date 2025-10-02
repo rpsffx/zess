@@ -21,14 +21,14 @@ Zess（发音为 /zɛs/）是一个基于编译器的 JavaScript 框架，专注
 
 Zess 的性能优势主要基于以下两项技术实现：
 
-- **JSX 编译器**。Zess 的 JSX 编译器（`@zess/compiler`）不采用 React 中递归生成 `createElement` 的方式，而是将 JSX 直接编译为命令式的原生 JavaScript 代码，从而减少不必要的运行时函数调用（仅保留与 Signal 响应式系统交互所必需的部分）。在实现上，编译器借助 `meriyah` 和 `astring` 等工具提升解析与代码生成效率，编译性能优于传统 Babel。同时，它作为插件集成在 Vite 中，可直接复用 Vite 的 TypeScript 处理能力，降低编译开销，并融入其插件生态。
+- **JSX 编译器**。Zess 的 JSX 编译器（`@zessjs/compiler`）不采用 React 中递归生成 `createElement` 的方式，而是将 JSX 直接编译为命令式的原生 JavaScript 代码，从而减少不必要的运行时函数调用（仅保留与 Signal 响应式系统交互所必需的部分）。在实现上，编译器借助 `meriyah` 和 `astring` 等工具提升解析与代码生成效率，编译性能优于传统 Babel。同时，它作为插件集成在 Vite 中，可直接复用 Vite 的 TypeScript 处理能力，降低编译开销，并融入其插件生态。
 
 <img
   src="https://pic1.imgdb.cn/item/68d807e4c5157e1a883d2f8b.png"
   alt="Benchmark"
 />
 
-- **Signal 响应式系统**。Zess 的 Signal 响应式系统（`@zess/core`）采用现代细粒度响应式方案，通过依赖追踪机制，在状态变化时直接定位并更新受影响的具体界面部分，而非重新渲染整个组件。这种方式最大限度地减少了不必要的渲染操作，显著提升了应用运行效率，带来更快的响应速度和更流畅的用户体验。
+- **Signal 响应式系统**。Zess 的 Signal 响应式系统（`@zessjs/core`）采用现代细粒度响应式方案，通过依赖追踪机制，在状态变化时直接定位并更新受影响的具体界面部分，而非重新渲染整个组件。这种方式最大限度地减少了不必要的渲染操作，显著提升了应用运行效率，带来更快的响应速度和更流畅的用户体验。
 
 ### 完备的类型安全
 
@@ -37,7 +37,7 @@ Zess 提供开箱即用的 TypeScript 支持，深度集成 TSX 语法，将类�
 通过严格的类型约束，Zess 帮助开发者在编码阶段即可发现并修复大部分类型相关错误，有效减少运行时异常，让应用更加稳定健壮。同时，完善的类型文档使团队协作更加顺畅，大幅降低维护成本。
 
 ```tsx title="Counter.tsx"
-import { render, useSignal, type Component } from '@zess/core'
+import { render, useSignal, type Component } from '@zessjs/core'
 
 const Counter: Component = () => {
   const [count, setCount] = useSignal(1)

@@ -1,4 +1,4 @@
-import { compile } from '@zess/compiler'
+import { compile } from '@zessjs/compiler'
 import { defineConfig } from 'tsdown'
 
 export default [

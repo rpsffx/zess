@@ -1,5 +1,5 @@
-import { Link } from '@zess/router'
-import type { Component } from '@zess/core'
+import { Link } from '@zessjs/router'
+import type { Component } from '@zessjs/core'
 
 const HomePage: Component = () => (
   <div class="w-full text-center pb-8">

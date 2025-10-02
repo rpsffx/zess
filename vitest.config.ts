@@ -1,5 +1,5 @@
 import { resolve } from 'node:path'
-import zess from '@zess/vite-plugin'
+import zess from '@zessjs/vite-plugin'
 import { defineConfig, type ViteUserConfig } from 'vitest/config'
 
 const config: ViteUserConfig = defineConfig({
@@ -40,7 +40,7 @@ const config: ViteUserConfig = defineConfig({
           environment: 'node',
           include: ['./tests/*.test.ts'],
           alias: {
-            '@zess/compiler': resolve(
+            '@zessjs/compiler': resolve(
               __dirname,
               './packages/compiler/src/compiler.ts',
             ),

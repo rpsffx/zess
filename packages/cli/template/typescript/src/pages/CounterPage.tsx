@@ -1,5 +1,5 @@
-import { useMemo, useSignal, type Component } from '@zess/core'
-import { Link } from '@zess/router'
+import { useMemo, useSignal, type Component } from '@zessjs/core'
+import { Link } from '@zessjs/router'
 
 const CounterPage: Component = () => {
   const [count, setCount] = useSignal(0)

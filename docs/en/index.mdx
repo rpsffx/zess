@@ -81,7 +81,7 @@ import { Tab, Tabs, HomeFooter } from 'rspress/theme'
     <Tabs>
       <Tab label="TypeScript">
         ```tsx title="Counter.tsx"
-        import { render, useSignal, type Component } from '@zess/core'
+        import { render, useSignal, type Component } from '@zessjs/core'
 
         const Counter: Component = () => {
         const [count, setCount] = useSignal(1)
@@ -100,8 +100,8 @@ import { Tab, Tabs, HomeFooter } from 'rspress/theme'
       </Tab>
       <Tab label="JavaScript">
         ```js title="Counter.js"
-        import {createComponent as _$createComponent, createElement as _$createElement, delegateEvents as _$delegateEvents, insert as _$insert, setAttribute as _$setAttribute} from "@zess/core";
-        import {render, useSignal} from "@zess/core";
+        import {createComponent as _$createComponent, createElement as _$createElement, delegateEvents as _$delegateEvents, insert as _$insert, setAttribute as _$setAttribute} from "@zessjs/core";
+        import {render, useSignal} from "@zessjs/core";
         const Counter = () => {
           const [count, setCount] = useSignal(1);
           const increment = () => setCount(count => count + 1);
@@ -118,6 +118,7 @@ import { Tab, Tabs, HomeFooter } from 'rspress/theme'
         ```
       </Tab>
     </Tabs>
+
   </div>
   <div className="footer">
     <HomeFooter />

@@ -6,7 +6,7 @@ import { PackageManagerTabs } from 'rspress/theme'
 
 ### Method 1: Create via CLI
 
-You can create a Zess project using the `@zess/cli` cli:
+You can create a Zess project using the `@zessjs/cli` cli:
 
 <PackageManagerTabs
   command={{
@@ -61,11 +61,11 @@ mkdir my-app && cd my-app && npm init -y
 
 Next, install the Zess core library using npm, pnpm, yarn, or bun:
 
-<PackageManagerTabs command="install @zess/core" />
+<PackageManagerTabs command="install @zessjs/core" />
 
 Then install the Zess JSX compiler plugin (if Vite is not installed, please install it as well):
 
-<PackageManagerTabs command="install @zess/vite-plugin -D" />
+<PackageManagerTabs command="install @zessjs/vite-plugin -D" />
 
 Add the following scripts to your `package.json`:
 
@@ -79,11 +79,11 @@ Add the following scripts to your `package.json`:
 }
 ```
 
-Import `@zess/vite-plugin` in your Vite configuration:
+Import `@zessjs/vite-plugin` in your Vite configuration:
 
 ```ts title="vite.config.ts"
 import { defineConfig } from 'vite'
-import zess from '@zess/vite-plugin'
+import zess from '@zessjs/vite-plugin'
 
 export default defineConfig({
   plugins: [zess()],
@@ -97,7 +97,7 @@ Also, create a new `tsconfig.json` with the following content:
   "compilerOptions": {
     "target": "ESNext",
     "jsx": "preserve",
-    "jsxImportSource": "@zess/core",
+    "jsxImportSource": "@zessjs/core",
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
     "moduleDetection": "force",
     "module": "preserve",

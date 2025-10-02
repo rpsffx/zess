@@ -1,5 +1,5 @@
-import { render } from '@zess/core'
-import { Link, Route, Router } from '@zess/router'
+import { render } from '@zessjs/core'
+import { Link, Route, Router } from '@zessjs/router'
 import viteLogo from './assets/vite.svg'
 import ConditionalPage from './pages/ConditionalPage'
 import CounterPage from './pages/CounterPage'

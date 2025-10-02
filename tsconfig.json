@@ -8,9 +8,9 @@
     "module": "preserve",
     "moduleResolution": "bundler",
     "paths": {
-      "@zess/core": ["core/src/index.ts"],
-      "@zess/compiler": ["compiler/src/compiler.ts"],
-      "@zess/vite-plugin": ["plugin/src/plugin.ts"]
+      "@zessjs/core": ["core/src/index.ts"],
+      "@zessjs/compiler": ["compiler/src/compiler.ts"],
+      "@zessjs/vite-plugin": ["plugin/src/plugin.ts"]
     },
     "resolveJsonModule": true,
     "types": ["node", "@vitest/browser/providers/playwright"],

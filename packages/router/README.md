@@ -2,9 +2,9 @@
   <img src="https://pic1.imgdb.cn/item/68c7c093c5157e1a8804fb52.svg" alt="Zess Logo">
 </div>
 
-# @zess/router
+# @zessjs/router
 
-[![NPM Version](https://img.shields.io/npm/v/@zess/router.svg?style=for-the-badge)](https://www.npmjs.com/package/@zess/router) [![NPM License](https://img.shields.io/npm/l/@zess/router.svg?style=for-the-badge)](https://github.com/rpsffx/zess/blob/main/LICENSE)
+[![NPM Version](https://img.shields.io/npm/v/@zessjs/router.svg?style=for-the-badge)](https://www.npmjs.com/package/@zessjs/router) [![NPM License](https://img.shields.io/npm/l/@zessjs/router.svg?style=for-the-badge)](https://github.com/rpsffx/zess/blob/main/LICENSE)
 
 Zess router 📍 Client-side navigation, dynamic & nested routing for web apps.
 
@@ -17,19 +17,19 @@ Zess router 📍 Client-side navigation, dynamic & nested routing for web apps.
 - **🚀 Dynamic Navigation**: Programmatically navigate between routes using hooks
 - **🔍 Search Params Handling**: Built-in support for managing query parameters
 - **🔒 Type Safety**: Complete TypeScript type definitions
-- **🔄 Seamless Integration**: Works perfectly with @zess/core reactive system
+- **🔄 Seamless Integration**: Works perfectly with @zessjs/core reactive system
 
 ## 📦 Installation
 
 ```bash
 # Using npm
-npm install @zess/router
+npm install @zessjs/router
 
 # Using yarn
-yarn add @zess/router
+yarn add @zessjs/router
 
 # Using pnpm
-pnpm add @zess/router
+pnpm add @zessjs/router
 ```
 
 ## 🚀 Basic Usage
@@ -37,8 +37,8 @@ pnpm add @zess/router
 ### Setting Up the Router
 
 ```jsx
-import { render } from '@zess/core'
-import { Router, Route } from '@zess/router'
+import { render } from '@zessjs/core'
+import { Router, Route } from '@zessjs/router'
 
 function RootLayout(props) {
   return <div>{props.children}</div>
@@ -66,7 +66,7 @@ render(
 ### Using Navigation Links
 
 ```jsx
-import { Link } from '@zess/router'
+import { Link } from '@zessjs/router'
 
 function Navigation() {
   return (
@@ -85,7 +85,7 @@ function Navigation() {
 ### Programmatically Navigating
 
 ```jsx
-import { useNavigate } from '@zess/router'
+import { useNavigate } from '@zessjs/router'
 
 function NavigationButtons() {
   const navigate = useNavigate()
@@ -106,7 +106,7 @@ function NavigationButtons() {
 ### Nested Routes
 
 ```jsx
-import { Router, Route } from '@zess/router'
+import { Router, Route } from '@zessjs/router'
 
 function AppLayout(props) {
   return (
@@ -156,7 +156,7 @@ render(
 ### Working with Search Parameters
 
 ```jsx
-import { useSearchParams } from '@zess/router'
+import { useSearchParams } from '@zessjs/router'
 
 function SearchComponent() {
   const [searchParams, setSearchParams] = useSearchParams()

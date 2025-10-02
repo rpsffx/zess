@@ -2,9 +2,9 @@
   <img src="https://pic1.imgdb.cn/item/68c7c093c5157e1a8804fb52.svg" alt="Zess Logo">
 </div>
 
-# @zess/compiler
+# @zessjs/compiler
 
-[![NPM Version](https://img.shields.io/npm/v/@zess/compiler.svg?style=for-the-badge)](https://www.npmjs.com/package/@zess/compiler) [![NPM License](https://img.shields.io/npm/l/@zess/compiler.svg?style=for-the-badge)](https://github.com/rpsffx/zess/blob/main/LICENSE)
+[![NPM Version](https://img.shields.io/npm/v/@zessjs/compiler.svg?style=for-the-badge)](https://www.npmjs.com/package/@zessjs/compiler) [![NPM License](https://img.shields.io/npm/l/@zessjs/compiler.svg?style=for-the-badge)](https://github.com/rpsffx/zess/blob/main/LICENSE)
 
 Zess JSX compiler 💥 Delivers efficient code conversion for super - responsive web experiences.
 
@@ -33,19 +33,19 @@ Zess JSX compiler 💥 Delivers efficient code conversion for super - responsive
 
 ```bash
 # Using npm
-npm install @zess/compiler
+npm install @zessjs/compiler
 
 # Using yarn
-yarn add @zess/compiler
+yarn add @zessjs/compiler
 
 # Using pnpm
-pnpm add @zess/compiler
+pnpm add @zessjs/compiler
 ```
 
 ## 🚀 Basic Usage
 
 ```javascript
-import { compile } from '@zess/compiler'
+import { compile } from '@zessjs/compiler'
 
 // Compile simple JSX code
 const result = compile('<div>Hello World</div>')
@@ -59,7 +59,7 @@ console.log(result.map) // Generated source map
 ### Custom Runtime Import Path
 
 ```javascript
-import { compile } from '@zess/compiler'
+import { compile } from '@zessjs/compiler'
 
 // Configure custom runtime module path
 const result = compile('<div>Custom Runtime</div>', {
@@ -70,7 +70,7 @@ const result = compile('<div>Custom Runtime</div>', {
 ### Source Map Configuration
 
 ```javascript
-import { compile } from '@zess/compiler'
+import { compile } from '@zessjs/compiler'
 
 // Enable source maps with file information
 const result = compile('<div>With Source Maps</div>', {
@@ -90,7 +90,7 @@ const sourceMapString = JSON.stringify(result.map)
 
 - `code` (string): The JSX code to compile
 - `options` (object, optional): Compilation options
-  - `modulePath` (string): Module path for importing runtime functions (default: '@zess/core')
+  - `modulePath` (string): Module path for importing runtime functions (default: '@zessjs/core')
   - `file` (string): Filename for source map generation (default: 'output.js')
   - `sourceRoot` (string): Source root directory for source maps (default: '')
   - `sourcemap` (RawSourceMap): Existing source map to merge with the generated map

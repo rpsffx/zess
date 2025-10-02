@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "ESNext",
     "jsx": "preserve",
-    "jsxImportSource": "@zess/core",
+    "jsxImportSource": "@zessjs/core",
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
     "types": ["vite/client", "vitest/jsdom"],
     "moduleResolution": "bundler"

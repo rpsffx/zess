@@ -1,4 +1,4 @@
-import { render } from '@zess/core'
+import { render } from '@zessjs/core'
 import { describe, expect, it } from 'vitest'
 
 function HelloWorld() {

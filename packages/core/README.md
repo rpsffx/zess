@@ -2,9 +2,9 @@
   <img src="https://pic1.imgdb.cn/item/68c7c093c5157e1a8804fb52.svg" alt="Zess Logo">
 </div>
 
-# @zess/core
+# @zessjs/core
 
-[![NPM Version](https://img.shields.io/npm/v/@zess/core.svg?style=for-the-badge)](https://www.npmjs.com/package/@zess/core) [![NPM License](https://img.shields.io/npm/l/@zess/core.svg?style=for-the-badge)](https://github.com/rpsffx/zess/blob/main/LICENSE)
+[![NPM Version](https://img.shields.io/npm/v/@zessjs/core.svg?style=for-the-badge)](https://www.npmjs.com/package/@zessjs/core) [![NPM License](https://img.shields.io/npm/l/@zessjs/core.svg?style=for-the-badge)](https://github.com/rpsffx/zess/blob/main/LICENSE)
 
 Zess core module ⚙️ Provides powerful runtime functionality for high - performance web applications.
 
@@ -23,13 +23,13 @@ Zess core module ⚙️ Provides powerful runtime functionality for high - perfo
 
 ```bash
 # Using npm
-npm install @zess/core
+npm install @zessjs/core
 
 # Using yarn
-yarn add @zess/core
+yarn add @zessjs/core
 
 # Using pnpm
-pnpm add @zess/core
+pnpm add @zessjs/core
 ```
 
 ## 🚀 Basic Usage
@@ -37,7 +37,7 @@ pnpm add @zess/core
 ### Creating a Reactive Signal
 
 ```jsx
-import { useSignal } from '@zess/core'
+import { useSignal } from '@zessjs/core'
 
 function Counter() {
   const [count, setCount] = useSignal(0)
@@ -54,7 +54,7 @@ function Counter() {
 ### Using Effects
 
 ```jsx
-import { useSignal, useEffect } from '@zess/core'
+import { useSignal, useEffect } from '@zessjs/core'
 
 function EffectExample() {
   const [count, setCount] = useSignal(0)
@@ -75,7 +75,7 @@ function EffectExample() {
 ### Creating Computed Values
 
 ```jsx
-import { useSignal, useMemo } from '@zess/core'
+import { useSignal, useMemo } from '@zessjs/core'
 
 function FormattedCounter() {
   const [count, setCount] = useSignal(0)
@@ -95,7 +95,7 @@ function FormattedCounter() {
 ### Using Conditional Rendering
 
 ```jsx
-import { useSignal, Show } from '@zess/core'
+import { useSignal, Show } from '@zessjs/core'
 
 function ConditionalContent() {
   const [isLoggedIn, setIsLoggedIn] = useSignal(false)
@@ -119,7 +119,7 @@ function ConditionalContent() {
 ### Rendering Lists
 
 ```jsx
-import { useSignal, For } from '@zess/core'
+import { useSignal, For } from '@zessjs/core'
 
 function TodoList() {
   const [todos, setTodos] = useSignal([
@@ -145,7 +145,7 @@ function TodoList() {
 ### Managing Complex State with Store
 
 ```jsx
-import { useStore } from '@zess/core'
+import { useStore } from '@zessjs/core'
 
 function UserProfile() {
   const [user, setUser] = useStore({

@@ -1,4 +1,4 @@
-import { Link } from '@zess/router'
+import { Link } from '@zessjs/router'
 
 const HomePage = () => (
   <div class="w-full text-center pb-8">

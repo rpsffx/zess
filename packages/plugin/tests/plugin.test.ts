@@ -3,7 +3,7 @@ import { resolve } from 'node:path'
 import { createServer, type ViteDevServer } from 'vite'
 import { describe, expect, it } from 'vitest'
 import zess from '../src/plugin'
-import type { RawSourceMap } from '@zess/compiler'
+import type { RawSourceMap } from '@zessjs/compiler'
 
 function createTestServer(): Promise<ViteDevServer> {
   return createServer({
@@ -11,7 +11,7 @@ function createTestServer(): Promise<ViteDevServer> {
     plugins: [zess()],
     resolve: {
       alias: {
-        '@zess/core': resolve(__dirname, '../../core/src/index.ts'),
+        '@zessjs/core': resolve(__dirname, '../../core/src/index.ts'),
       },
     },
   })

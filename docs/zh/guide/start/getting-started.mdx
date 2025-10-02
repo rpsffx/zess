@@ -61,11 +61,11 @@ mkdir my-app && cd my-app && npm init -y
 
 接着，使用 npm、pnpm、yarn 或 bun 安装 Zess 核心库：
 
-<PackageManagerTabs command="install @zess/core" />
+<PackageManagerTabs command="install @zessjs/core" />
 
 再安装 Zess 的 JSX 编译器插件（如未安装 Vite，请一并安装）：
 
-<PackageManagerTabs command="install @zess/vite-plugin -D" />
+<PackageManagerTabs command="install @zessjs/vite-plugin -D" />
 
 在 `package.json` 中添加以下脚本：
 
@@ -79,11 +79,11 @@ mkdir my-app && cd my-app && npm init -y
 }
 ```
 
-在 Vite 配置中引入 `@zess/vite-plugin`：
+在 Vite 配置中引入 `@zessjs/vite-plugin`：
 
 ```ts title="vite.config.ts"
 import { defineConfig } from 'vite'
-import zess from '@zess/vite-plugin'
+import zess from '@zessjs/vite-plugin'
 
 export default defineConfig({
   plugins: [zess()],
@@ -97,7 +97,7 @@ export default defineConfig({
   "compilerOptions": {
     "target": "ESNext",
     "jsx": "preserve",
-    "jsxImportSource": "@zess/core",
+    "jsxImportSource": "@zessjs/core",
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
     "moduleDetection": "force",
     "module": "preserve",
