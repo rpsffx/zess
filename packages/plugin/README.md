@@ -4,7 +4,7 @@
 
 # @zess/plugin
 
-[![NPM Version](https://img.shields.io/npm/v/@zess/plugin.svg?style=flat-square&color=lightblue)](https://www.npmjs.com/package/@zess/plugin) [![License](https://img.shields.io/npm/l/@zess/plugin.svg?style=flat-square&color=lightblue)](https://github.com/rpsffx/zess/blob/main/LICENSE)
+[![NPM Version](https://img.shields.io/npm/v/@zess/plugin.svg?style=for-the-badge)](https://www.npmjs.com/package/@zess/plugin) [![License](https://img.shields.io/npm/l/@zess/plugin.svg?style=for-the-badge)](https://github.com/rpsffx/zess/blob/main/LICENSE)
 
 Vite plugin for Zess 🧩 JSX file parser and transformer for building modern web applications.
 

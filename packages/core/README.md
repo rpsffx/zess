@@ -4,7 +4,7 @@
 
 # @zess/core
 
-[![NPM Version](https://img.shields.io/npm/v/@zess/core.svg?style=flat-square&color=lightblue)](https://www.npmjs.com/package/@zess/core) [![License](https://img.shields.io/npm/l/@zess/core.svg?style=flat-square&color=lightblue)](https://github.com/rpsffx/zess/blob/main/LICENSE)
+[![NPM Version](https://img.shields.io/npm/v/@zess/core.svg?style=for-the-badge)](https://www.npmjs.com/package/@zess/core) [![License](https://img.shields.io/npm/l/@zess/core.svg?style=for-the-badge)](https://github.com/rpsffx/zess/blob/main/LICENSE)
 
 Zess core module ⚙️ Provides powerful runtime functionality for high - performance web applications.
 

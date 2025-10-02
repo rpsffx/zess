@@ -4,7 +4,7 @@
 
 # @zess/cli
 
-[![NPM Version](https://img.shields.io/npm/v/@zess/cli.svg?style=flat-square&color=lightblue)](https://www.npmjs.com/package/@zess/cli) [![License](https://img.shields.io/npm/l/@zess/cli.svg?style=flat-square&color=lightblue)](https://github.com/rpsffx/zess/blob/main/LICENSE)
+[![NPM Version](https://img.shields.io/npm/v/@zess/cli.svg?style=for-the-badge)](https://www.npmjs.com/package/@zess/cli) [![License](https://img.shields.io/npm/l/@zess/cli.svg?style=for-the-badge)](https://github.com/rpsffx/zess/blob/main/LICENSE)
 
 Zess CLI tool 🔨 For easily creating Vite-powered Zess project.
 
