@@ -28,7 +28,7 @@ Zess (pronounced /zɛs/) is a compiler-based JavaScript framework for building u
 Create a new Zess project via CLI where `my-app` is your project directory:
 
 ```bash
-npx create-zess my-app
+npx -p @zessjs/cli init my-app
 ```
 
 ### Start Development Server

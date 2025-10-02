@@ -11,7 +11,7 @@
 Zess CLI tool 🔨 For easily creating Vite-powered Zess project.
 
 <div align="center">
-  <img src="https://pic1.imgdb.cn/item/68d2c7b7c5157e1a882be39f.gif" alt="Zess CLI Usage" style="max-width: 100%; height: auto;">
+  <img src="https://pic1.imgdb.cn/item/68dea750c5157e1a885103f9.gif" alt="Zess CLI Usage" style="max-width: 100%; height: auto;">
 </div>
 
 ## 🚀 Usage
@@ -21,7 +21,7 @@ Zess CLI tool 🔨 For easily creating Vite-powered Zess project.
 Run the following command to create a new Zess project:
 
 ```bash
-npx create-zess my-app
+npx -p @zessjs/cli init my-app
 ```
 
 Where `my-app` is the directory where you want to create your project.

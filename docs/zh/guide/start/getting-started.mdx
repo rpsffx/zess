@@ -10,17 +10,17 @@ import { PackageManagerTabs } from 'rspress/theme'
 
 <PackageManagerTabs
   command={{
-    npm: 'npx create-zess my-app',
-    yarn: 'yarn dlx create-zess my-app',
-    pnpm: 'pnpx create-zess my-app',
-    bun: 'bunx create-zess my-app',
+    npm: 'npx -p @zessjs/cli init my-app',
+    yarn: 'yarn dlx -p @zessjs/cli init my-app',
+    pnpm: 'pnpx -p @zessjs/cli init my-app',
+    bun: 'bunx -p @zessjs/cli init my-app',
   }}
 />
 
 其中 `my-app` 为要创建的项目目录名。运行命令后，只需按照提示输入项目名称并选择模板，即可快速创建 Zess 项目。
 
 <img
-  src="https://pic1.imgdb.cn/item/68d2c7b7c5157e1a882be39f.gif"
+  src="https://pic1.imgdb.cn/item/68dea750c5157e1a885103f9.gif"
   alt="Zess CLI Usage"
 />
 
