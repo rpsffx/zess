@@ -1,6 +1,6 @@
 {
   "name": "@zessjs/cli",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "packageManager": "pnpm@10.17.1",
   "description": "Zess CLI tool 🔨 For easily creating Vite-powered Zess project.",
   "type": "module",
