@@ -12,6 +12,7 @@
     "dev": "pnpm run --filter=\"./packages/*\" dev",
     "lint": "eslint --cache .",
     "lint:fix": "pnpm run lint --fix",
+    "typecheck": "tsc --noEmit",
     "test": "vitest",
     "coverage": "vitest run --coverage",
     "format": "prettier --write --cache \"**/*.{ts,tsx}\"",
