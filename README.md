@@ -8,7 +8,7 @@
 
 A compiler-driven JavaScript framework for building high-performance user interfaces.
 
-**[📚 Documentation](https://rpsffx.github.io/zess/)**
+**[📖 Documentation](https://rpsffx.github.io/zess/)**
 
 ## 🔍 What is Zess?
 
