@@ -167,6 +167,7 @@ async function mergePackageJson(
     destPackageJson.prettier = srcPackageJson.prettier
     srcPackageJson = destPackageJson
   }
+  srcPackageJson.version = '0.0.0'
   srcPackageJson.name = projectName
   delete srcPackageJson.devDependencies[
     useTypeScript ? 'eslint-plugin-react' : 'typescript'
