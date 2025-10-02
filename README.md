@@ -22,7 +22,7 @@ Zess (pronounced /zɛs/) is a compiler-based JavaScript framework for building u
 - **🛠️ Fast Development**: Powered by Vite for millisecond-level hot updates and efficient bundling, boosting development productivity.
 - **📚 Easy to Learn**: Familiar API design inspired by mainstream frameworks lowers the learning curve and speeds up proficiency.
 
-## 🚀 Usage
+## 🎯 Getting Started
 
 ### Create Project
 
