@@ -1,4 +1,4 @@
-#!/usr/bin/env -S npx tsx
+#!/usr/bin/env node
 
 import child_process from 'node:child_process'
 import { existsSync } from 'node:fs'
@@ -21,8 +21,8 @@ import {
 import { program } from 'commander'
 import gradient from 'gradient-string'
 import pc from 'picocolors'
-import { description, version } from './package.json'
-import { name } from './template/common/package.json'
+import { description, version } from '../package.json'
+import { name } from '../template/common/package.json'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const exec = promisify(child_process.exec)
@@ -91,7 +91,7 @@ async function copyTemplateFiles(
 ): Promise<void> {
   const setupSpinner = spinner()
   setupSpinner.start('Setting up project files...')
-  const templatePath = path.join(__dirname, 'template')
+  const templatePath = path.join(__dirname, '..', 'template')
   await copyDirectory(path.join(templatePath, 'common'), projectPath, {
     '.gitignore': async (srcPath, destPath) => {
       if (!existsSync(destPath)) return true
@@ -199,7 +199,7 @@ function init(): void {
           'Network: use --host to expose',
         )
         outro('Happy coding with your Zess project!')
-      } catch (error) {
+      } catch (error: any) {
         process.stderr.write(error?.message ?? error)
         process.exit(1)
       }
