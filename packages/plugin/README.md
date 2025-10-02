@@ -92,7 +92,7 @@ export default defineConfig({
 The Zess plugin is compatible with:
 
 - Vite ^3 || ^4 || ^5 || ^6 || ^7
-- Node.js >=18.12.0
+- Node.js >=18.0.0
 - Modern browsers (Chrome, Firefox, Safari, Edge)
 
 ## 📝 License

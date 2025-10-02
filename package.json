@@ -15,7 +15,7 @@
     "test": "vitest",
     "coverage": "vitest run --coverage",
     "format": "prettier --write --cache \"**/*.{ts,tsx}\"",
-    "release": "bumpp -r && pnpm publish -r --access public",
+    "release": "bumpp -r && pnpm publish -r",
     "prepublishOnly": "pnpm run build",
     "postinstall": "playwright install && simple-git-hooks",
     "docs:dev": "rspress dev",
@@ -28,24 +28,24 @@
     "@rspress/plugin-shiki": "^1.45.6",
     "@sxzz/eslint-config": "^4.6.0",
     "@sxzz/prettier-config": "^2.2.4",
-    "@types/node": "^22.18.8",
+    "@types/node": "^24.6.2",
     "@vitest/browser": "^3.2.4",
     "@vitest/coverage-istanbul": "^3.2.4",
     "@zessjs/vite-plugin": "workspace:*",
-    "bumpp": "^9.11.1",
+    "bumpp": "^10.2.3",
     "eslint": "^9.36.0",
     "lint-staged": "^16.2.3",
     "playwright": "^1.55.1",
     "prettier": "^3.6.2",
     "rspress": "^1.45.6",
     "simple-git-hooks": "^2.13.1",
-    "tsdown": "^0.6.10",
+    "tsdown": "^0.7.5",
     "tsx": "^4.20.6",
     "typescript": "~5.8.3",
     "vitest": "^3.2.4"
   },
   "engines": {
-    "node": ">=18.12.0"
+    "node": ">=18.0.0"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
