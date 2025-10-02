@@ -2,9 +2,9 @@
   <img src="https://pic1.imgdb.cn/item/68c7c093c5157e1a8804fb52.svg" alt="Zess Logo">
 </div>
 
-# @zessjs/plugin
+# @zessjs/vite-plugin
 
-[![NPM Version](https://img.shields.io/npm/v/@zessjs/plugin.svg?style=for-the-badge)](https://www.npmjs.com/package/@zessjs/plugin) [![NPM License](https://img.shields.io/npm/l/@zessjs/plugin.svg?style=for-the-badge)](https://github.com/rpsffx/zess/blob/main/LICENSE)
+[![NPM Version](https://img.shields.io/npm/v/@zessjs/vite-plugin.svg?style=for-the-badge)](https://www.npmjs.com/package/@zessjs/vite-plugin) [![NPM License](https://img.shields.io/npm/l/@zessjs/vite-plugin.svg?style=for-the-badge)](https://github.com/rpsffx/zess/blob/main/LICENSE)
 
 Vite plugin for Zess 🧩 JSX file parser and transformer for building modern web applications.
 
@@ -20,13 +20,13 @@ Vite plugin for Zess 🧩 JSX file parser and transformer for building modern we
 
 ```bash
 # Using npm
-npm install -D @zessjs/plugin
+npm install -D @zessjs/vite-plugin
 
 # Using yarn
-yarn add -D @zessjs/plugin
+yarn add -D @zessjs/vite-plugin
 
 # Using pnpm
-pnpm add -D @zessjs/plugin
+pnpm add -D @zessjs/vite-plugin
 ```
 
 ## 🚀 Basic Usage
@@ -35,7 +35,7 @@ Add the Zess plugin to your Vite configuration file:
 
 ```javascript
 import { defineConfig } from 'vite'
-import zess from '@zessjs/plugin'
+import zess from '@zessjs/vite-plugin'
 
 export default defineConfig({
   plugins: [zess()],
@@ -65,7 +65,7 @@ The Zess plugin supports the following configuration options:
 
 ```javascript
 import { defineConfig } from 'vite'
-import zess from '@zessjs/plugin'
+import zess from '@zessjs/vite-plugin'
 
 export default defineConfig({
   plugins: [
