@@ -4,7 +4,7 @@
 
 # Zess
 
-[![GitHub package.json version](https://img.shields.io/github/package-json/v/rpsffx/zess?style=for-the-badge)](./package.json) [![GitHub License](https://img.shields.io/github/license/rpsffx/zess?style=for-the-badge)](./LICENSE)
+[![GitHub package.json version](https://img.shields.io/github/package-json/v/rpsffx/zess?style=for-the-badge)](./package.json) [![GitHub License](https://img.shields.io/github/license/rpsffx/zess?style=for-the-badge)](./LICENSE) [![Build Status](https://img.shields.io/github/actions/workflow/status/rpsffx/zess/unit-test.yml/badge.svg?branch=main&logo=github&style=for-the-badge)](https://github.com/rpsffx/zess/actions/workflows/unit-test.yml)
 
 A compiler-driven JavaScript framework for building high-performance user interfaces.
 
