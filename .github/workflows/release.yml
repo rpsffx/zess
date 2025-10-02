@@ -5,8 +5,6 @@ permissions:
 
 on:
   push:
-    branches:
-      - main
     tags:
       - 'v*'
   workflow_dispatch:
@@ -25,5 +23,6 @@ jobs:
           node-version: lts/*
 
       - run: npx changelogithub
+        if: startsWith(github.ref, 'refs/tags/v')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
