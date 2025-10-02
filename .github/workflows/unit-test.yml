@@ -59,5 +59,12 @@ jobs:
       - name: Build
         run: pnpm run build
 
-      - name: Test
-        run: pnpm run test
+      - name: Test & Coverage
+        run: |
+          pnpm run test
+          pnpm run coverage
+
+      - name: Upload results to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
