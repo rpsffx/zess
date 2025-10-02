@@ -1,5 +1,5 @@
-<div align="center" style="display: block; text-align: center; margin: 0 auto;">
-  <img src="https://pic1.imgdb.cn/item/68c7c093c5157e1a8804fb52.svg" alt="Zess Logo" style="max-width: 100%; height: auto;">
+<div align="center">
+  <img src="https://pic1.imgdb.cn/item/68c7c093c5157e1a8804fb52.svg" alt="Zess Logo">
 </div>
 
 # Zess
