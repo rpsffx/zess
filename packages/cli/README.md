@@ -1,5 +1,7 @@
 <div align="center">
-  <img src="https://pic1.imgdb.cn/item/68c7c093c5157e1a8804fb52.svg" alt="Zess Logo">
+  <a href="https://rpsffx.github.io/zess" target="_blank" alt="Zess Logo">
+    <img src="https://pic1.imgdb.cn/item/68c7c093c5157e1a8804fb52.svg" alt="Zess Logo">
+  </a>
 </div>
 
 # @zessjs/cli

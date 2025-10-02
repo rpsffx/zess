@@ -1,6 +1,6 @@
 {
   "name": "zess",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "packageManager": "pnpm@10.17.1",
   "description": "Zess ⚡ The compiler-driven JavaScript framework for building user interfaces.",
