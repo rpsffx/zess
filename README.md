@@ -9,7 +9,7 @@
   </a>
 </div>
 
-[![NPM Version](https://img.shields.io/npm/v/@zess/core.svg?style=for-the-badge)](https://www.npmjs.com/package/@zess/core) [![License](https://img.shields.io/npm/l/@zess/core.svg?style=for-the-badge)](https://github.com/rpsffx/zess/blob/main/LICENSE)
+[![GitHub package.json version](https://img.shields.io/github/package-json/v/rpsffx/zess?style=for-the-badge)](https://github.com/rpsffx/zess/blob/main/package.json) [![GitHub License](https://img.shields.io/github/license/rpsffx/zess?style=for-the-badge)](https://github.com/rpsffx/zess/blob/main/LICENSE)
 
 ## 🔍 What is Zess?
 
