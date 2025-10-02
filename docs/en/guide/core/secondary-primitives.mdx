@@ -2,7 +2,7 @@
 
 ## useComputed
 
-Creates a computed value that derives its value from other signals and recalculates only when dependencies change. Similar to `useMemo` but designed to be used for side effects that depend on reactive values.
+Creates a reactive computation that runs immediately and re-executes when dependencies change. The function receives its previous return value and is designed for side effects that update reactive state. Unlike `useMemo`, it doesn't return a value, and unlike `useEffect`, it runs synchronously during rendering, which may cause excessive updates.
 
 **Type:**
 
@@ -27,7 +27,7 @@ useComputed(() => {
 
 ## useRenderEffect
 
-Creates a render effect that runs immediately after rendering before the DOM is fully updated, useful for DOM manipulations that need to happen right after rendering. Like `useEffect`, render effects support batching of updates.
+Creates a render effect that runs synchronously during rendering, before DOM updates complete. Unlike `useEffect`, it executes immediately when DOM elements may not be ready and refs aren't set. Reactive updates are batched automatically.
 
 **Type:**
 
@@ -37,23 +37,20 @@ useRenderEffect<T>(fn: Callback<T>, value?: T): void
 
 **Parameters:**
 
-- `fn`: A function to run after rendering. It receives the previous value returned by the effect and returns a new value to be used in the next run
-- `value`: Optional initial value to pass to the first effect run
+- `fn`: A function that executes synchronously during rendering, receiving the previous return value
+- `value`: Optional initial value
 
 **Example:**
 
 ```jsx
-function InputFocusComponent() {
-  const [ref, setRef] = useSignal(null)
+function TextInput() {
+  const [text, setText] = useSignal('')
 
   useRenderEffect(() => {
-    const element = ref()
-    if (element) {
-      element.focus() // This will happen synchronously after render
-    }
+    console.log('Text changed:', text())
   })
 
-  return <input ref={setRef} />
+  return <input value={text()} onInput={(e) => setText(e.target.value)} />
 }
 ```
 

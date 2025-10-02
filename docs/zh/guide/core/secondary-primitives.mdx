@@ -2,7 +2,7 @@
 
 ## useComputed
 
-创建一个计算值，该值从其他信号派生其值，并且仅在依赖项更改时重新计算。类似于 `useMemo`，但设计用于依赖于响应式值的副作用操作。
+创建一个响应式计算，该计算会立即运行并在依赖项变化时自动重新执行。该函数接收其上一次的返回值，并设计用于更新响应式状态的副作用。与 `useMemo` 不同，它不返回任何值；与 `useEffect` 不同，它会在渲染期间同步运行，这可能导致过度更新。
 
 **类型：**
 
@@ -27,7 +27,7 @@ useComputed(() => {
 
 ## useRenderEffect
 
-创建一个渲染副作用，该副作用会在渲染后、DOM 完全更新之前立即运行，适用于需要在渲染后立即进行的 DOM 操作。与 `useEffect` 类似，渲染副作用支持更新的批处理。
+创建一个渲染副作用，该效果会在 DOM 更新完成前，在渲染期间同步执行。与 `useEffect` 不同，它会在 DOM 元素可能尚未准备就绪且引用（refs）尚未设置时立即执行。响应式更新会自动进行批处理。
 
 **类型：**
 
@@ -37,23 +37,20 @@ useRenderEffect<T>(fn: Callback<T>, value?: T): void
 
 **参数：**
 
-- `fn`: 渲染后运行的函数。它接收副作用上一次返回的值，并返回一个新值用于下一次运行
-- `value`: 可选的初始值，将在第一次副作用运行时传入
+- `fn`: 在渲染期间同步执行的函数，接收上一次的返回值作为参数
+- `value`: 可选的初始值
 
 **示例：**
 
 ```jsx
-function InputFocusComponent() {
-  const [ref, setRef] = useSignal(null)
+function TextInput() {
+  const [text, setText] = useSignal('')
 
   useRenderEffect(() => {
-    const element = ref()
-    if (element) {
-      element.focus() // 这将在渲染后同步发生
-    }
+    console.log('文本已更改:', text())
   })
 
-  return <input ref={setRef} />
+  return <input value={text()} onInput={(e) => setText(e.target.value)} />
 }
 ```
 
