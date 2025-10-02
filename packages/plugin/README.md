@@ -2,13 +2,13 @@
   <a href="https://rpsffx.github.io/zess" target="_blank" alt="Zess Logo">
     <img src="https://pic1.imgdb.cn/item/68c7c093c5157e1a8804fb52.svg" alt="Zess Logo">
   </a>
-</div>
-
-# @zessjs/vite-plugin
+  <h1>@zessjs/vite-plugin</h1>
 
 [![NPM Version](https://img.shields.io/npm/v/@zessjs/vite-plugin.svg?style=for-the-badge)](https://www.npmjs.com/package/@zessjs/vite-plugin) [![NPM License](https://img.shields.io/npm/l/@zessjs/vite-plugin.svg?style=for-the-badge)](https://github.com/rpsffx/zess/blob/main/LICENSE)
 
 Vite plugin for Zess 🧩 JSX file parser and transformer for building modern web applications.
+
+</div>
 
 ## ✨ Features
 
