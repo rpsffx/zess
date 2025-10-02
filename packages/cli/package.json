@@ -1,6 +1,6 @@
 {
   "name": "@zessjs/cli",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "packageManager": "pnpm@10.17.1",
   "description": "Zess CLI tool 🔨 For easily creating Vite-powered Zess project.",
   "type": "module",
@@ -20,11 +20,19 @@
     "directory": "packages/cli"
   },
   "author": "Columsys",
+  "files": [
+    "dist",
+    "template"
+  ],
   "bin": {
-    "create-zess": "index.ts"
+    "init": "./dist/index.js"
   },
   "publishConfig": {
     "access": "public"
+  },
+  "scripts": {
+    "build": "tsdown",
+    "dev": "tsdown --watch"
   },
   "dependencies": {
     "@clack/prompts": "^0.11.0",
