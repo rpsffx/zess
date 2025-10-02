@@ -1,6 +1,6 @@
 {
   "name": "@zessjs/router",
-  "version": "1.0.2",
+  "version": "1.0.1",
   "packageManager": "pnpm@10.17.1",
   "description": "Zess router 📍 Client-side navigation, dynamic & nested routing for web apps",
   "type": "module",
