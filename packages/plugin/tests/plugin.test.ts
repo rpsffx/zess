@@ -34,9 +34,9 @@ describe('zess', () => {
   })
   it('should report error with correct source location', async () => {
     const mainTsxPath = resolve(__dirname, 'fixtures/main.tsx')
-    const originalCode = await readFile(mainTsxPath, 'utf-8')
+    const originalCode = await readFile(mainTsxPath, 'utf8')
     const brokenCode = originalCode.replace('</button>', '</buton')
-    await writeFile(mainTsxPath, brokenCode, 'utf-8')
+    await writeFile(mainTsxPath, brokenCode, 'utf8')
     const server = await createTestServer()
     try {
       await server.transformRequest('./main.tsx')
@@ -52,7 +52,7 @@ describe('zess', () => {
       expect(errorLine.trim()).toContain('</buton')
       expect(errorLine.length).toBeGreaterThan(loc.column)
     } finally {
-      await writeFile(mainTsxPath, originalCode, 'utf-8')
+      await writeFile(mainTsxPath, originalCode, 'utf8')
     }
   })
 })

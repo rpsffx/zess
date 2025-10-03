@@ -420,30 +420,28 @@ function reconcileArray<T extends Node[]>(
         while (i < end) map.set(nodes[i], i++)
       }
       const index = map.get(prevNodes[prevStart])
-      if (index != null) {
-        if (start < index && index < end) {
-          let i = prevStart
-          let sequence = 1
-          while (
-            ++i < prevEnd &&
-            i < end &&
-            map.get(prevNodes[i]) === index + sequence
-          ) {
-            sequence++
-          }
-          if (sequence > index - start) {
-            const node = prevNodes[prevStart]
-            while (start < index) {
-              parent.insertBefore(nodes[start++], node)
-            }
-          } else {
-            parent.replaceChild(nodes[start++], prevNodes[prevStart++])
+      if (index == null) {
+        parent.removeChild(prevNodes[prevStart++])
+      } else if (start < index && index < end) {
+        let i = prevStart
+        let sequence = 1
+        while (
+          ++i < prevEnd &&
+          i < end &&
+          map.get(prevNodes[i]) === index + sequence
+        ) {
+          sequence++
+        }
+        if (sequence > index - start) {
+          const node = prevNodes[prevStart]
+          while (start < index) {
+            parent.insertBefore(nodes[start++], node)
           }
         } else {
-          prevStart++
+          parent.replaceChild(nodes[start++], prevNodes[prevStart++])
         }
       } else {
-        parent.removeChild(prevNodes[prevStart++])
+        prevStart++
       }
     }
   }

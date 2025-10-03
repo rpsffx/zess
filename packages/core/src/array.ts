@@ -76,13 +76,7 @@ export function mapArray<T, U>(
         disposeFallback()
         disposeFallback = undefined
       }
-      if (!cache.length) {
-        for (let i = 0; i < items.length; ++i) {
-          const entry = createMapArrayEntry(items, i, mapFn)
-          mapped[i] = entry.value
-          cache.push(entry)
-        }
-      } else {
+      if (cache.length) {
         let start = 0
         let end = items.length - 1
         let prevEnd = cache.length - 1
@@ -130,6 +124,12 @@ export function mapArray<T, U>(
           cache[i] = entry
         }
         cache.length = items.length
+      } else {
+        for (let i = 0; i < items.length; ++i) {
+          const entry = createMapArrayEntry(items, i, mapFn)
+          mapped[i] = entry.value
+          cache.push(entry)
+        }
       }
       return mapped
     })

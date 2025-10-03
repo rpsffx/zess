@@ -327,12 +327,12 @@ function addRouteEvent(
   const listeners = getRouteEventListeners(isHashMode)
   const event = isHashMode ? 'hashchange' : 'popstate'
   if (listeners.add(fn).size === 1) {
-    window.addEventListener(event, routeEventListener)
+    globalThis.addEventListener(event, routeEventListener)
   }
   return function () {
     listeners.delete(fn)
     if (!listeners.size) {
-      window.removeEventListener(event, routeEventListener)
+      globalThis.removeEventListener(event, routeEventListener)
     }
   }
 }
@@ -369,7 +369,7 @@ function getParsedPath(
   }
   if (isHashMode) {
     const index = parsedPath.indexOf('?')
-    const search = index !== -1 ? parsedPath.slice(index) : ''
+    const search = index === -1 ? '' : parsedPath.slice(index)
     return `${altPath}${search}#${parsedPath}`
   }
   return altPath === '/' ? parsedPath : `${parsedPath}#${altPath}`

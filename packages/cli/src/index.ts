@@ -95,8 +95,8 @@ async function copyTemplateFiles(
   await copyDirectory(path.join(templatePath, 'common'), projectPath, {
     '.gitignore': async (srcPath, destPath) => {
       if (!existsSync(destPath)) return true
-      const srcGitignore = await readFile(srcPath, 'utf-8')
-      const destGitignore = await readFile(destPath, 'utf-8')
+      const srcGitignore = await readFile(srcPath, 'utf8')
+      const destGitignore = await readFile(destPath, 'utf8')
       await writeFile(destPath, `${destGitignore}\n${srcGitignore}`)
     },
     'package.json': async (srcPath, destPath) => {
@@ -104,7 +104,7 @@ async function copyTemplateFiles(
     },
     'README.md': async (srcPath, destPath) => {
       if (projectName === name) return true
-      const srcReadme = await readFile(srcPath, 'utf-8')
+      const srcReadme = await readFile(srcPath, 'utf8')
       await writeFile(destPath, srcReadme.replace(name, projectName))
     },
   })
@@ -155,9 +155,9 @@ async function mergePackageJson(
   projectName: string,
   useTypeScript: boolean,
 ): Promise<void> {
-  let srcPackageJson = JSON.parse(await readFile(srcPath, 'utf-8'))
+  let srcPackageJson = JSON.parse(await readFile(srcPath, 'utf8'))
   if (existsSync(destPath)) {
-    const destPackageJson = JSON.parse(await readFile(destPath, 'utf-8'))
+    const destPackageJson = JSON.parse(await readFile(destPath, 'utf8'))
     Object.assign(destPackageJson.dependencies, srcPackageJson.dependencies)
     Object.assign(
       destPackageJson.devDependencies,

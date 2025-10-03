@@ -13,7 +13,7 @@ function waitFor(
   type: 'hashchange' | 'popstate',
 ): Promise<HashChangeEvent | PopStateEvent> {
   return new Promise((resolve) =>
-    window.addEventListener(type, resolve, { once: true }),
+    globalThis.addEventListener(type, resolve, { once: true }),
   )
 }
 
