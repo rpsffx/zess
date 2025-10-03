@@ -7,6 +7,8 @@ on:
 
 jobs:
   release:
+    if: github.repository == 'rpsffx/zess'
+
     runs-on: ubuntu-latest
 
     permissions:
@@ -14,17 +16,35 @@ jobs:
       id-token: write
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: latest
 
       - name: Set node
         uses: actions/setup-node@v4
         with:
           node-version: lts/*
           registry-url: 'https://registry.npmjs.org'
+          cache: 'pnpm'
 
-      - run: npx changelogithub
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Update npm
+        run: npm i -g npm@latest
+
+      - name: Publish package
+        run: pnpm release
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Create release
+        run: npx changelogithub
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
