@@ -1,21 +1,18 @@
 import { sxzz, type Config } from '@sxzz/eslint-config'
 import { globalIgnores } from 'eslint/config'
 
-const configs: Config[] = sxzz([
-  globalIgnores(['**/*.{md,mdx}', '**/template']) as Config,
-  {
-    rules: {
-      eqeqeq: 'off',
-      'import/no-default-export': 'off',
-      'unicorn/no-for-loop': 'off',
-      'unicorn/no-new-array': 'off',
-      'unicorn/new-for-builtins': 'off',
-      'unicorn/prefer-modern-dom-apis': 'off',
-      'unicorn/prefer-dom-node-remove': 'off',
-      '@typescript-eslint/no-this-alias': 'off',
-      '@typescript-eslint/consistent-type-assertions': 'off',
-    },
-  },
-])
+const config: Promise<Config[]> = sxzz()
+  .append(globalIgnores(['**/*.{md,mdx}', '**/template']) as Config)
+  .removeRules(
+    'eqeqeq',
+    'import/no-default-export',
+    'unicorn/no-for-loop',
+    'unicorn/no-new-array',
+    'unicorn/new-for-builtins',
+    'unicorn/prefer-modern-dom-apis',
+    'unicorn/prefer-dom-node-remove',
+    '@typescript-eslint/no-this-alias',
+    '@typescript-eslint/consistent-type-assertions',
+  )
 
-export default configs
+export default config
