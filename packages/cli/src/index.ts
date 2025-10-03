@@ -166,8 +166,9 @@ async function mergePackageJson(
     Object.assign(destPackageJson.scripts, srcPackageJson.scripts)
     destPackageJson.prettier = srcPackageJson.prettier
     srcPackageJson = destPackageJson
+  } else {
+    srcPackageJson.version = '0.0.0'
   }
-  srcPackageJson.version = '0.0.0'
   srcPackageJson.name = projectName
   delete srcPackageJson.devDependencies[
     useTypeScript ? 'eslint-plugin-react' : 'typescript'
