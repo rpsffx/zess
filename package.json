@@ -25,10 +25,10 @@
     "docs:preview": "rspress preview"
   },
   "devDependencies": {
-    "@commitlint/cli": "^19.8.1",
-    "@commitlint/config-conventional": "^19.8.1",
+    "@commitlint/cli": "^20.1.0",
+    "@commitlint/config-conventional": "^20.0.0",
     "@rspress/plugin-shiki": "^1.45.6",
-    "@sxzz/eslint-config": "^4.6.0",
+    "@sxzz/eslint-config": "^7.2.6",
     "@sxzz/prettier-config": "^2.2.4",
     "@types/node": "^24.6.2",
     "@vitest/browser": "^3.2.4",
@@ -43,11 +43,15 @@
     "simple-git-hooks": "^2.13.1",
     "tsdown": "^0.7.5",
     "tsx": "^4.20.6",
-    "typescript": "~5.8.3",
+    "typescript": "^5.9.3",
     "vitest": "^3.2.4"
   },
   "engines": {
-    "node": ">=18.12.0"
+    "node": ">=18.18.0"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "pnpm lint-staged",
+    "commit-msg": "pnpm commitlint --edit ${1}"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
@@ -60,9 +64,5 @@
       "@commitlint/config-conventional"
     ]
   },
-  "prettier": "@sxzz/prettier-config",
-  "simple-git-hooks": {
-    "pre-commit": "pnpm lint-staged",
-    "commit-msg": "pnpm commitlint --edit ${1}"
-  }
+  "prettier": "@sxzz/prettier-config"
 }
