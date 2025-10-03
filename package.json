@@ -2,7 +2,7 @@
   "name": "zess",
   "version": "1.0.3",
   "private": true,
-  "packageManager": "pnpm@10.17.1",
+  "packageManager": "pnpm@10.18.0",
   "description": "Zess ⚡ The compiler-driven JavaScript framework for building user interfaces.",
   "type": "module",
   "license": "MIT",
@@ -47,7 +47,7 @@
     "vitest": "^3.2.4"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=18.12.0"
   },
   "lint-staged": {
     "*.{ts,tsx}": [

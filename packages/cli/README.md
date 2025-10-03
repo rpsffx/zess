@@ -45,7 +45,7 @@ Then open your browser and visit:
 
 The Zess CLI is compatible with:
 
-- Node.js >=18.0.0
+- Node.js >=18.12.0
 
 ## 📝 License
 
