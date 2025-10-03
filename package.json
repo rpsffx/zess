@@ -17,7 +17,7 @@
     "coverage": "vitest run --coverage",
     "format": "prettier --write --cache \"**/*.{ts,tsx}\"",
     "bump": "bumpp -r",
-    "release": "pnpm publish -r --provenance",
+    "release": "pnpm publish -r --provenance --no-git-checks",
     "prepublishOnly": "pnpm run build",
     "postinstall": "playwright install && simple-git-hooks",
     "docs:dev": "rspress dev",
