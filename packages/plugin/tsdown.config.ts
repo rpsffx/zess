@@ -1,8 +1,10 @@
-import { defineConfig } from 'tsdown'
+import { defineConfig, type UserConfig } from 'tsdown'
 
-export default defineConfig({
+const config: UserConfig = defineConfig({
   entry: ['./src/plugin.ts'],
   format: ['cjs', 'esm'],
   clean: true,
   dts: true,
 })
+
+export default config
