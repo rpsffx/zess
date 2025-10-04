@@ -29,6 +29,7 @@
     "vitest.config.ts",
     "packages/*/src",
     "packages/*/tests",
-    "packages/*/types"
+    "packages/*/types",
+    "packages/*/tsdown.config.ts"
   ]
 }
