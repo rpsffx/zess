@@ -262,11 +262,11 @@ function insertExpression<T extends Node | Node[]>(
         replaceChild(parent, array[i])
       }
     } else if ((node as Placeholder)[PLACEHOLDER]) {
-      for (let i = array.length - 1; i >= 1; --i) {
+      node = replaceChild(parent, array.at(-1)!, node as Node) as T
+      for (let i = 0; i < array.length - 1; ++i) {
         if (array[i].parentNode === parent) continue
         parent.insertBefore(array[i], node as Node)
       }
-      replaceChild(parent, array[0], node as Node)
     }
     return array as T
   }
@@ -381,6 +381,7 @@ function reconcileArray<T extends Node[]>(
   let prevStart = 0
   let start = 0
   let map: WeakMap<Node, number> | undefined
+  const anchor = prevNodes[prevEnd - 1].nextSibling
   while (prevStart < prevEnd || start < end) {
     if (prevEnd === prevStart) {
       const node =
@@ -388,7 +389,7 @@ function reconcileArray<T extends Node[]>(
           ? start
             ? nodes[start - 1].nextSibling
             : nodes[end]
-          : null
+          : anchor
       while (start < end) {
         parent.insertBefore(nodes[start++], node)
       }
