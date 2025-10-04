@@ -45,7 +45,7 @@
     "vitest": "^3.2.4"
   },
   "engines": {
-    "node": ">=18.18.0"
+    "node": ">=20.19.0"
   },
   "simple-git-hooks": {
     "pre-commit": "pnpm lint-staged",
