@@ -1,33 +1,27 @@
-import { compile } from '@zessjs/compiler'
-import { defineConfig } from 'tsdown'
+import zess from '@zessjs/vite-plugin'
+import { defineConfig, type UserConfig } from 'tsdown'
 
-export default [
+const configs: UserConfig[] = [
   defineConfig({
     entry: ['./src/router.tsx'],
-    format: 'esm',
-    inputOptions: {
-      jsx: 'preserve',
-    },
-    outputOptions: {
-      entryFileNames: 'router.jsx',
-    },
+    format: ['cjs', 'esm'],
+    platform: 'neutral',
+    plugins: [zess()],
     clean: true,
     dts: true,
   }),
   defineConfig({
     entry: ['./src/router.tsx'],
     format: 'esm',
-    platform: 'neutral',
     inputOptions: {
       jsx: 'preserve',
     },
-    plugins: {
-      name: 'zess',
-      renderChunk(code) {
-        return compile(code)
-      },
-    },
+    outExtensions: () => ({
+      js: '.jsx',
+    }),
     clean: true,
-    dts: true,
+    silent: true,
   }),
 ]
+
+export default configs
