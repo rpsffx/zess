@@ -13,14 +13,14 @@
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.14",
-    "@zessjs/core": "^1.0.7",
-    "@zessjs/router": "^1.0.7",
+    "@zessjs/core": "^1.0.8",
+    "@zessjs/router": "^1.0.8",
     "tailwindcss": "^4.1.14"
   },
   "devDependencies": {
     "@sxzz/eslint-config": "^7.2.6",
     "@sxzz/prettier-config": "^2.2.4",
-    "@zessjs/vite-plugin": "^1.0.7",
+    "@zessjs/vite-plugin": "^1.0.8",
     "eslint": "^9.36.0",
     "eslint-plugin-react": "^7.37.5",
     "jsdom": "^27.0.0",
