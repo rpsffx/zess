@@ -11,6 +11,9 @@ const config: UserConfig = defineConfig({
   icon: 'https://pic1.imgdb.cn/item/68c7c093c5157e1a8804fb52.svg',
   logo: 'https://pic1.imgdb.cn/item/68c7c093c5157e1a8804fb52.svg',
   logoText: 'Zess',
+  head: [
+    '<meta name="algolia-site-verification"  content="FF98413A7B314DDF" />',
+  ],
   themeConfig: {
     enableScrollToTop: true,
     enableContentAnimation: true,
