@@ -1,6 +1,6 @@
 import { resolve } from 'node:path'
 import zess from '@zessjs/vite-plugin'
-import { defineConfig, type ViteUserConfig } from 'vitest/config'
+import { defineConfig, type Plugin, type ViteUserConfig } from 'vitest/config'
 
 const config: ViteUserConfig = defineConfig({
   test: {
@@ -20,7 +20,7 @@ const config: ViteUserConfig = defineConfig({
         },
       },
       {
-        plugins: [zess({ modulePath: '../src/dom' })],
+        plugins: [zess({ modulePath: '../src/dom' }) as Plugin],
         test: {
           name: 'core',
           root: './packages/core',
@@ -48,7 +48,7 @@ const config: ViteUserConfig = defineConfig({
         },
       },
       {
-        plugins: [zess()],
+        plugins: [zess() as Plugin],
         test: {
           name: 'router',
           root: './packages/router',
