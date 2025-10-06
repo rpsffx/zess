@@ -11,7 +11,7 @@ const Search: React.FC = () => {
       docSearchProps={{
         appId: '80NNROT76W',
         apiKey: 'e1534e12ea32a166b6028e9d962fbfe6',
-        indexName: 'Zess Website',
+        indexName: 'Zess Documentation',
         searchParameters: {
           facetFilters: [`lang:${lang}`],
         },
