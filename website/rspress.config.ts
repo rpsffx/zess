@@ -1,10 +1,17 @@
 import path from 'node:path'
 import { defineConfig, type UserConfig } from '@rspress/core'
 import { pluginAlgolia } from '@rspress/plugin-algolia'
+import { pluginSitemap } from '@rspress/plugin-sitemap'
 import { pluginFontOpenSans } from 'rspress-plugin-font-open-sans'
 
 const config: UserConfig = defineConfig({
-  plugins: [pluginAlgolia(), pluginFontOpenSans()],
+  plugins: [
+    pluginAlgolia(),
+    pluginFontOpenSans(),
+    pluginSitemap({
+      siteUrl: 'https://rpsffx.github.io/zess',
+    }),
+  ],
   globalStyles: path.join(__dirname, 'theme', 'styles', 'index.css'),
   root: path.join(__dirname, 'docs'),
   base: '/zess/',

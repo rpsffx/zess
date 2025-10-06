@@ -128,6 +128,9 @@ importers:
       '@rspress/plugin-algolia':
         specifier: 2.0.0-beta.34
         version: 2.0.0-beta.34(@algolia/client-search@5.39.0)(@rspress/core@2.0.0-beta.34(@types/react@19.2.0))(@types/react@19.2.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(search-insights@2.17.3)
+      '@rspress/plugin-sitemap':
+        specifier: 2.0.0-beta.34
+        version: 2.0.0-beta.34(@rspress/core@2.0.0-beta.34(@types/react@19.2.0))
       '@types/react':
         specifier: ^19.2.0
         version: 19.2.0
@@ -1316,6 +1319,12 @@ packages:
 
   '@rspress/plugin-algolia@2.0.0-beta.34':
     resolution: {integrity: sha512-1V4SuXR6OqEqgojrLZs9UkGTYQtNjcnXhFXugHTXNdLteCGLv6E5sdtR7c5J4latz6p4gmjHsCiqeNUMssKZXw==}
+    engines: {node: '>=18.0.0'}
+    peerDependencies:
+      '@rspress/core': ^2.0.0-beta.34
+
+  '@rspress/plugin-sitemap@2.0.0-beta.34':
+    resolution: {integrity: sha512-1EOEovb/6zcaV4STlkS3Lb1WPbrOBLLRQcf/j4gIEAoxBwpIqS+msuhk6NY0idIrfdXCm+50BFpJBsgyUohUiw==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
       '@rspress/core': ^2.0.0-beta.34
@@ -5497,6 +5506,10 @@ snapshots:
       - react
       - react-dom
       - search-insights
+
+  '@rspress/plugin-sitemap@2.0.0-beta.34(@rspress/core@2.0.0-beta.34(@types/react@19.2.0))':
+    dependencies:
+      '@rspress/core': 2.0.0-beta.34(@types/react@19.2.0)
 
   '@rspress/runtime@2.0.0-beta.34':
     dependencies:

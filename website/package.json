@@ -12,6 +12,7 @@
   "devDependencies": {
     "@rspress/core": "2.0.0-beta.34",
     "@rspress/plugin-algolia": "2.0.0-beta.34",
+    "@rspress/plugin-sitemap": "2.0.0-beta.34",
     "@types/react": "^19.2.0",
     "rspress-plugin-font-open-sans": "1.0.3"
   }
