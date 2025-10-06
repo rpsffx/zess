@@ -1,7 +1,7 @@
 {
   "name": "@zessjs/vite-plugin",
   "version": "1.0.8",
-  "packageManager": "pnpm@10.18.0",
+  "packageManager": "pnpm@10.18.1",
   "description": "Vite plugin for Zess 🧩 JSX file parser and transformer for building modern web applications.",
   "type": "module",
   "keywords": [
