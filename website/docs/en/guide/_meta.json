@@ -1,0 +1,17 @@
+[
+  {
+    "type": "dir",
+    "name": "start",
+    "label": "start"
+  },
+  {
+    "type": "dir",
+    "name": "core",
+    "label": "core"
+  },
+  {
+    "type": "dir",
+    "name": "router",
+    "label": "router"
+  }
+]

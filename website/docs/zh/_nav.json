@@ -1,0 +1,14 @@
+[
+  {
+    "text": "guide",
+    "link": "/guide/start/introduction",
+    "activeMatch": "^/zh/guide/",
+    "position": "right"
+  },
+  {
+    "text": "API",
+    "link": "/api/",
+    "activeMatch": "^/zh/api/",
+    "position": "right"
+  }
+]

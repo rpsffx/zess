@@ -1,0 +1,110 @@
+{
+  "basePath": {
+    "en": "",
+    "zh": "/zh"
+  },
+  "taglinePrefix": {
+    "en": "The ",
+    "zh": ""
+  },
+  "taglineAccent": {
+    "en": "Compiler-Driven",
+    "zh": "编译型"
+  },
+  "tagline": {
+    "en": "JavaScript Framework",
+    "zh": "JavaScript 框架"
+  },
+  "description": {
+    "en": "A compiler-driven JavaScript framework for building high-performance user interfaces.",
+    "zh": "一个编译器驱动的 JavaScript 框架，旨在构建高性能用户界面。"
+  },
+  "getStarted": {
+    "en": "Get Started",
+    "zh": "快速开始"
+  },
+  "highPerformance": {
+    "en": "High Performance",
+    "zh": "卓越性能"
+  },
+  "highPerformanceDescription": {
+    "en": "Deeply optimized compiler output, combined with an efficient reactive system using Signals, delivers native-like smoothness.",
+    "zh": "深度优化的编译器与高效的 Signals 响应式系统协同工作，带来原生般流畅体验。"
+  },
+  "fullTypeSafety": {
+    "en": "Full Type Safety",
+    "zh": "类型安全"
+  },
+  "fullTypeSafetyDescription": {
+    "en": "Built-in TypeScript support ensures end-to-end type checking across development and build, improving code reliability.",
+    "zh": "内置 TypeScript 支持，提供从开发到构建的端到端类型检查，确保代码高度可靠。"
+  },
+  "fastDevelopment": {
+    "en": "Fast Development",
+    "zh": "快速开发"
+  },
+  "fastDevelopmentDescription": {
+    "en": "Powered by Vite for millisecond-level hot updates and efficient bundling, boosting development productivity.",
+    "zh": "借助 Vite 驱动，实现毫秒级热更新与高效打包，从而提升开发效率。"
+  },
+  "easyToLearn": {
+    "en": "Easy to Learn",
+    "zh": "轻松上手"
+  },
+  "easyToLearnDescription": {
+    "en": "Familiar API design inspired by mainstream frameworks lowers the learning curve and speeds up proficiency.",
+    "zh": "采用主流框架风格的 API 设计，可降低学习难度，助力开发者快速上手。"
+  },
+  "guide": {
+    "en": "Guide",
+    "zh": "指南"
+  },
+  "core": {
+    "en": "Core",
+    "zh": "核心功能"
+  },
+  "start": {
+    "en": "Getting Started",
+    "zh": "开始"
+  },
+  "router": {
+    "en": "Router",
+    "zh": "路由系统"
+  },
+  "basicReactivity": {
+    "en": "Basic Reactivity",
+    "zh": "响应性基础"
+  },
+  "lifecycle": {
+    "en": "Lifecycle",
+    "zh": "生命周期"
+  },
+  "components": {
+    "en": "Components",
+    "zh": "内置组件"
+  },
+  "reactiveUtilities": {
+    "en": "Reactive Utilities",
+    "zh": "响应性工具类"
+  },
+  "storeUtilities": {
+    "en": "Store Utilities",
+    "zh": "Store 工具类"
+  },
+  "secondaryPrimitives": {
+    "en": "Secondary Primitives",
+    "zh": "次要 API"
+  },
+  "rendering": {
+    "en": "Rendering",
+    "zh": "渲染"
+  },
+  "jsxAttributes": {
+    "en": "JSX Attributes",
+    "zh": "特殊 JSX 属性"
+  },
+  "primitives": {
+    "en": "Primitives",
+    "zh": "基础 API"
+  }
+}

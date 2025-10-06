@@ -1,0 +1,42 @@
+import { Tab, Tabs } from '@rspress/core/theme'
+
+<Tabs>
+  <Tab label="TypeScript">
+    ```tsx title="Counter.tsx"
+    import { render, useSignal, type Component } from '@zessjs/core'
+
+    const Counter: Component = () => {
+    const [count, setCount] = useSignal(1)
+    const increment = () => setCount((count) => count + 1)
+
+      return (
+        <button type="button" onClick={increment}>
+          {count()}
+        </button>
+      )
+
+    }
+
+    render(() => <Counter />, document.getElementById('app')!)
+    ```
+  </Tab>
+  <Tab label="JavaScript">
+    ```js title="Counter.js"
+    import {createComponent as _$createComponent, createElement as _$createElement, delegateEvents as _$delegateEvents, insert as _$insert, setAttribute as _$setAttribute} from "@zessjs/core";
+    import {render, useSignal} from "@zessjs/core";
+    const Counter = () => {
+      const [count, setCount] = useSignal(1);
+      const increment = () => setCount(count => count + 1);
+      return (() => {
+        const _el$ = _$createElement("button");
+        _el$.$$click = increment;
+        _$setAttribute(_el$, "type", "button");
+        _$insert(_el$, count);
+        return _el$;
+      })();
+    };
+    render(() => _$createComponent(Counter, {}), document.getElementById("app"));
+    _$delegateEvents(["click"]);
+    ```
+  </Tab>
+</Tabs>

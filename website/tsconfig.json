@@ -1,0 +1,16 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "useDefineForClassFields": true,
+    "baseUrl": ".",
+    "paths": {
+      "i18n": ["./i18n.json"]
+    },
+    "allowImportingTsExtensions": true
+  },
+  "include": ["rspress.config.ts", "**/*.mdx", "**/*.tsx"],
+  "mdx": {
+    "checkMdx": true
+  }
+}

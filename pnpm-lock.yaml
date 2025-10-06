@@ -132,7 +132,7 @@ importers:
         specifier: ^19.2.0
         version: 19.2.0
       rspress-plugin-font-open-sans:
-        specifier: ^1.0.3
+        specifier: 1.0.3
         version: 1.0.3(@rspress/core@2.0.0-beta.34(@types/react@19.2.0))
 
 packages:

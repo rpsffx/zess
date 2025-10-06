@@ -1,0 +1,365 @@
+@font-face {
+  font-family: Inter;
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url(../assets/inter-roman-latin-ext.4ZJIpNVo.woff2) format('woff2');
+  unicode-range:
+    U+0100-02AF, U+0304, U+0308, U+0329, U+1E00-1E9F, U+1EF2-1EFF, U+2020,
+    U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: Inter;
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url(../assets/inter-roman-latin.Di8DUHzh.woff2) format('woff2');
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: Inter;
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url(../assets/inter-roman-cyrillic.C5lxZ8CY.woff2) format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+
+section :has(.home) {
+  all: unset;
+  display: contents;
+}
+
+section :has(.home) .rspress-sidebar-menu-container,
+section :has(.home) .rspress-doc-container > button,
+section :has(.home) .rspress-doc-footer {
+  display: none;
+}
+
+.home {
+  background:
+    radial-gradient(
+      ellipse 60% 45% at 10% 20%,
+      rgba(135, 206, 250, 0.3) 0%,
+      transparent 85%
+    ),
+    radial-gradient(
+      ellipse 45% 60% at 90% 30%,
+      rgba(173, 216, 230, 0.25) 0%,
+      transparent 80%
+    ),
+    radial-gradient(
+      ellipse 50% 50% at 25% 80%,
+      rgba(176, 224, 230, 0.3) 0%,
+      transparent 90%
+    ),
+    radial-gradient(
+      ellipse 40% 55% at 75% 70%,
+      rgba(135, 206, 250, 0.2) 0%,
+      transparent 75%
+    ),
+    radial-gradient(
+      ellipse 55% 40% at 5% 15%,
+      rgba(135, 206, 250, 0.18) 0%,
+      transparent 80%
+    ),
+    radial-gradient(
+      ellipse 40% 55% at 95% 25%,
+      rgba(173, 216, 230, 0.15) 0%,
+      transparent 75%
+    ),
+    radial-gradient(
+      ellipse 60% 50% at 20% 85%,
+      rgba(176, 224, 230, 0.22) 0%,
+      transparent 85%
+    ),
+    radial-gradient(
+      ellipse 45% 60% at 80% 65%,
+      rgba(135, 206, 250, 0.12) 0%,
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 55% 40% at 85% 75%,
+      rgba(255, 255, 224, 0.3) 0%,
+      transparent 80%
+    ),
+    radial-gradient(
+      ellipse 45% 55% at 20% 40%,
+      rgba(255, 250, 205, 0.35) 0%,
+      transparent 85%
+    ),
+    radial-gradient(
+      ellipse 60% 45% at 60% 15%,
+      rgba(255, 255, 240, 0.25) 0%,
+      transparent 75%
+    ),
+    radial-gradient(
+      ellipse 50% 50% at 40% 90%,
+      rgba(255, 250, 210, 0.4) 0%,
+      transparent 90%
+    ),
+    radial-gradient(
+      ellipse 50% 45% at 90% 70%,
+      rgba(255, 255, 224, 0.18) 0%,
+      transparent 75%
+    ),
+    radial-gradient(
+      ellipse 40% 50% at 15% 45%,
+      rgba(255, 250, 205, 0.22) 0%,
+      transparent 80%
+    ),
+    radial-gradient(
+      ellipse 55% 40% at 65% 10%,
+      rgba(255, 255, 240, 0.15) 0%,
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 45% 55% at 45% 95%,
+      rgba(255, 250, 210, 0.25) 0%,
+      transparent 85%
+    ),
+    radial-gradient(
+      ellipse 65% 35% at 15% 30%,
+      rgba(135, 206, 250, 0.12) 0%,
+      transparent 90%
+    ),
+    radial-gradient(
+      ellipse 35% 65% at 85% 15%,
+      rgba(173, 216, 230, 0.08) 0%,
+      transparent 85%
+    ),
+    radial-gradient(
+      ellipse 55% 45% at 30% 70%,
+      rgba(176, 224, 230, 0.15) 0%,
+      transparent 95%
+    ),
+    radial-gradient(
+      ellipse 45% 55% at 75% 80%,
+      rgba(255, 255, 224, 0.12) 0%,
+      transparent 80%
+    ),
+    radial-gradient(
+      ellipse 60% 40% at 25% 55%,
+      rgba(255, 250, 205, 0.15) 0%,
+      transparent 90%
+    ),
+    radial-gradient(
+      ellipse 40% 60% at 70% 25%,
+      rgba(255, 255, 240, 0.08) 0%,
+      transparent 85%
+    );
+}
+
+.dark .home {
+  background: none;
+}
+
+.hero {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-items: center;
+  text-align: center;
+  font-family: Inter, var(--rp-font-family-base);
+  padding: 64px 32px;
+}
+
+.hero__logo {
+  filter: drop-shadow(0 0 15px rgba(0, 204, 204, 0.6));
+  transition: filter 0.3s ease;
+}
+
+.hero__logo:hover {
+  filter: drop-shadow(0 0 20px rgba(0, 204, 204, 0.8));
+}
+
+.hero__title {
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.hero__name {
+  background: var(--rp-home-hero-name-background);
+  background-clip: text;
+  -webkit-text-fill-color: var(--rp-home-hero-name-color);
+  -webkit-background-clip: text;
+}
+
+.hero__name,
+.hero__tagline {
+  font-weight: 900;
+  font-size: 76px;
+  line-height: 1.25;
+  letter-spacing: -1.5px;
+}
+
+.hero__tagline__accent {
+  background: linear-gradient(315deg, #4dd0d0 25%, #ffe082);
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  -webkit-background-clip: text;
+}
+
+.hero__description {
+  max-width: 960px;
+  line-height: 1.5;
+  color: var(--rp-c-text-2);
+  transition: color 0.5s;
+  font-size: 22px;
+  margin: 24px auto 40px;
+}
+
+.hero__button {
+  width: 100%;
+  justify-content: center;
+  gap: 18px;
+  display: flex;
+}
+
+.hero__button__get-started,
+.hero__button__github {
+  font-size: 16px;
+  border-radius: 8px;
+  min-width: 142px;
+  font-weight: 700;
+  white-space: nowrap;
+  justify-content: center;
+  align-items: center;
+  height: 48px;
+  line-height: 150%;
+  display: inline-flex;
+  letter-spacing: 0.2px;
+  border-radius: var(--rp-radius-large);
+}
+
+.hero__button__get-started {
+  opacity: 1;
+  color: #fff;
+  transition: all 0.3s;
+  background: linear-gradient(
+    275deg,
+    var(--rp-c-brand-dark) 3%,
+    var(--rp-c-brand-light) 97%
+  );
+}
+
+.hero__button__get-started:hover,
+.hero__button__get-started:active {
+  opacity: 0.8;
+  background-color: var(--rp-c-brand-light);
+}
+
+.hero__button__github {
+  border: 1px solid var(--rp-c-gray-light-3);
+  color: var(--rp-c-text-1);
+  background-color: var(--rp-c-gray-light-5);
+  transition: all 0.3s;
+}
+
+.dark .hero__button__github {
+  background-color: var(--rp-c-bg-mute);
+  border-color: #484848;
+}
+
+.hero__button__github:hover,
+.hero__button__github:active {
+  background-color: var(--rp-c-gray-light-4);
+}
+
+.dark .hero__button__github:hover,
+.dark .hero__button__github:active {
+  background-color: #484848;
+}
+
+.hero__button__github-icon {
+  color: currentColor;
+  width: 22px;
+  height: 22px;
+  margin-right: 8px;
+}
+
+.features {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  font-family: Inter, var(--rp-font-family-base);
+  padding: 32px;
+  gap: 32px;
+  width: 100%;
+  max-width: 1296px;
+  margin: 0 auto;
+}
+
+.feature {
+  flex: 0 32%;
+  font-size: 14px;
+  max-width: calc((100% - 32px * 3) / 4);
+}
+
+.feature__title {
+  font-weight: 600;
+  font-size: 20px;
+  letter-spacing: -0.4px;
+  transition: color 0.5s;
+  margin-bottom: 0.75em;
+}
+
+.feature__description {
+  font-weight: 400;
+  font-size: 15px;
+  color: var(--rp-c-text-2);
+}
+
+.example {
+  margin: 0 auto;
+  padding: 64px 32px;
+  max-width: 960px;
+}
+
+.footer footer {
+  position: inherit;
+}
+
+@media (max-width: 768px) {
+  .hero {
+    padding: 32px;
+  }
+
+  .hero__logo {
+    width: 200px;
+    height: auto;
+  }
+
+  .hero__name,
+  .hero__tagline {
+    font-size: 48px;
+    letter-spacing: -0.5px;
+  }
+
+  .hero__description {
+    font-size: 16px;
+    margin: 18px 0 30px;
+  }
+
+  .hero__button {
+    flex-direction: column;
+  }
+
+  .features {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .feature {
+    max-width: 100%;
+  }
+
+  .example {
+    padding: 32px;
+  }
+}
