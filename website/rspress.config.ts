@@ -13,7 +13,7 @@ const config: UserConfig = defineConfig({
   logo: 'https://pic1.imgdb.cn/item/68c7c093c5157e1a8804fb52.svg',
   logoText: 'Zess',
   head: [
-    '<meta name="algolia-site-verification"  content="FF98413A7B314DDF" />',
+    '<meta name="algolia-site-verification"  content="36948B26089B1A5B" />',
   ],
   search: {
     codeBlocks: true,

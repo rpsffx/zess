@@ -9,8 +9,8 @@ const Search: React.FC = () => {
   return (
     <PluginAlgoliaSearch
       docSearchProps={{
-        appId: 'SXK65K1R5K',
-        apiKey: 'd4cb6321c1869529d9c49889cf5a1f7b',
+        appId: '80NNROT76W',
+        apiKey: 'e1534e12ea32a166b6028e9d962fbfe6',
         indexName: 'Zess Website',
         searchParameters: {
           facetFilters: [`lang:${lang}`],
