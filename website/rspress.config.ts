@@ -51,7 +51,8 @@ const config: UserConfig = defineConfig({
         nextPageText: 'Next page',
         editLink: {
           text: '📝 Edit this page on GitHub',
-          docRepoBaseUrl: 'https://github.com/rpsffx/zess/tree/main/docs',
+          docRepoBaseUrl:
+            'https://github.com/rpsffx/zess/tree/main/website/docs',
         },
         overview: {
           filterNameText: 'Filter',
@@ -70,7 +71,8 @@ const config: UserConfig = defineConfig({
         nextPageText: '下一页',
         editLink: {
           text: '📝 在 GitHub 上编辑此页',
-          docRepoBaseUrl: 'https://github.com/rpsffx/zess/tree/main/docs',
+          docRepoBaseUrl:
+            'https://github.com/rpsffx/zess/tree/main/website/docs',
         },
         overview: {
           filterNameText: '过滤',
