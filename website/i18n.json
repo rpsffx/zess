@@ -59,6 +59,10 @@
     "en": "Guide",
     "zh": "指南"
   },
+  "playground": {
+    "en": "Playground",
+    "zh": "演练场"
+  },
   "core": {
     "en": "Core",
     "zh": "核心功能"

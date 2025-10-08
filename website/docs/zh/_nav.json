@@ -10,5 +10,10 @@
     "link": "/api/",
     "activeMatch": "^/zh/api/",
     "position": "right"
+  },
+  {
+    "text": "playground",
+    "link": "https://stackblitz.com/edit/zess-app?file=index.html",
+    "position": "right"
   }
 ]
