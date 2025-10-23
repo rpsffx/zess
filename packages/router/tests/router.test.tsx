@@ -5,6 +5,7 @@ import {
   Route,
   Router,
   useBeforeLeave,
+  useLocation,
   useNavigate,
   useSearchParams,
 } from '../src/router'
@@ -152,6 +153,28 @@ describe('Router', () => {
       expect(container.textContent).toBe('Test')
       container.style.height = container.style.overflow = ''
     })
+    it('should pass state to history when using state prop', () => {
+      const testState = { from: 'link-test', timestamp: Date.now() }
+      dispose = render(
+        () => (
+          <Router
+            root={(props) => (
+              <>
+                <Link to="/test" state={testState} />
+                {props.children}
+              </>
+            )}
+          >
+            <Route path="/test" component={() => <div>Test</div>} />
+          </Router>
+        ),
+        container,
+      )
+      ;(container.firstElementChild as HTMLAnchorElement).click()
+      expect(location.hash).toBe('#/test')
+      expect(container.textContent).toBe('Test')
+      expect(history.state).toEqual(testState)
+    })
     it('should apply style to link when using style prop', () => {
       dispose = render(
         () => (
@@ -194,7 +217,6 @@ describe('Router', () => {
       dispose = render(
         () => (
           <Router
-            mode="hash"
             root={(props) => (
               <>
                 <Link to="/test" activeClass="active-link" />
@@ -216,7 +238,6 @@ describe('Router', () => {
       dispose = render(
         () => (
           <Router
-            mode="hash"
             root={(props) => (
               <>
                 <Link to="/parent" activeClass="active" />
@@ -535,7 +556,7 @@ describe('Router', () => {
       expect(container.textContent).toBe('Page 2')
       history.back()
       await waitFor('hashchange')
-      expect(location.hash).toBe('#/')
+      expect(location.hash).toBe('')
       expect(container.textContent).toBe('')
     })
     it('should not scroll to top when noScroll option is true', () => {
@@ -566,11 +587,33 @@ describe('Router', () => {
       expect(window.scrollY).toBe(1000)
       container.style.height = container.style.overflow = ''
     })
+    it('should pass state to history when using state option', () => {
+      let navigate: ReturnType<typeof useNavigate>
+      const testState = { from: 'navigate-test', data: { id: 123 } }
+      dispose = render(
+        () => (
+          <Router
+            root={(props) => {
+              navigate = useNavigate()
+              return props.children
+            }}
+          >
+            <Route path="/test" component={() => <div>Test</div>} />
+          </Router>
+        ),
+        container,
+      )
+      navigate!('/test', { state: testState })
+      expect(location.hash).toBe('#/test')
+      expect(container.textContent).toBe('Test')
+      expect(history.state).toEqual(testState)
+    })
   })
   describe('useSearchParams hook', () => {
     it('should update searchParams when setSearchParams is called', () => {
       const effectSpy = vi.fn()
       const navigate = useNavigate()
+      const testState = { from: 'search-test' }
       navigate('?name=John&age=20')
       const [searchParams, setSearchParams] = useSearchParams()
       createRoot(() => {
@@ -585,14 +628,15 @@ describe('Router', () => {
       expect(location.search).toBe('?name=Eric&age=20')
       expect(effectSpy).toHaveBeenCalledTimes(2)
       expect(effectSpy).toHaveBeenCalledWith('Eric', '20')
-      setSearchParams({ name: 'Henry' }, true)
+      setSearchParams({ name: 'Henry' }, { replace: true })
       history.back()
       expect(location.search).toBe('?name=Henry&age=20')
       expect(effectSpy).toHaveBeenCalledTimes(3)
       expect(effectSpy).toHaveBeenCalledWith('Henry', '20')
-      setSearchParams({ gender: 'male' })
+      setSearchParams({ gender: 'male' }, { state: testState })
       expect(location.search).toBe('?gender=male&name=Henry&age=20')
       expect(searchParams.gender).toBe('male')
+      expect(history.state).toEqual(testState)
     })
     it('should refresh searchParams when location.search changes', () => {
       const effectSpy = vi.fn()
@@ -771,7 +815,7 @@ describe('Router', () => {
       expect(capturedEvent).toEqual({
         to: '/target',
         from: '/source',
-        options: { replace: true, noScroll: true },
+        options: { replace: true, noScroll: true, state: null },
         defaultPrevented: false,
       })
       expect(container.textContent).toBe('Source Page')
@@ -849,6 +893,69 @@ describe('Router', () => {
       navigate!('/guard')
       navigate!('/second')
       expect(guardSpy).toHaveBeenCalledTimes(2)
+    })
+  })
+  describe('useLocation hook', () => {
+    it('should detect hash changes in hash mode', () => {
+      let location: ReturnType<typeof useLocation>
+      let navigate: ReturnType<typeof useNavigate>
+      dispose = render(
+        () => (
+          <Router
+            mode="hash"
+            root={(props) => {
+              location = useLocation()
+              navigate = useNavigate()
+              return props.children
+            }}
+          >
+            <Route path="/test" component={() => <div>Test</div>} />
+          </Router>
+        ),
+        container,
+      )
+      expect(location!.hash).toBe('')
+      navigate!('/test')
+      expect(location!.hash).toBe('#/test')
+      expect(container.textContent).toBe('Test')
+    })
+    it('should detect pathname changes in history mode', () => {
+      let location: ReturnType<typeof useLocation>
+      let navigate: ReturnType<typeof useNavigate>
+      dispose = render(
+        () => (
+          <Router
+            mode="history"
+            root={(props) => {
+              location = useLocation()
+              navigate = useNavigate()
+              return props.children
+            }}
+          >
+            <Route path="/test" component={() => <div>Test</div>} />
+          </Router>
+        ),
+        container,
+      )
+      expect(location!.pathname).toBe('/')
+      navigate!('/test')
+      expect(location!.pathname).toBe('/test')
+      expect(container.textContent).toBe('Test')
+    })
+    it('should detect search, state and query changes using navigate', () => {
+      const navigate = useNavigate()
+      const location = useLocation()
+      expect(location.search).toBe('')
+      expect(location.state).toBeNull()
+      expect(location.query).toEqual({})
+      navigate('/?name=test', { state: { initial: true } })
+      expect(location.search).toBe('?name=test')
+      expect(location.state).toEqual({ initial: true })
+      expect(location.query).toEqual({ name: 'test' })
+      navigate('/?filter=active&filter=important&id=123')
+      expect(location.search).toBe('?filter=active&filter=important&id=123')
+      expect(location.query.filter).toEqual(['active', 'important'])
+      expect(location.query.id).toBe('123')
     })
   })
 })
