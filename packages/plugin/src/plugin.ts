@@ -7,6 +7,8 @@ import {
   type Plugin,
 } from 'vite'
 
+const isTypeScriptFile = RegExp.prototype.test.bind(/\.[mc]?tsx?$/)
+
 export default function zess(
   options: {
     include?: FilterPattern
@@ -34,7 +36,7 @@ export default function zess(
     async transform(code, id) {
       if (!filter(id)) return
       let sourcemap = this.getCombinedSourcemap()
-      if (id.endsWith('.tsx')) {
+      if (isTypeScriptFile(id)) {
         const transformed = await transformWithEsbuild(
           code,
           id,
