@@ -194,7 +194,7 @@ describe('compile', () => {
   })
   it('should handle this expression in program context', () => {
     const result = compile('<div>{this.text}</div>')
-    match(result.code, 'const _self$ = this')
+    match(result.code, 'const _self$ = globalThis')
     match(result.code, '_self$.text')
   })
   it('should handle this expression in function context', () => {
