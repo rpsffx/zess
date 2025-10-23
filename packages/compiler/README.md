@@ -404,7 +404,7 @@ const withRefs = (
 **Output:**
 
 ```javascript
-const _self$ = this
+const _self$ = globalThis
 const withRefs = [
   (() => {
     const _el$ = _$createElement('input')
