@@ -44,9 +44,15 @@ type RouteContext = {
   patternPath: string
   resolvedPath: string
 }
+type RouterRegistry = {
+  hash?: RouterContext
+  history?: RouterContext
+}
 type RouterContext = {
   path: string
   mode: RouteMode
+  count: number
+  event: 'hashchange' | 'popstate'
 }
 type RouteGuard = {
   listener: RouteGuardListener
@@ -60,32 +66,36 @@ type RouteGuardEvent = {
   preventDefault: () => void
   retry: (force?: boolean) => void
 }
-type NavigateOptions = {
+type NavigateOptions = SearchParamsOptions & {
   relative?: boolean
-  replace?: boolean
   noScroll?: boolean
 }
+type SearchParamsOptions = {
+  replace?: boolean
+  state?: any
+}
+type Location = {
+  pathname: string
+  search: string
+  hash: string
+  state: any
+  query: SearchParams
+}
 type RouteMode = 'hash' | 'history'
-type RouteEventListener = (path: string) => void
 type RouteGuardListener = (event: RouteGuardEvent) => void
 type RouteComponent = Component<{ children?: JSX.Element }>
 type SearchParams = Record<string, string | string[]>
 
-let searchParamsStore: [SearchParams, SetStoreFunction<SearchParams>]
-const hashchangeListeners = new Set<RouteEventListener>()
-const popstateListeners = new Set<RouteEventListener>()
+const routerRegistry: RouterRegistry = {}
 const hashRouteGuards = new Set<RouteGuard>()
 const historyRouteGuards = new Set<RouteGuard>()
+let locationStore: [Location, SetStoreFunction<Location>]
+let searchParamsStore: [SearchParams, SetStoreFunction<SearchParams>]
 
 export function Router(props: RouterProps): JSX.Element {
   if (getRouterContext()) return
   const Root = props.root
-  const mode = props.mode ?? 'hash'
-  const isHashMode = mode === 'hash'
-  const [context, setContext] = useStore<RouterContext>({
-    mode,
-    path: getCurrentPath(isHashMode),
-  })
+  const context = createRouterContext(props.mode)
   const childRoutes = useMemo(() => {
     setRouterContext(context)
     return props.children
@@ -96,8 +106,7 @@ export function Router(props: RouterProps): JSX.Element {
       if (routeNode.isMatched) return routeNode.component
     }
   }) as unknown as JSX.Element
-  if (isHashMode && !location.hash) history.replaceState(null, '', '#/')
-  onCleanup(addRouteEvent((path) => setContext({ path }), isHashMode))
+  onCleanup(listenRouteUpdate(context))
   if (!Root) return match
   return useMemo(() =>
     untrack(() => {
@@ -198,6 +207,7 @@ export function Link(props: LinkProps): JSX.Element {
       props.relative,
       props.replace,
       props.noScroll,
+      props.state,
       routerContext?.path,
     )
   }
@@ -227,6 +237,7 @@ export function useNavigate(): (
       options?.relative,
       options?.replace,
       options?.noScroll,
+      options?.state,
       routerContext?.path,
     )
   }
@@ -246,12 +257,21 @@ export function useBeforeLeave(listener: RouteGuardListener): void {
   onCleanup(() => routeGuards.delete(routeGuard))
 }
 
+export function useLocation(): Location {
+  locationStore ??= useStore({ ...getLocation(), query: useSearchParams()[0] })
+  return locationStore[0]
+}
+
 function getRouterContext(): RouterContext | undefined {
-  return getContext('routerContext')
+  for (let context, owner = getOwner(); owner; owner = owner.owner) {
+    if ((context = (owner as RouteOwner).routerContext)) return context
+  }
 }
 
 function getRouteContext(): RouteContext | undefined {
-  return getContext('routeContext')
+  for (let context, owner = getOwner(); owner; owner = owner.owner) {
+    if ((context = (owner as RouteOwner).routeContext)) return context
+  }
 }
 
 function setRouterContext(routerContext: RouterContext): void {
@@ -262,77 +282,45 @@ function setRouteContext(routeContext: RouteContext): void {
   ;(getOwner() as RouteOwner).routeContext = routeContext
 }
 
-function getContext<T extends 'routeContext' | 'routerContext'>(
-  prop: T,
-): RouteOwner[T] {
-  for (let owner = getOwner(); owner; owner = owner.owner) {
-    if (prop in owner) return (owner as RouteOwner)[prop]
-  }
-}
-
-function navigate(
-  href: string,
-  isHashMode: boolean,
-  relative?: boolean,
-  replace?: boolean,
-  noScroll?: boolean,
-  from = '/',
-  skipGuards?: boolean,
-): void {
-  const routeGuards = getRouteGuards(isHashMode)
-  if (routeGuards.size && !skipGuards) {
-    const options = { relative, replace, noScroll }
-    const event: RouteGuardEvent = {
-      to: getFullPath(href),
-      from,
-      options,
-      defaultPrevented: false,
-      preventDefault() {
-        event.defaultPrevented = true
-      },
-      retry(force) {
-        navigate(
-          href,
-          isHashMode,
-          options.relative,
-          options.replace,
-          options.noScroll,
-          from,
-          force,
-        )
+function createRouterContext(mode: RouteMode = 'hash'): RouterContext {
+  if (!routerRegistry[mode]) {
+    const isHashMode = mode === 'hash'
+    const event = isHashMode ? 'hashchange' : 'popstate'
+    if (!routerRegistry[isHashMode ? 'history' : 'hash']) updateRoute()
+    const location = useLocation()
+    const currentPath = useMemo(() => {
+      const path = isHashMode ? location.hash.slice(1) : location.pathname
+      return path.length > 1 ? decodeURIComponent(path) : '/'
+    })
+    routerRegistry[mode] = {
+      mode,
+      event,
+      count: 0,
+      get path() {
+        return currentPath()
       },
     }
-    for (const { routeContext, listener } of routeGuards) {
-      if (!matchPath(routeContext.patternPath, event.to)) {
-        listener(event)
-      }
-    }
-    if (event.defaultPrevented) return
   }
-  history[replace ? 'replaceState' : 'pushState'](null, '', href)
-  handleRouteEvent(isHashMode)
-  if (!noScroll) window.scrollTo(0, 0)
+  return routerRegistry[mode]
 }
 
-function getCurrentPath(isHashMode: boolean): string {
-  const { hash, pathname } = location
-  const path = isHashMode ? hash.slice(1) : pathname
-  return path ? decodeURIComponent(path) : '/'
+function getRouteNodes(childRoute: JSX.Element): RouteNode[] {
+  if (childRoute == null) return []
+  if (typeof childRoute === 'function' && !(childRoute as any).length) {
+    return getRouteNodes((childRoute as () => JSX.Element)())
+  }
+  if (Array.isArray(childRoute)) return childRoute.flatMap(getRouteNodes)
+  return [childRoute as unknown as RouteNode]
 }
 
-function addRouteEvent(
-  fn: RouteEventListener,
-  isHashMode: boolean,
-): () => void {
-  const listeners = getRouteEventListeners(isHashMode)
-  const event = isHashMode ? 'hashchange' : 'popstate'
-  if (listeners.add(fn).size === 1) {
-    globalThis.addEventListener(event, routeEventListener)
+function listenRouteUpdate(routerContext: RouterContext): () => void {
+  if (!routerContext.count++) {
+    globalThis.addEventListener(routerContext.event, updateRoute)
   }
-  return function () {
-    listeners.delete(fn)
-    if (!listeners.size) {
-      globalThis.removeEventListener(event, routeEventListener)
+  return () => {
+    if (!--routerContext.count) {
+      globalThis.removeEventListener(routerContext.event, updateRoute)
+      routerRegistry[routerContext.mode] = undefined
     }
   }
 }
@@ -363,7 +351,8 @@ function getParsedPath(
   relative = true,
 ): string {
   let parsedPath = formatPath(path)
-  const altPath = getCurrentPath(!isHashMode)
+  let altPath = location[isHashMode ? 'pathname' : 'hash']
+  if (altPath.length > 1) altPath = decodeURIComponent(altPath)
   if (routeContext && relative) {
     parsedPath = joinPaths(routeContext.resolvedPath, parsedPath)
   }
@@ -372,131 +361,7 @@ function getParsedPath(
     const search = index === -1 ? '' : parsedPath.slice(index)
     return `${altPath}${search}#${parsedPath}`
   }
-  return altPath === '/' ? parsedPath : `${parsedPath}#${altPath}`
-}
-
-function getSearchParams(): SearchParams {
-  const searchParams: SearchParams = {}
-  forEachSearchParam((key, value) =>
-    appendSearchParam(searchParams, key, value),
-  )
-  return searchParams
-}
-
-function setSearchParams(params: Record<string, any>, replace?: boolean): void {
-  const keys = Object.keys(params)
-  if (!keys.length) return
-  let search = ''
-  const searchParams: SearchParams = {}
-  for (let i = 0; i < keys.length; ++i) {
-    const key = keys[i]
-    const value = params[key]
-    if (value === '' || value == null) {
-      searchParams[key] = undefined!
-    } else if (Array.isArray(value)) {
-      const values = []
-      for (let j = 0; j < value.length; ++j) {
-        if (value[j] != null && value[j] !== '') {
-          values.push(value[j].toString())
-          search += `${search ? '&' : ''}${key}=${value[j]}`
-        }
-      }
-      searchParams[key] = values.length ? values : undefined!
-    } else {
-      searchParams[key] = value.toString()
-      search += `${search ? '&' : ''}${key}=${value}`
-    }
-  }
-  forEachSearchParam((key, value) => {
-    if (!(key in searchParams)) {
-      let param = key
-      if (value) param += `=${value}`
-      search += `${search ? '&' : ''}${param}`
-    }
-  })
-  if (search) search = `?${search}`
-  const href = `${location.pathname}${search}${location.hash}`
-  history[replace ? 'replaceState' : 'pushState'](null, '', href)
-  searchParamsStore?.[1](searchParams)
-}
-
-function forEachSearchParam(fn: (key: string, value: string) => void): void {
-  let { search } = location
-  if (search.length <= 1) return
-  let key = ''
-  let value = ''
-  search = decodeURIComponent(search)
-  for (let i = 1; i < search.length; ++i) {
-    const char = search[i]
-    if (char === '=') {
-      key = value
-      value = ''
-      continue
-    }
-    if (char === '&') {
-      fn(key, value)
-      key = value = ''
-      continue
-    }
-    value += char
-  }
-  if (key || value) {
-    if (!key) {
-      key = value
-      value = ''
-    }
-    fn(key, value)
-  }
-}
-
-function appendSearchParam(
-  searchParams: SearchParams,
-  key: string,
-  value: string,
-): void {
-  const prevValue = searchParams[key]
-  if (prevValue === undefined) {
-    searchParams[key] = value
-  } else if (typeof prevValue === 'string') {
-    searchParams[key] = [prevValue, value]
-  } else {
-    prevValue.push(value)
-  }
-}
-
-function routeEventListener({ type }: Event): void {
-  handleRouteEvent(type === 'hashchange')
-}
-
-function handleRouteEvent(isHashMode: boolean): void {
-  const currentPath = getCurrentPath(isHashMode)
-  const listeners = getRouteEventListeners(isHashMode)
-  for (const listener of listeners) listener(currentPath)
-  searchParamsStore?.[1]((prevSearchParams) => {
-    const searchParams = getSearchParams()
-    const keys = Object.keys(prevSearchParams)
-    for (let i = 0; i < keys.length; ++i) {
-      searchParams[keys[i]] ??= undefined!
-    }
-    return searchParams
-  })
-}
-
-function getRouteEventListeners(isHashMode: boolean): Set<RouteEventListener> {
-  return isHashMode ? hashchangeListeners : popstateListeners
-}
-
-function getRouteGuards(isHashMode: boolean): Set<RouteGuard> {
-  return isHashMode ? hashRouteGuards : historyRouteGuards
-}
-
-function getRouteNodes(childRoute: JSX.Element): RouteNode[] {
-  if (childRoute == null) return []
-  if (typeof childRoute === 'function' && !(childRoute as any).length) {
-    return getRouteNodes((childRoute as () => JSX.Element)())
-  }
-  if (Array.isArray(childRoute)) return childRoute.flatMap(getRouteNodes)
-  return [childRoute as unknown as RouteNode]
+  return `${parsedPath}${altPath}`
 }
 
 function joinPaths(basePath: string, path: string): string {
@@ -561,4 +426,170 @@ function formatPath(
     formattedPath = `/${formattedPath}`
   }
   return formattedPath
+}
+
+function navigate(
+  href: string,
+  isHashMode: boolean,
+  relative?: boolean,
+  replace?: boolean,
+  noScroll?: boolean,
+  state: any = null,
+  from = '/',
+  skipGuards?: boolean,
+): void {
+  const routeGuards = getRouteGuards(isHashMode)
+  if (routeGuards.size && !skipGuards) {
+    const options = { relative, replace, noScroll, state }
+    const event: RouteGuardEvent = {
+      to: getFullPath(href),
+      from,
+      options,
+      defaultPrevented: false,
+      preventDefault() {
+        event.defaultPrevented = true
+      },
+      retry(force) {
+        navigate(
+          href,
+          isHashMode,
+          options.relative,
+          options.replace,
+          options.noScroll,
+          options.state,
+          from,
+          force,
+        )
+      },
+    }
+    for (const { routeContext, listener } of routeGuards) {
+      if (!matchPath(routeContext.patternPath, event.to)) listener(event)
+    }
+    if (event.defaultPrevented) return
+  }
+  history[replace ? 'replaceState' : 'pushState'](state, '', href)
+  updateRoute()
+  if (!noScroll) window.scrollTo(0, 0)
+}
+
+function updateRoute(): void {
+  locationStore?.[1](getLocation())
+  searchParamsStore?.[1]((prevSearchParams) => {
+    const searchParams = getSearchParams()
+    const keys = Object.keys(prevSearchParams)
+    for (let i = 0; i < keys.length; ++i) {
+      searchParams[keys[i]] ??= undefined!
+    }
+    return searchParams
+  })
+}
+
+function getSearchParams(): SearchParams {
+  const searchParams: SearchParams = {}
+  forEachSearchParam((key, value) =>
+    appendSearchParam(searchParams, key, value),
+  )
+  return searchParams
+}
+
+function setSearchParams(
+  params: Record<string, any>,
+  options?: SearchParamsOptions,
+): void {
+  const keys = Object.keys(params)
+  if (!keys.length) return
+  let search = ''
+  const state = options?.state ?? null
+  const searchParams: SearchParams = {}
+  for (let i = 0; i < keys.length; ++i) {
+    const key = keys[i]
+    const value = params[key]
+    if (value === '' || value == null) {
+      searchParams[key] = undefined!
+    } else if (Array.isArray(value)) {
+      const values = []
+      for (let j = 0; j < value.length; ++j) {
+        if (value[j] != null && value[j] !== '') {
+          values.push(value[j].toString())
+          search += `${search ? '&' : ''}${key}=${value[j]}`
+        }
+      }
+      searchParams[key] = values.length ? values : undefined!
+    } else {
+      searchParams[key] = value.toString()
+      search += `${search ? '&' : ''}${key}=${value}`
+    }
+  }
+  forEachSearchParam((key, value) => {
+    if (!(key in searchParams)) {
+      let param = key
+      if (value) param += `=${value}`
+      search += `${search ? '&' : ''}${param}`
+    }
+  })
+  search &&= `?${search}`
+  history[options?.replace ? 'replaceState' : 'pushState'](
+    state,
+    '',
+    `${location.pathname}${search}${location.hash}`,
+  )
+  locationStore?.[1]({ search, state })
+  searchParamsStore[1](searchParams)
+}
+
+function forEachSearchParam(fn: (key: string, value: string) => void): void {
+  let { search } = location
+  if (search.length <= 1) return
+  let key = ''
+  let value = ''
+  search = decodeURIComponent(search)
+  for (let i = 1; i < search.length; ++i) {
+    const char = search[i]
+    if (char === '=') {
+      key = value
+      value = ''
+      continue
+    }
+    if (char === '&') {
+      fn(key, value)
+      key = value = ''
+      continue
+    }
+    value += char
+  }
+  if (key || value) {
+    if (!key) {
+      key = value
+      value = ''
+    }
+    fn(key, value)
+  }
+}
+
+function appendSearchParam(
+  searchParams: SearchParams,
+  key: string,
+  value: string,
+): void {
+  const prevValue = searchParams[key]
+  if (prevValue === undefined) {
+    searchParams[key] = value
+  } else if (typeof prevValue === 'string') {
+    searchParams[key] = [prevValue, value]
+  } else {
+    prevValue.push(value)
+  }
+}
+
+function getRouteGuards(isHashMode: boolean): Set<RouteGuard> {
+  return isHashMode ? hashRouteGuards : historyRouteGuards
+}
+
+function getLocation(): Omit<Location, 'query'> {
+  return {
+    pathname: location.pathname,
+    search: location.search,
+    hash: location.hash,
+    state: history.state,
+  }
 }
