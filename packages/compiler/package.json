@@ -1,7 +1,7 @@
 {
   "name": "@zessjs/compiler",
   "version": "1.0.8",
-  "packageManager": "pnpm@10.18.1",
+  "packageManager": "pnpm@10.19.0",
   "description": "Zess JSX compiler 💥 Delivers efficient code conversion for super - responsive web experiences.",
   "type": "module",
   "keywords": [
