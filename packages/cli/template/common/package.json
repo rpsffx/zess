@@ -12,21 +12,21 @@
     "format": "prettier --cache --write ."
   },
   "dependencies": {
-    "@tailwindcss/vite": "^4.1.14",
-    "@zessjs/core": "^1.0.8",
-    "@zessjs/router": "^1.0.8",
-    "tailwindcss": "^4.1.14"
+    "@tailwindcss/vite": "^4.1.16",
+    "@zessjs/core": "^1.1.0",
+    "@zessjs/router": "^1.1.0",
+    "tailwindcss": "^4.1.16"
   },
   "devDependencies": {
-    "@sxzz/eslint-config": "^7.2.6",
+    "@sxzz/eslint-config": "^7.2.7",
     "@sxzz/prettier-config": "^2.2.4",
-    "@zessjs/vite-plugin": "^1.0.8",
-    "eslint": "^9.36.0",
+    "@zessjs/vite-plugin": "^1.1.0",
+    "eslint": "^9.38.0",
     "eslint-plugin-react": "^7.37.5",
-    "jsdom": "^27.0.0",
+    "jsdom": "^27.0.1",
     "prettier": "^3.6.2",
     "typescript": "^5.9.3",
-    "vite": "^7.1.9",
+    "vite": "^7.1.12",
     "vitest": "^3.2.4"
   },
   "prettier": "@sxzz/prettier-config"
