@@ -17,6 +17,7 @@ useNavigate(): (href: string, options?: NavigateOptions) => void
   - `relative`: 如果为 `false`，导航到绝对路径，忽略相对基准。默认为 `true`
   - `replace`: 如果为 `true`，替换当前历史记录
   - `noScroll`: 如果为 `true`，阻止导航时滚动到顶部
+  - `state`: 可选的状态对象，会被传递给 `history.state`。默认为 `null`
 
 **示例：**
 
@@ -39,6 +40,9 @@ function NavigationComponent() {
       <button onClick={() => navigate('/search?q=zess&page=1')}>
         搜索 Zess（第1页）
       </button>
+      <button onClick={() => navigate('/checkout', { state: { userId: 1 } })}>
+        前往结账
+      </button>
     </>
   )
 }
@@ -51,7 +55,7 @@ function NavigationComponent() {
 **类型：**
 
 ```ts
-useSearchParams(): [SearchParams, (params: Record<string, any>, replace?: boolean) => void]
+useSearchParams(): [SearchParams, (params: Record<string, any>, options?: SearchParamsOptions) => void]
 ```
 
 **返回值：** 包含以下内容的数组
@@ -59,28 +63,36 @@ useSearchParams(): [SearchParams, (params: Record<string, any>, replace?: boolea
 - `searchParams`: 响应式对象，包含当前搜索参数，当 `location.search` 更改或通过 `setSearchParams` 修改时会自动更新
 - `setSearchParams`: 更新搜索参数的函数
   - `params`: 要与现有参数合并的搜索参数。将属性值设置为 `undefined`、`null` 或空字符串会移除该属性
-  - `replace`: 可选标志，用于替换当前历史记录
+  - `options`: 可选的配置对象
+    - `replace`: 可选标志，用于替换当前历史记录条目而不是添加新条目
+    - `state`: 可选的状态对象，会被传递给 `history.state`。默认为 `null`
 
 **示例：**
 
 ```jsx
-function SearchPage() {
+function ProductFilter() {
   const [searchParams, setSearchParams] = useSearchParams()
-  const handleFilterChange = (category) => {
-    setSearchParams({ category })
+  const setCategory = (category) => setSearchParams({ category })
+  const search = (keyword, searchType) => {
+    setSearchParams(
+      { keyword },
+      {
+        replace: true,
+        state: { searchType },
+      },
+    )
   }
-  const resetFilters = () => {
-    setSearchParams({ category: undefined })
+  const clearFilters = () => {
+    setSearchParams({ category: undefined, keyword: undefined })
   }
 
   return (
     <div>
-      <p>当前筛选条件: {searchParams.category || '全部'}</p>
-      <button onClick={() => handleFilterChange('electronics')}>
-        电子产品
-      </button>
-      <button onClick={() => handleFilterChange('clothing')}>服装</button>
-      <button onClick={resetFilters}>重置</button>
+      <p>当前分类: {searchParams.category || '全部'}</p>
+      <p>搜索关键词: {searchParams.keyword || '无'}</p>
+      <button onClick={() => setCategory('shoes')}>设置分类</button>
+      <button onClick={() => search('sale', 'quick')}>按类型搜索</button>
+      <button onClick={clearFilters}>清除筛选</button>
     </div>
   )
 }
@@ -125,6 +137,43 @@ function FormEditor() {
     <div>
       <input type="text" onChange={() => setHasUnsavedChanges(true)} />
       <button onClick={() => setHasUnsavedChanges(false)}>保存</button>
+    </div>
+  )
+}
+```
+
+## useLocation
+
+返回一个响应式 `Location` 对象的钩子，该对象包含当前 URL 的相关信息。当 URL 变化时，此对象会自动更新。
+
+**类型：**
+
+```ts
+useLocation(): Location
+```
+
+**返回值：** 一个带有 `pathname` 和其他属性的响应式 `Location` 对象
+
+- `pathname`: URL 的路径部分，不包含查询字符串
+- `search`: URL 的查询字符串部分
+- `hash`: URL 的哈希部分，包含 `#` 符号
+- `state`: 与当前历史记录条目关联的状态对象，通过 `useNavigate` 或 `<Link>` 组件传递
+- `query`: 包含 URL 所有查询参数的响应式对象
+
+**示例：**
+
+```jsx
+function LocationDisplay() {
+  const location = useLocation()
+
+  return (
+    <div>
+      <h2>当前位置信息</h2>
+      <p>路径: {location.pathname}</p>
+      <p>查询字符串: {location.search}</p>
+      <p>哈希值: {location.hash}</p>
+      <p>状态: {JSON.stringify(location.state)}</p>
+      <p>查询参数: {JSON.stringify(location.query)}</p>
     </div>
   )
 }

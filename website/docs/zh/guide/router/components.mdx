@@ -77,6 +77,7 @@ Link(props: LinkProps): JSX.Element
 - `relative`: 可选标志，导航到相对路径。默认为 `true`
 - `replace`: 可选标志，替换当前历史记录而不是添加新记录
 - `noScroll`: 可选标志，阻止导航时滚动到顶部
+- `state`: 可选的状态对象，会被传递给 `history.state`。默认为 `null`
 - `style`: 可选 CSS 样式
 - `class`: 可选 CSS 类名
 - `activeClass`: 链接激活时应用的可选 CSS 类名
@@ -112,4 +113,9 @@ Link(props: LinkProps): JSX.Element
 
 // 带查询参数的链接
 <Link to="/products?category=electronics&sort=price">产品（电子类）</Link>
+
+// 带状态的链接
+<Link to="/account" state={{ from: 'search', sourceId: 1 }}>
+  View Product Details
+</Link>
 ```

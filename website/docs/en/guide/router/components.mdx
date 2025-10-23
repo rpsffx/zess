@@ -77,6 +77,7 @@ Link(props: LinkProps): JSX.Element
 - `relative`: Optional flag to navigate to the relative path. Defaults to `true`
 - `replace`: Optional flag to replace the current history entry instead of pushing a new one
 - `noScroll`: Optional flag to prevent scrolling to top when navigating
+- `state`: Optional state object to pass to `history.state`, defaults to `null`
 - `style`: Optional CSS styles
 - `class`: Optional CSS class name
 - `activeClass`: Optional CSS class name to apply when the link is active
@@ -112,4 +113,9 @@ Link(props: LinkProps): JSX.Element
 
 // Link with query parameters
 <Link to="/products?category=electronics&sort=price">Products (Electronics)</Link>
+
+// Link with state
+<Link to="/account" state={{ from: 'search', sourceId: 1 }}>
+  View Product Details
+</Link>
 ```
