@@ -549,7 +549,7 @@ function transformThisExpression(
         0,
         createVariableDeclaration(
           thisId,
-          createThisExpression(programPosition),
+          createIdentifier('globalThis', programPosition),
           programPosition,
         ),
       )
