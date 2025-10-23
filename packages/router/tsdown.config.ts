@@ -14,7 +14,9 @@ const configs: UserConfig[] = [
     entry: ['./src/router.tsx'],
     format: 'esm',
     inputOptions: {
-      jsx: 'preserve',
+      transform: {
+        jsx: 'preserve',
+      },
     },
     outExtensions: () => ({
       js: '.jsx',
