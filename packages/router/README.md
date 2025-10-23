@@ -268,6 +268,7 @@ Creates a navigable link to another route.
 - `relative`: Optional flag to navigate to the relative path. Defaults to `true`
 - `replace`: Optional flag to replace the current history entry instead of pushing a new one
 - `noScroll`: Optional flag to prevent scrolling to top when navigating
+- `state`: Optional state object to pass to `history.state`, defaults to `null`
 - `style`: Optional CSS styles
 - `class`: Optional CSS class name
 - `activeClass`: Optional CSS class name to apply when the link is active
@@ -303,6 +304,11 @@ Creates a navigable link to another route.
 
 // Link with query parameters
 <Link to="/products?category=electronics&sort=price">Products (Electronics)</Link>
+
+// Link with state
+<Link to="/account" state={{ from: 'search', sourceId: 1 }}>
+  View Product Details
+</Link>
 ```
 
 ### Primitives
@@ -318,6 +324,7 @@ Hook that returns a function to programmatically navigate between routes.
   - `relative`: If `false`, navigates to the absolute path without relative base. Defaults to `true`
   - `replace`: If `true`, replaces the current history entry
   - `noScroll`: If `true`, prevents scrolling to top when navigating
+  - `state`: Optional state object to pass to `history.state`, defaults to `null`
 
 **Example:**
 
@@ -340,12 +347,15 @@ function NavigationComponent() {
       <button onClick={() => navigate('/search?q=zess&page=1')}>
         Search Zess (Page 1)
       </button>
+      <button onClick={() => navigate('/checkout', { state: { userId: 1 } })}>
+        Proceed to Checkout
+      </button>
     </>
   )
 }
 ```
 
-#### `useSearchParams(): [SearchParams, (params: Record<string, any>, replace?: boolean) => void]`
+#### `useSearchParams(): [SearchParams, (params: Record<string, any>, options?: SearchParamsOptions) => void]`
 
 Hook that provides access to search parameters and a function to update them.
 
@@ -354,28 +364,36 @@ Hook that provides access to search parameters and a function to update them.
 - `searchParams`: A reactive object with current search parameters that auto-updates when `location.search` changes or when modified via `setSearchParams`
 - `setSearchParams`: A function to update search parameters
   - `params`: Search parameters to merge with existing ones. Setting a property value to `undefined`, `null` or an empty string removes that property
-  - `replace`: Optional flag to replace the current history entry
+  - `options`: Optional configuration object
+    - `replace`: Optional flag to replace the current history entry instead of pushing a new one
+    - `state`: Optional state object to pass to `history.state`, defaults to `null`
 
 **Example:**
 
 ```jsx
-function SearchPage() {
+function ProductFilter() {
   const [searchParams, setSearchParams] = useSearchParams()
-  const handleFilterChange = (category) => {
-    setSearchParams({ category })
+  const setCategory = (category) => setSearchParams({ category })
+  const search = (keyword, searchType) => {
+    setSearchParams(
+      { keyword },
+      {
+        replace: true,
+        state: { searchType },
+      },
+    )
   }
-  const resetFilters = () => {
-    setSearchParams({ category: undefined })
+  const clearFilters = () => {
+    setSearchParams({ category: undefined, keyword: undefined })
   }
 
   return (
     <div>
-      <p>Current filters: {searchParams.category || 'All'}</p>
-      <button onClick={() => handleFilterChange('electronics')}>
-        Electronics
-      </button>
-      <button onClick={() => handleFilterChange('clothing')}>Clothing</button>
-      <button onClick={resetFilters}>Reset</button>
+      <p>Current category: {searchParams.category || 'All'}</p>
+      <p>Search keyword: {searchParams.keyword || 'None'}</p>
+      <button onClick={() => setCategory('shoes')}>Set Category</button>
+      <button onClick={() => search('sale', 'quick')}>Search with Type</button>
+      <button onClick={clearFilters}>Clear Filters</button>
     </div>
   )
 }
@@ -416,6 +434,37 @@ function FormEditor() {
     <div>
       <input type="text" onChange={() => setHasUnsavedChanges(true)} />
       <button onClick={() => setHasUnsavedChanges(false)}>Save</button>
+    </div>
+  )
+}
+```
+
+#### `useLocation(): Location`
+
+Hook that returns a reactive `Location` object containing information about the current URL. This object automatically updates when the URL changes.
+
+**Returns:** A reactive `Location` object with `pathname` and other properties
+
+- `pathname`: The path portion of the URL excluding the query string
+- `search`: The query string portion of the URL
+- `hash`: The hash portion of the URL including the `#` symbol
+- `state`: The state object associated with the current history entry passed via `useNavigate` or `<Link>` component
+- `query`: A reactive object containing all query parameters of the URL
+
+**Example:**
+
+```jsx
+function LocationDisplay() {
+  const location = useLocation()
+
+  return (
+    <div>
+      <h2>Current Location Information</h2>
+      <p>pathname: {location.pathname}</p>
+      <p>search: {location.search}</p>
+      <p>hash: {location.hash}</p>
+      <p>state: {JSON.stringify(location.state)}</p>
+      <p>query: {JSON.stringify(location.query)}</p>
     </div>
   )
 }
