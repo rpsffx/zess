@@ -13,7 +13,7 @@
       "@zessjs/vite-plugin": ["plugin/src/plugin.ts"]
     },
     "resolveJsonModule": true,
-    "types": ["node", "@vitest/browser/providers/playwright"],
+    "types": ["node"],
     "strict": true,
     "noUnusedLocals": true,
     "declaration": true,

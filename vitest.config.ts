@@ -1,6 +1,7 @@
 import { resolve } from 'node:path'
+import { playwright } from '@vitest/browser-playwright'
 import zess from '@zessjs/vite-plugin'
-import { defineConfig, type Plugin, type ViteUserConfig } from 'vitest/config'
+import { defineConfig, type ViteUserConfig } from 'vitest/config'
 
 const config: ViteUserConfig = defineConfig({
   test: {
@@ -20,7 +21,7 @@ const config: ViteUserConfig = defineConfig({
         },
       },
       {
-        plugins: [zess({ modulePath: '../src/dom' }) as Plugin],
+        plugins: [zess({ modulePath: '../src/dom' })],
         test: {
           name: 'core',
           root: './packages/core',
@@ -28,7 +29,7 @@ const config: ViteUserConfig = defineConfig({
           browser: {
             enabled: true,
             headless: true,
-            provider: 'playwright',
+            provider: playwright(),
             instances: [{ browser: 'chromium' }],
           },
         },
@@ -48,7 +49,7 @@ const config: ViteUserConfig = defineConfig({
         },
       },
       {
-        plugins: [zess() as Plugin],
+        plugins: [zess()],
         test: {
           name: 'router',
           root: './packages/router',
@@ -56,7 +57,7 @@ const config: ViteUserConfig = defineConfig({
           browser: {
             enabled: true,
             headless: true,
-            provider: 'playwright',
+            provider: playwright(),
             instances: [{ browser: 'chromium' }],
           },
         },
