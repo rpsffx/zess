@@ -1302,16 +1302,27 @@ function transformChildren(
   if (elements.length) {
     stmts.push(
       createExpressionStatement(
-        createCallExpression(
-          createMemberExpression(
-            id,
-            createIdentifier('append', elementsPosition!),
-            false,
-            elementsPosition!,
-          ),
-          elements,
-          elementsPosition!,
-        ),
+        !stmts.length && elements.length === 1 && textContent
+          ? createAssignmentExpression(
+              createMemberExpression(
+                id,
+                createIdentifier('textContent', elementsPosition!),
+                false,
+                elementsPosition!,
+              ),
+              elements[0],
+              elementsPosition!,
+            )
+          : createCallExpression(
+              createMemberExpression(
+                id,
+                createIdentifier('append', elementsPosition!),
+                false,
+                elementsPosition!,
+              ),
+              elements,
+              elementsPosition!,
+            ),
         elementsPosition!,
       ),
     )
