@@ -25,7 +25,7 @@ describe('compile', () => {
   it('should compile simple HTML element', () => {
     const result = compile('<div>Hello</div>')
     match(result.code, 'const _el$ = _$createElement("div")')
-    match(result.code, '_el$.append("Hello")')
+    match(result.code, '_el$.textContent = "Hello"')
   })
   it('should handle SVG namespace', () => {
     const result = compile('<svg><circle /></svg>')
@@ -94,6 +94,12 @@ describe('compile', () => {
   it('should handle empty expression containers', () => {
     const result = compile('<div>{/* empty */}</div>')
     match(result.code, '_$createElement("div")')
+  })
+  it('should handle mixed types of children', () => {
+    const result = compile('<div>Hello {name}<br /></div>')
+    match(result.code, '_el$.append("Hello ")')
+    match(result.code, '_$insert(_el$, name)')
+    match(result.code, '_el$.append(_$createElement("br"))')
   })
   it('should handle single expression fragments', () => {
     const result = compile('<>{userName}</>')
