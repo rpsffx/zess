@@ -120,7 +120,7 @@ const element = <div class="container">Hello World</div>
 const element = (() => {
   const _el$ = _$createElement('div')
   _$setAttribute(_el$, 'class', 'container')
-  _el$.append('Hello World')
+  _el$.textContent = 'Hello World'
   return _el$
 })()
 ```
@@ -180,12 +180,12 @@ const fragment = (
 const fragment = [
   (() => {
     const _el$ = _$createElement('span')
-    _el$.append('First item')
+    _el$.textContent = 'First item'
     return _el$
   })(),
   (() => {
     const _el$2 = _$createElement('span')
-    _el$2.append('Second item')
+    _el$2.textContent = 'Second item'
     return _el$2
   })(),
 ]
@@ -269,12 +269,12 @@ const conditional = (() => {
     isVisible
       ? (() => {
           const _el$2 = _$createElement('span')
-          _el$2.append('Visible')
+          _el$2.textContent = 'Visible'
           return _el$2
         })()
       : (() => {
           const _el$3 = _$createElement('span')
-          _el$3.append('Hidden')
+          _el$3.textContent = 'Hidden'
           return _el$3
         })(),
   )
@@ -296,7 +296,7 @@ const withClass = <div class={isActive ? 'active' : 'inactive'}>Status</div>
 const withClass = (() => {
   const _el$ = _$createElement('div')
   _$setAttribute(_el$, 'class', isActive ? 'active' : 'inactive')
-  _el$.append('Status')
+  _el$.textContent = 'Status'
   return _el$
 })()
 ```
@@ -320,7 +320,7 @@ const withStyle = (() => {
     color: 'red',
     fontSize: '16px',
   })
-  _el$.append('Styled Text')
+  _el$.textContent = 'Styled Text'
   return _el$
 })()
 ```
@@ -359,7 +359,7 @@ const dynamicAttrs = (() => {
       ['data-id']: undefined,
     },
   )
-  _el$.append('Dynamic')
+  _el$.textContent = 'Dynamic'
   return _el$
 })()
 ```
@@ -383,7 +383,7 @@ const withEvents = (() => {
   const _el$ = _$createElement('button')
   _el$.onclick = handleClick
   _el$.$$mouseenter = handleMouseEnter
-  _el$.append('Click Me')
+  _el$.textContent = 'Click Me'
   return _el$
 })()
 ```
@@ -415,7 +415,7 @@ const withRefs = [
     const _el$2 = _$createElement('div')
     const _ref$ = myDiv
     typeof _ref$ === 'function' ? _$use(_ref$, _el$2) : (myDiv = _el$2)
-    _el$2.append('Ref Element')
+    _el$2.textContent = 'Ref Element'
     return _el$2
   })(),
 ]
