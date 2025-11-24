@@ -6,6 +6,7 @@ const config: Promise<Config[]> = sxzz()
   .removeRules(
     'eqeqeq',
     'import/no-default-export',
+    'baseline-js/use-baseline',
     'unicorn/no-for-loop',
     'unicorn/no-new-array',
     'unicorn/new-for-builtins',
