@@ -17,7 +17,7 @@
     "coverage": "vitest run --coverage",
     "format": "prettier --write --cache \"**/*.{ts,tsx}\"",
     "bump": "bumpp -r",
-    "postinstall": "playwright install && simple-git-hooks",
+    "postinstall": "pnpx playwright install chromium && simple-git-hooks",
     "docs:dev": "pnpm run --filter=\"zess-website\" dev",
     "docs:build": "pnpm run --filter=\"zess-website\" build",
     "docs:preview": "pnpm run --filter=\"zess-website\" preview"
