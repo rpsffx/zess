@@ -23,7 +23,7 @@ The `class` attribute is used to set CSS class names for elements, with `classNa
 
 ## style
 
-The `style` attribute applies inline CSS styles using either strings or style objects. Unlike React, Zess utilizes the native `element.style.setProperty` method, requiring standard CSS property names in lowercase with hyphens (e.g., `background-color` instead of `backgroundColor`). This approach offers performance benefits and full support for CSS custom properties.
+The `style` attribute applies inline CSS styles using either strings or style objects. Unlike React, Zess utilizes the native `element.style.setProperty` method, supporting both standard CSS property names in lowercase with hyphens (e.g., `background-color`) and camelCase naming (e.g., `backgroundColor`). This approach offers performance benefits and full support for CSS custom properties.
 
 **Example:**
 
@@ -36,7 +36,7 @@ The `style` attribute applies inline CSS styles using either strings or style ob
 // Object format with signals and CSS variables
 <div style={{
   'color': 'blue',
-  'font-size': fontSize() + 'px',
+  'fontSize': fontSize() + 'px',
   'background-color': getBgColor(),
   'border': '1px solid var(--primary-color)'
 }}>

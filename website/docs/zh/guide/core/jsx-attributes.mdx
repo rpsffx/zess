@@ -23,7 +23,7 @@
 
 ## style
 
-`style` 属性使用字符串或样式对象来应用内联 CSS 样式。与 React 不同，Zess 使用原生的 `element.style.setProperty` 方法，需要使用标准的带连字符的小写 CSS 属性名（例如 `background-color` 而不是 `backgroundColor`）。这种方法具有性能优势，并完全支持 CSS 自定义属性。
+`style` 属性使用字符串或样式对象来应用内联 CSS 样式。与 React 不同，Zess 使用原生的 `element.style.setProperty` 方法，支持标准的带连字符的小写 CSS 属性名（例如 `background-color`）和驼峰式命名（例如 `backgroundColor`）。这种方法具有性能优势，并完全支持 CSS 自定义属性。
 
 **示例：**
 
@@ -36,7 +36,7 @@
 // 对象格式 - 使用信号和 CSS 变量
 <div style={{
   'color': 'blue',
-  'font-size': fontSize() + 'px',
+  'fontSize': fontSize() + 'px',
   'background-color': getBgColor(),
   'border': '1px solid var(--primary-color)'
 }}>
