@@ -151,16 +151,16 @@ describe('compile', () => {
     match(result.code, '_el$.$$click = handleClick')
   })
   it('should handle dynamic class and style attributes', () => {
-    const result = compile('<div class={className} style={styles}></div>')
+    const result = compile('<div class={className} style={styles} />')
     match(result.code, '_$className(_el$, className)')
     match(result.code, '_$style(_el$, styles)')
   })
   it('should handle function ref', () => {
-    const result = compile('<div ref={el => this.ref = el}></div>')
+    const result = compile('<div ref={el => this.ref = el} />')
     match(result.code, '_$use(el => _self$.ref = el, _el$)')
   })
   it('should handle object ref', () => {
-    const result = compile('<div ref={myDiv}></div>')
+    const result = compile('<div ref={myDiv} />')
     match(result.code, 'const _ref$ = myDiv')
     match(
       result.code,
@@ -168,7 +168,7 @@ describe('compile', () => {
     )
   })
   it('should handle ref with conditional expression', () => {
-    const result = compile('<div ref={condition ? ref1 : ref2}></div>')
+    const result = compile('<div ref={condition ? ref1 : ref2} />')
     match(result.code, 'const _ref$ = condition ? ref1 : ref2')
     match(result.code, 'typeof _ref$ === "function" && _$use(_ref$, _el$)')
   })
@@ -233,6 +233,15 @@ describe('compile', () => {
     `)
     match(result.code, 'const _self$ = this')
     match(result.code, '_self$.value')
+  })
+  it('should handle this in class field with JSX', () => {
+    const result = compile(`
+      class Test {
+        element = <div id={this.id} />
+      }
+    `)
+    match(result.code, 'const _self$ = this')
+    match(result.code, '_self$.id')
   })
   it('should handle component methods in JSX', () => {
     const result = compile(`
