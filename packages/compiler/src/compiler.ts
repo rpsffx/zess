@@ -16,10 +16,9 @@ type CompilerContext = {
   JSXId?: number
   refId?: number
   thisId?: number
-  JSXParent?: ESTree.Expression
-  functionParent?: Function
-  hasThisInFunction?: boolean
-  hasThisInProgram?: boolean
+  functionScope?: FunctionScope
+  hasThisInFunctionScope?: boolean
+  hasThisInGlobalScope?: boolean
   hasDynamicChildrenInComponent?: boolean
   prevHasDynamicChildrenInComponent?: boolean
   shouldImportCreateComponent?: boolean
@@ -49,7 +48,10 @@ type Position = Required<ESTree._Node>
 type Listener = FunctionExpression | RightValue
 type Stylesheet = ESTree.ObjectExpression | RightValue
 type LeftValue = ESTree.Identifier | ESTree.MemberExpression
-type Function = FunctionExpression | ESTree.FunctionDeclaration
+type FunctionScope =
+  | ESTree.FunctionExpression
+  | ESTree.FunctionDeclaration
+  | ESTree.PropertyDefinition
 type FunctionExpression =
   | ESTree.FunctionExpression
   | ESTree.ArrowFunctionExpression
@@ -256,8 +258,9 @@ export function compile(
   code: string,
   options: CompilerOptions = {},
 ): CompilerResult {
-  let prevFunctionParent: Function | undefined
-  let prevHasThisInFunction: boolean | undefined
+  let JSXRootNode: ESTree.Expression | undefined
+  let prevFunctionScope: FunctionScope | undefined
+  let prevHasThisInFunctionScope: boolean | undefined
   const ast = parse(code, {
     jsx: true,
     next: true,
@@ -306,7 +309,7 @@ export function compile(
           callExpressionPosition,
         )
       }
-      currentContext.JSXParent ??= expression
+      JSXRootNode ??= expression
       this.replace(expression)
     },
     JSXFragment(node) {
@@ -317,49 +320,45 @@ export function compile(
         node.children,
         copyPosition(node.openingFragment),
       )!
-      currentContext.JSXParent ??= expression
+      JSXRootNode ??= expression
       this.replace(expression)
     },
     FunctionDeclaration(node) {
-      prevFunctionParent = currentContext.functionParent
-      prevHasThisInFunction = currentContext.hasThisInFunction
-      currentContext.functionParent = node
-      currentContext.hasThisInFunction = false
+      prevFunctionScope = currentContext.functionScope
+      prevHasThisInFunctionScope = currentContext.hasThisInFunctionScope
+      currentContext.functionScope = node
+      currentContext.hasThisInFunctionScope = false
     },
     FunctionExpression(node) {
       if (currentContext.generatedFunctions.has(node)) {
         currentContext.generatedFunctions.delete(node)
       } else {
-        prevFunctionParent = currentContext.functionParent
-        prevHasThisInFunction = currentContext.hasThisInFunction
-        currentContext.functionParent = node
-        currentContext.hasThisInFunction = false
+        prevFunctionScope = currentContext.functionScope
+        prevHasThisInFunctionScope = currentContext.hasThisInFunctionScope
+        currentContext.functionScope = node
+        currentContext.hasThisInFunctionScope = false
       }
     },
-    ArrowFunctionExpression(node, parent, key) {
-      if (
-        parent?.type === 'PropertyDefinition' &&
-        (key as keyof typeof parent) === 'value'
-      ) {
-        prevFunctionParent = currentContext.functionParent
-        prevHasThisInFunction = currentContext.hasThisInFunction
-        currentContext.functionParent = node
-        currentContext.hasThisInFunction = false
+    PropertyDefinition(node) {
+      if (node.value) {
+        prevFunctionScope = currentContext.functionScope
+        prevHasThisInFunctionScope = currentContext.hasThisInFunctionScope
+        currentContext.functionScope = node
+        currentContext.hasThisInFunctionScope = false
       }
     },
     ThisExpression(node) {
-      const expression = transformThisExpression(node)
-      if (expression) this.replace(expression)
+      if (JSXRootNode) this.replace(transformThisExpression(node))
     },
     exit(node) {
-      if (node === currentContext.functionParent) {
-        currentContext.functionParent = prevFunctionParent
-        currentContext.hasThisInFunction = prevHasThisInFunction
-      } else if (node === currentContext.JSXParent) {
+      if (node === currentContext.functionScope) {
+        currentContext.functionScope = prevFunctionScope
+        currentContext.hasThisInFunctionScope = prevHasThisInFunctionScope
+      } else if (node === JSXRootNode) {
         currentContext.JSXId = undefined
         currentContext.refId = undefined
         currentContext.thisId = undefined
-        currentContext.JSXParent = undefined
+        JSXRootNode = undefined
       }
     },
   })
@@ -531,17 +530,16 @@ function transformFragment(
 
 function transformThisExpression(
   node: ESTree.ThisExpression | ESTree.JSXIdentifier,
-): ESTree.Identifier | void {
-  if (!currentContext.JSXParent) return
+): ESTree.Identifier {
   const thisId = createIdentifier(
     getUniqueId('self', 'thisId'),
     copyPosition(node),
   )
-  if (!currentContext.functionParent) {
-    if (currentContext.hasThisInProgram) return thisId
+  if (!currentContext.functionScope) {
+    if (currentContext.hasThisInGlobalScope) return thisId
     const { body } = currentContext.ast
     const programPosition = copyPosition(currentContext.ast)
-    currentContext.hasThisInProgram = true
+    currentContext.hasThisInGlobalScope = true
     for (let i = 0; i < body.length; ++i) {
       if (body[i].type === 'ImportDeclaration') continue
       body.splice(
@@ -555,23 +553,42 @@ function transformThisExpression(
       )
       break
     }
-  } else if (!currentContext.hasThisInFunction) {
-    const functionPosition = copyPosition(currentContext.functionParent)
-    const block = currentContext.functionParent.body!
-    const declaration = createVariableDeclaration(
-      thisId,
-      createThisExpression(functionPosition),
-      functionPosition,
-    )
-    currentContext.hasThisInFunction = true
-    if (block.type === 'BlockStatement') {
-      block.body.unshift(declaration)
+  } else if (!currentContext.hasThisInFunctionScope) {
+    let block: ESTree.BlockStatement
+    let functionScopePosition: Position
+    if (currentContext.functionScope.type === 'PropertyDefinition') {
+      const { value } = currentContext.functionScope
+      functionScopePosition = copyPosition(value)
+      if (value.type !== 'ArrowFunctionExpression') {
+        block = createBlockStatement(
+          [createReturnStatement(value, functionScopePosition)],
+          functionScopePosition,
+        )
+        currentContext.functionScope.value = createCallExpression(
+          createArrowFunctionExpression(block, functionScopePosition),
+          [],
+          functionScopePosition,
+        )
+      } else if (value.body.type === 'BlockStatement') {
+        block = value.body
+      } else {
+        value.body = block = createBlockStatement(
+          [createReturnStatement(value.body, functionScopePosition)],
+          functionScopePosition,
+        )
+      }
     } else {
-      currentContext.functionParent.body = createBlockStatement(
-        [declaration, createReturnStatement(block, copyPosition(block))],
-        functionPosition,
-      )
+      block = currentContext.functionScope.body!
+      functionScopePosition = copyPosition(currentContext.functionScope)
     }
+    currentContext.hasThisInFunctionScope = true
+    block.body.unshift(
+      createVariableDeclaration(
+        thisId,
+        createThisExpression(functionScopePosition),
+        functionScopePosition,
+      ),
+    )
   }
   return thisId
 }
