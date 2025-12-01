@@ -37,7 +37,7 @@
     "prettier": "^3.7.3",
     "simple-git-hooks": "^2.13.1",
     "tsdown": "^0.15.12",
-    "tsx": "^4.20.6",
+    "tsx": "^4.21.0",
     "typescript": "^5.9.3",
     "vitest": "^4.0.14"
   },
