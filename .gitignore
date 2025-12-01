@@ -5,3 +5,4 @@ dist
 .eslintcache
 coverage
 doc_build
+.vscode
