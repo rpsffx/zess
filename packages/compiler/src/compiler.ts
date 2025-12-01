@@ -364,6 +364,12 @@ export function compile(
         this.replace(transformThisExpression(node))
       }
     },
+    ImportDeclaration() {
+      this.skip()
+    },
+    ExportAllDeclaration() {
+      this.skip()
+    },
     exit(node) {
       if (node === currentContext.functionScope) {
         currentContext.functionScope = prevFunctionScope ?? ast
@@ -1951,6 +1957,10 @@ function isDynamicExpression(
       this.break()
     },
     ChainExpression() {
+      isDynamic = true
+      this.break()
+    },
+    TaggedTemplateExpression() {
       isDynamic = true
       this.break()
     },
