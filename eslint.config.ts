@@ -3,6 +3,9 @@ import { globalIgnores } from 'eslint/config'
 
 const config: Promise<Config[]> = sxzz()
   .append(globalIgnores(['**/*.{md,mdx}', '**/template']) as Config)
+  .overrideRules({
+    'no-restricted-syntax': ['error', 'ForInStatement'],
+  })
   .removeRules(
     'eqeqeq',
     'import/no-default-export',
