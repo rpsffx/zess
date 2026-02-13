@@ -7,7 +7,7 @@ import {
   type Plugin,
 } from 'vite'
 
-const isTypeScriptFile = RegExp.prototype.test.bind(/\.[mc]?tsx?$/)
+const isTypeScriptFile = RegExp.prototype.test.bind(/(?<!\.d)\.[mc]?tsx?$/)
 
 export default function zess(
   options: {
