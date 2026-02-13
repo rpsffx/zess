@@ -1,8 +1,9 @@
 {
   "name": "zess-website",
+  "type": "module",
   "version": "1.1.6",
   "private": true,
-  "packageManager": "pnpm@10.24.0",
+  "packageManager": "pnpm@10.29.3",
   "license": "MIT",
   "scripts": {
     "dev": "rspress dev",
@@ -13,7 +14,7 @@
     "@rspress/core": "2.0.0-beta.35",
     "@rspress/plugin-algolia": "2.0.0-beta.35",
     "@rspress/plugin-sitemap": "2.0.0-beta.35",
-    "@types/react": "^19.2.7",
+    "@types/react": "^19.2.14",
     "rspress-plugin-font-open-sans": "1.0.3"
   }
 }

@@ -1,39 +1,42 @@
 {
   "name": "@zessjs/compiler",
-  "version": "1.1.6",
-  "packageManager": "pnpm@10.24.0",
-  "description": "Zess JSX compiler 💥 Delivers efficient code conversion for super - responsive web experiences.",
   "type": "module",
+  "version": "1.1.6",
+  "packageManager": "pnpm@10.29.3",
+  "description": "Zess JSX compiler 💥 Delivers efficient code conversion for super - responsive web experiences.",
+  "author": "Columsys",
+  "license": "MIT",
+  "homepage": "https://github.com/rpsffx/zess/tree/main/packages/compiler#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rpsffx/zess.git",
+    "directory": "packages/compiler"
+  },
+  "bugs": {
+    "url": "https://github.com/rpsffx/zess/issues"
+  },
   "keywords": [
     "zess",
     "zessjs",
     "compiler",
     "JSX"
   ],
-  "license": "MIT",
-  "homepage": "https://github.com/rpsffx/zess/tree/main/packages/compiler#readme",
-  "bugs": {
-    "url": "https://github.com/rpsffx/zess/issues"
+  "exports": {
+    "types": "./dist/compiler.d.ts",
+    "import": "./dist/compiler.js",
+    "require": "./dist/compiler.cjs"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/rpsffx/zess.git",
-    "directory": "packages/compiler"
-  },
-  "author": "Columsys",
-  "files": [
-    "dist"
-  ],
   "main": "./dist/compiler.js",
   "module": "./dist/compiler.js",
   "types": "./dist/compiler.d.ts",
-  "exports": {
-    "types": "./dist/compiler.d.ts",
-    "require": "./dist/compiler.cjs",
-    "import": "./dist/compiler.js"
-  },
+  "files": [
+    "dist"
+  ],
   "publishConfig": {
     "access": "public"
+  },
+  "engines": {
+    "node": ">=18.12.0"
   },
   "scripts": {
     "build": "tsdown",
@@ -41,12 +44,9 @@
   },
   "dependencies": {
     "astring": "^1.9.0",
-    "entities": "^7.0.0",
+    "entities": "^7.0.1",
     "merge-source-map": "^1.1.0",
-    "meriyah": "^6.1.4",
+    "meriyah": "^7.1.0",
     "source-map": "^0.7.6"
-  },
-  "engines": {
-    "node": ">=18.12.0"
   }
 }

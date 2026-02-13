@@ -1,9 +1,20 @@
 {
   "name": "@zessjs/core",
-  "version": "1.1.6",
-  "packageManager": "pnpm@10.24.0",
-  "description": "Zess core module ⚙️ Provides powerful runtime functionality for high - performance web applications.",
   "type": "module",
+  "version": "1.1.6",
+  "packageManager": "pnpm@10.29.3",
+  "description": "Zess core module ⚙️ Provides powerful runtime functionality for high - performance web applications.",
+  "author": "Columsys",
+  "license": "MIT",
+  "homepage": "https://github.com/rpsffx/zess/tree/main/packages/core#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rpsffx/zess.git",
+    "directory": "packages/core"
+  },
+  "bugs": {
+    "url": "https://github.com/rpsffx/zess/issues"
+  },
   "keywords": [
     "zess",
     "zessjs",
@@ -12,49 +23,38 @@
     "components",
     "framework"
   ],
-  "license": "MIT",
-  "homepage": "https://github.com/rpsffx/zess/tree/main/packages/core#readme",
-  "bugs": {
-    "url": "https://github.com/rpsffx/zess/issues"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/rpsffx/zess.git",
-    "directory": "packages/core"
-  },
-  "author": "Columsys",
-  "files": [
-    "dist",
-    "types"
-  ],
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "require": "./dist/index.cjs",
-      "import": "./dist/index.js"
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
     },
     "./jsx-runtime": "./types/jsx.d.ts",
     "./jsx-dev-runtime": "./types/jsx.d.ts"
   },
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
   "unpkg": "./dist/index.js",
   "jsdelivr": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "types"
+  ],
   "publishConfig": {
     "access": "public"
+  },
+  "engines": {
+    "node": ">=18.12.0"
   },
   "scripts": {
     "build": "tsdown",
     "dev": "tsdown --watch"
   },
   "peerDependencies": {
-    "csstype": "^3.1.3"
+    "csstype": "^3.2.3"
   },
   "devDependencies": {
     "csstype": "^3.2.3"
-  },
-  "engines": {
-    "node": ">=18.12.0"
   }
 }
