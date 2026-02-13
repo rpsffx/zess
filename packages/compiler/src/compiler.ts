@@ -708,7 +708,10 @@ function injectRuntimeImport(ast: ESTree.Program): void {
       type: 'ImportDeclaration',
       specifiers,
       attributes: [],
-      source: createLiteral(currentContext.config.modulePath, programPosition),
+      source: createLiteral(
+        currentContext.config.modulePath,
+        programPosition,
+      ) as ESTree.StringLiteral,
       ...programPosition,
     })
   }
@@ -1824,10 +1827,15 @@ function createIdentifier(name: string, position: Position): ESTree.Identifier {
 }
 
 function createLiteral(
-  value: ESTree.Literal['value'],
+  value: string | number | boolean,
   position: Position,
 ): ESTree.Literal {
-  return { type: 'Literal', value, raw: JSON.stringify(value), ...position }
+  return {
+    type: 'Literal',
+    value,
+    raw: JSON.stringify(value),
+    ...position,
+  }
 }
 
 function createThisExpression(position: Position): ESTree.ThisExpression {
