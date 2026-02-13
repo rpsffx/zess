@@ -133,6 +133,11 @@ describe('compile', () => {
     const result = compile('<>Outer<>{Inner}</></>')
     match(result.code, '["Outer", Inner]')
   })
+  it('should handle element with fragment inside', () => {
+    const result = compile('<div>Hello <>World</>!</div>')
+    match(result.code, 'const _el$ = _$createElement("div")')
+    match(result.code, '_el$.textContent = "Hello World!"')
+  })
   it('should handle boolean attributes', () => {
     const result = compile('<input disabled />')
     match(result.code, '_el$.disabled = true')
