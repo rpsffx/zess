@@ -452,83 +452,87 @@ function transformFragment(
   position: Position,
   isInComponent?: boolean,
 ): ESTree.Expression | void {
-  const elements: ESTree.Expression[] = []
   let hasDynamicChildren = false
   let shouldImportUseMemo = false
   let textContent: string | undefined
   let textPosition: Position | undefined
   let elementsPosition: Position | undefined
   let childExpression: ESTree.Expression | undefined
-  for (let i = 0; i < children.length; ++i) {
-    const childNode = children[i]
-    if (childNode.type === 'JSXText') {
-      const text = childNode.value
-      if (isBlankLine(text)) continue
-      if (textContent) {
-        textContent = `${textContent}${text}`
-      } else {
-        textContent = text
-        textPosition = copyPosition(childNode)
-        elementsPosition ??= textPosition
-      }
-    } else if (isJSXEmptyExpression(childNode)) {
-      continue
-    } else if (childNode.type === 'JSXFragment') {
-      children.splice(i--, 1, ...childNode.children)
-    } else {
-      const childPosition = copyPosition(childNode)
-      let childElement: ESTree.Expression
-      if (textContent) {
-        elements.push(createLiteral(decodeText(textContent), textPosition!))
-        textContent = textPosition = undefined
-      }
-      if (childNode.type === 'JSXElement') {
-        const stmts = transformElement(childNode)
-        if (isInComponent) hasDynamicChildren = true
-        if (stmts.length > 1) {
-          const stmt = stmts[0] as ESTree.VariableDeclaration
-          const id = stmt.declarations[0].id as ESTree.Identifier
-          childElement = createCallExpression(
-            createArrowFunctionExpression(
-              createBlockStatement(
-                [...stmts, createReturnStatement(id, childPosition)],
+  const stack: [ESTree.JSXChild[], number][] = [[children, 0]]
+  const elements: ESTree.Expression[] = []
+  outer: do {
+    const top = stack.at(-1)!
+    while (top[1] < top[0].length) {
+      const childNode = top[0][top[1]++]
+      if (childNode.type === 'JSXText') {
+        const text = childNode.value
+        if (isBlankLine(text)) continue
+        if (textContent) {
+          textContent = `${textContent}${text}`
+        } else {
+          textContent = text
+          textPosition = copyPosition(childNode)
+          elementsPosition ??= textPosition
+        }
+      } else if (childNode.type === 'JSXFragment') {
+        stack.push([childNode.children, 0])
+        continue outer
+      } else if (!isJSXEmptyExpression(childNode)) {
+        const childPosition = copyPosition(childNode)
+        let childElement: ESTree.Expression
+        if (textContent) {
+          elements.push(createLiteral(decodeText(textContent), textPosition!))
+          textContent = textPosition = undefined
+        }
+        if (childNode.type === 'JSXElement') {
+          const stmts = transformElement(childNode)
+          if (isInComponent) hasDynamicChildren = true
+          if (stmts.length > 1) {
+            const stmt = stmts[0] as ESTree.VariableDeclaration
+            const id = stmt.declarations[0].id as ESTree.Identifier
+            childElement = createCallExpression(
+              createArrowFunctionExpression(
+                createBlockStatement(
+                  [...stmts, createReturnStatement(id, childPosition)],
+                  childPosition,
+                ),
                 childPosition,
               ),
+              [],
               childPosition,
-            ),
-            [],
-            childPosition,
-          )
-        } else if (stmts[0].type === 'VariableDeclaration') {
-          childElement = stmts[0].declarations[0].init!
+            )
+          } else if (stmts[0].type === 'VariableDeclaration') {
+            childElement = stmts[0].declarations[0].init!
+          } else {
+            childElement = (stmts[0] as ESTree.ExpressionStatement).expression
+          }
         } else {
-          childElement = (stmts[0] as ESTree.ExpressionStatement).expression
+          const expression = childNode.expression as ESTree.Expression
+          if (isInComponent) childExpression ??= expression
+          if (isDynamicExpression(expression, isInComponent)) {
+            shouldImportUseMemo = hasDynamicChildren = true
+            childElement = createCallExpression(
+              createIdentifier('_$memo', childPosition),
+              [
+                !isInComponent && isBareIdentifierCall(expression)
+                  ? expression.callee
+                  : createArrowFunctionExpression(
+                      expression,
+                      copyPosition(expression),
+                    ),
+              ],
+              childPosition,
+            )
+          } else {
+            childElement = expression
+          }
         }
-      } else {
-        const expression = childNode.expression as ESTree.Expression
-        if (isInComponent) childExpression ??= expression
-        if (isDynamicExpression(expression, isInComponent)) {
-          shouldImportUseMemo = hasDynamicChildren = true
-          childElement = createCallExpression(
-            createIdentifier('_$memo', childPosition),
-            [
-              !isInComponent && isBareIdentifierCall(expression)
-                ? expression.callee
-                : createArrowFunctionExpression(
-                    expression,
-                    copyPosition(expression),
-                  ),
-            ],
-            childPosition,
-          )
-        } else {
-          childElement = expression
-        }
+        elements.push(childElement)
+        elementsPosition ??= childPosition
       }
-      elements.push(childElement)
-      elementsPosition ??= childPosition
     }
-  }
+    stack.pop()
+  } while (stack.length)
   if (textContent) {
     elements.push(createLiteral(decodeText(textContent), textPosition!))
   }
@@ -1243,92 +1247,97 @@ function transformChildren(
   children: ESTree.JSXChild[],
   id: ESTree.Identifier,
 ): ESTree.Statement[] {
-  const stmts: ESTree.Statement[] = []
   let elements: ESTree.Expression[] = []
   let textContent: string | undefined
   let textPosition: Position | undefined
   let elementsPosition: Position | undefined
-  for (let i = 0; i < children.length; ++i) {
-    const childNode = children[i]
-    if (childNode.type === 'JSXText') {
-      const text = childNode.value
-      if (isBlankLine(text)) continue
-      if (textContent) {
-        textContent = `${textContent}${text}`
-      } else {
-        textContent = text
-        textPosition = copyPosition(childNode)
-        elementsPosition ??= textPosition
-      }
-    } else if (isJSXEmptyExpression(childNode)) {
-      continue
-    } else if (childNode.type === 'JSXFragment') {
-      children.splice(i--, 1, ...childNode.children)
-    } else {
-      const childPosition = copyPosition(childNode)
-      let expression: ESTree.Expression
-      if (textContent) {
-        elements.push(createLiteral(decodeText(textContent), textPosition!))
-        textContent = textPosition = undefined
-      }
-      if (childNode.type === 'JSXElement') {
-        const childStmts = transformElement(childNode)
-        if (childStmts.length > 1) {
-          const stmt = childStmts[0] as ESTree.VariableDeclaration
-          elements.push(stmt.declarations[0].id as ESTree.Identifier)
-          elementsPosition ??= childPosition
-          stmts.push(...childStmts)
-          continue
-        } else if (childStmts[0].type === 'VariableDeclaration') {
-          elements.push(childStmts[0].declarations[0].init!)
-          elementsPosition ??= childPosition
-          continue
+  const stack: [ESTree.JSXChild[], number][] = [[children, 0]]
+  const stmts: ESTree.Statement[] = []
+  outer: do {
+    const top = stack.at(-1)!
+    while (top[1] < top[0].length) {
+      const childNode = top[0][top[1]++]
+      if (childNode.type === 'JSXText') {
+        const text = childNode.value
+        if (isBlankLine(text)) continue
+        if (textContent) {
+          textContent = `${textContent}${text}`
         } else {
-          expression = (childStmts[0] as ESTree.ExpressionStatement).expression
+          textContent = text
+          textPosition = copyPosition(childNode)
+          elementsPosition ??= textPosition
         }
-      } else {
-        expression = childNode.expression as ESTree.Expression
-        if (isBareIdentifierCall(expression)) {
-          expression = expression.callee
-        } else if (isDynamicExpression(expression)) {
-          expression = createArrowFunctionExpression(
-            expression,
-            copyPosition(expression),
+      } else if (childNode.type === 'JSXFragment') {
+        stack.push([childNode.children, 0])
+        continue outer
+      } else if (!isJSXEmptyExpression(childNode)) {
+        const childPosition = copyPosition(childNode)
+        let expression: ESTree.Expression
+        if (textContent) {
+          elements.push(createLiteral(decodeText(textContent), textPosition!))
+          textContent = textPosition = undefined
+        }
+        if (childNode.type === 'JSXElement') {
+          const childStmts = transformElement(childNode)
+          if (childStmts.length > 1) {
+            const stmt = childStmts[0] as ESTree.VariableDeclaration
+            elements.push(stmt.declarations[0].id as ESTree.Identifier)
+            elementsPosition ??= childPosition
+            stmts.push(...childStmts)
+            continue
+          } else if (childStmts[0].type === 'VariableDeclaration') {
+            elements.push(childStmts[0].declarations[0].init!)
+            elementsPosition ??= childPosition
+            continue
+          } else {
+            expression = (childStmts[0] as ESTree.ExpressionStatement)
+              .expression
+          }
+        } else {
+          expression = childNode.expression as ESTree.Expression
+          if (isBareIdentifierCall(expression)) {
+            expression = expression.callee
+          } else if (isDynamicExpression(expression)) {
+            expression = createArrowFunctionExpression(
+              expression,
+              copyPosition(expression),
+            )
+          }
+        }
+        if (elements.length) {
+          stmts.push(
+            createExpressionStatement(
+              createCallExpression(
+                createMemberExpression(
+                  id,
+                  createIdentifier('append', elementsPosition!),
+                  false,
+                  elementsPosition!,
+                ),
+                elements,
+                elementsPosition!,
+              ),
+              elementsPosition!,
+            ),
           )
+          elements = []
+          elementsPosition = undefined
         }
-      }
-      if (elements.length) {
+        currentContext.shouldImportInsert = true
         stmts.push(
           createExpressionStatement(
             createCallExpression(
-              createMemberExpression(
-                id,
-                createIdentifier('append', elementsPosition!),
-                false,
-                elementsPosition!,
-              ),
-              elements,
-              elementsPosition!,
+              createIdentifier('_$insert', childPosition),
+              [id, expression],
+              childPosition,
             ),
-            elementsPosition!,
-          ),
-        )
-        elements = []
-        elementsPosition = undefined
-      }
-      currentContext.shouldImportInsert = true
-      stmts.push(
-        createExpressionStatement(
-          createCallExpression(
-            createIdentifier('_$insert', childPosition),
-            [id, expression],
             childPosition,
           ),
-          childPosition,
-        ),
-      )
+        )
+      }
     }
-  }
+    stack.pop()
+  } while (stack.length)
   if (textContent) {
     elements.push(createLiteral(decodeText(textContent), textPosition!))
   }
