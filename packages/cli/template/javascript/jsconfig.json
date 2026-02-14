@@ -4,8 +4,8 @@
     "jsx": "preserve",
     "jsxImportSource": "@zessjs/core",
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
-    "types": ["vite/client", "vitest/jsdom"],
-    "moduleResolution": "bundler"
+    "moduleResolution": "bundler",
+    "types": ["vite/client", "vitest/jsdom"]
   },
   "include": ["src", "tests"]
 }
