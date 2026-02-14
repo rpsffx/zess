@@ -1,7 +1,7 @@
 {
   "name": "@zessjs/router",
   "type": "module",
-  "version": "1.1.8",
+  "version": "1.1.9",
   "packageManager": "pnpm@10.29.3",
   "description": "Zess router 📍 Client-side navigation, dynamic & nested routing for web apps",
   "author": "Columsys",
