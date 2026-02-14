@@ -3,8 +3,8 @@
   <h1>Zess</h1>
 
 [![GitHub package.json version](https://img.shields.io/github/package-json/v/rpsffx/zess?style=for-the-badge)](./package.json) [![GitHub License](https://img.shields.io/github/license/rpsffx/zess?style=for-the-badge)](./LICENSE) [![Build Status](https://img.shields.io/github/actions/workflow/status/rpsffx/zess/unit-test.yml?branch=main&logo=github&style=for-the-badge)](./.github/workflows/unit-test.yml) [![Codecov](https://img.shields.io/codecov/c/github/rpsffx/zess?branch=main&logo=codecov&style=for-the-badge)](https://app.codecov.io/gh/rpsffx/zess) [![NPM Downloads](https://img.shields.io/npm/dm/%40zessjs%2Fcli?style=for-the-badge)
-](https://github.com/rpsffx/zess/commits/main/) [![NPM Last Update](https://img.shields.io/npm/last-update/%40zessjs%2Fcore?style=for-the-badge)
-](https://www.npmjs.com/package/@zessjs/core)
+](https://www.npmjs.com/package/@zessjs/cli) [![NPM Last Update](https://img.shields.io/npm/last-update/%40zessjs%2Fcore?style=for-the-badge)
+](https://github.com/rpsffx/zess/commits/main/)
 
 A compiler-driven JavaScript framework for building high-performance user interfaces.
 
