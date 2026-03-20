@@ -1,7 +1,7 @@
 {
   "name": "@zessjs/compiler",
   "type": "module",
-  "version": "1.1.9",
+  "version": "1.1.10",
   "packageManager": "pnpm@10.32.1",
   "description": "Zess JSX compiler 💥 Delivers efficient code conversion for super - responsive web experiences.",
   "author": "Columsys",
