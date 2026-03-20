@@ -16,8 +16,8 @@ const config: UserConfig = defineConfig({
   root: path.join(__dirname, 'docs'),
   base: '/zess/',
   lang: 'en',
-  icon: 'https://pic1.imgdb.cn/item/68c7c093c5157e1a8804fb52.svg',
-  logo: 'https://pic1.imgdb.cn/item/68c7c093c5157e1a8804fb52.svg',
+  icon: 'https://cdn.jsdelivr.net/gh/rpsffx/images/20260321010120627.svg',
+  logo: 'https://cdn.jsdelivr.net/gh/rpsffx/images/20260321010120627.svg',
   logoText: 'Zess',
   head: [
     '<meta name="algolia-site-verification"  content="36948B26089B1A5B" />',
