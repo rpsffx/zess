@@ -10,7 +10,7 @@ const Home: React.FC = () => {
       <div className="hero">
         <div className="hero__logo">
           <img
-            src="https://pic1.imgdb.cn/item/68c7c093c5157e1a8804fb52.svg"
+            src="https://cdn.jsdelivr.net/gh/rpsffx/images/20260321010120627.svg"
             alt="Zess Logo"
           />
         </div>

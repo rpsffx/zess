@@ -1,6 +1,6 @@
 <div align="center">
   <a href="https://rpsffx.github.io/zess" target="_blank" alt="Zess Logo">
-    <img src="https://pic1.imgdb.cn/item/68c7c093c5157e1a8804fb52.svg" alt="Zess Logo">
+    <img src="https://cdn.jsdelivr.net/gh/rpsffx/images/20260321010120627.svg" alt="Zess Logo">
   </a>
   <h1>@zessjs/cli</h1>
 
@@ -11,7 +11,7 @@ Zess CLI tool 🔨 For easily creating Vite-powered Zess project.
 </div>
 
 <div align="center">
-  <img src="https://pic1.imgdb.cn/item/68dea750c5157e1a885103f9.gif" alt="Zess CLI Usage" style="max-width: 100%; height: auto;">
+  <img src="https://cdn.jsdelivr.net/gh/rpsffx/images/20260321010120414.gif" alt="Zess CLI Usage" style="max-width: 100%; height: auto;">
 </div>
 
 ## 🚀 Usage
